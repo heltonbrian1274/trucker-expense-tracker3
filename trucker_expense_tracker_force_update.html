@@ -1,0 +1,2555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Trucker Expense Tracker - Professional Expense Management for Owner-Operators</title>
+    <meta name="description" content="Professional expense tracking PWA for owner-operator truck drivers. Track fuel, maintenance, meals, and all business expenses with offline capability and tax-ready reports.">
+    <meta name="keywords" content="trucker expenses, owner operator, truck driver, expense tracker, tax deductions, fuel tracking, maintenance records">
+    <meta name="author" content="Trucker Expense Tracker">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://trucker-expense-tracker.vercel.app/">
+    <meta property="og:title" content="Trucker Expense Tracker - Professional Expense Management">
+    <meta property="og:description" content="Professional expense tracking PWA for owner-operator truck drivers. Track all business expenses with offline capability.">
+    <meta property="og:image" content="https://trucker-expense-tracker.vercel.app/icon-512x512.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://trucker-expense-tracker.vercel.app/">
+    <meta property="twitter:title" content="Trucker Expense Tracker - Professional Expense Management">
+    <meta property="twitter:description" content="Professional expense tracking PWA for owner-operator truck drivers. Track all business expenses with offline capability.">
+    <meta property="twitter:image" content="https://trucker-expense-tracker.vercel.app/icon-512x512.png">
+
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self';">
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Trucker Expense Tracker">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon-16x16.png">
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary-color: #94a3b8;
+            --success-color: #34d399;
+            --warning-color: #fbbf24;
+            --danger-color: #f87171;
+            --background-color: #0f172a;
+            --surface-color: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 120px;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: calc(100vh - 120px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            position: relative;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .version-info {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .update-button {
+            position: absolute;
+            top: 90px;
+            right: 0;
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .update-button:hover {
+            background: #059669;
+            transform: scale(1.05);
+        }
+
+        .update-button.show {
+            display: block;
+        }
+
+        .main-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .content-area {
+            background: var(--surface-color);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .expense-category {
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .expense-category:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow);
+        }
+
+        .expense-category.expanded {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .category-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .expense-form {
+            padding: 25px;
+            display: none;
+            background: var(--background-color);
+        }
+
+        .expense-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 16px;
+            background: var(--surface-color);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .receipt-upload {
+            border: 2px dashed var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--surface-color);
+        }
+
+        .receipt-upload:hover {
+            border-color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .add-category-section {
+            background: var(--surface-color);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid var(--border-color);
+        }
+
+        .icon-selector {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .icon-button {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--surface-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .icon-button:hover {
+            border-color: var(--primary-color);
+        }
+
+        .icon-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--surface-color);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .icon-list.show {
+            display: block;
+        }
+
+        .icon-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .icon-option:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .icon-option:last-child {
+            border-bottom: none;
+        }
+
+        .summary-section {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .summary-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .summary-amount {
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+        }
+
+        .print-btn {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+        }
+
+        .csv-btn {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        }
+
+        .feedback-btn {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+
+        .faq-btn {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .privacy-notice {
+            background: var(--surface-color);
+            border: 2px solid var(--success-color);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .privacy-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--success-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--surface-color);
+            border-top: 2px solid var(--border-color);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: var(--background-color);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 100px;
+            justify-content: center;
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .nav-btn:hover:not(.active) {
+            border-color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--surface-color);
+            margin: 20px;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+
+        .faq-item {
+            margin-bottom: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            background: var(--background-color);
+            padding: 15px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: var(--surface-color);
+            color: var(--text-secondary);
+        }
+
+        .faq-answer.show {
+            padding: 15px 20px;
+            max-height: 500px;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success-color);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            z-index: 3000;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .success-message.show {
+            transform: translateX(0);
+        }
+
+        .update-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-color);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            z-index: 3000;
+            box-shadow: var(--shadow-lg);
+            display: none;
+        }
+
+        .update-notification.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateX(-50%) translateY(-100%);
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .main-title {
+                font-size: 2rem;
+            }
+
+            .content-area {
+                padding: 20px;
+            }
+
+            .action-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .navigation {
+                padding: 10px 15px;
+                gap: 10px;
+            }
+
+            .nav-btn {
+                padding: 10px 15px;
+                font-size: 12px;
+                min-width: 80px;
+            }
+
+            body {
+                padding-bottom: 100px;
+            }
+
+            .version-info {
+                position: static;
+                margin: 10px 0;
+                display: inline-block;
+            }
+
+            .update-button {
+                position: static;
+                margin: 5px 0;
+                display: inline-block;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: black;
+                padding: 0;
+            }
+
+            .navigation,
+            .action-buttons,
+            .theme-toggle,
+            .version-info,
+            .update-button {
+                display: none !important;
+            }
+
+            .content-area {
+                box-shadow: none;
+                border: 1px solid #ccc;
+                page-break-inside: avoid;
+            }
+
+            .expense-category {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙</button>
+            <div class="version-info" id="versionInfo">v2.1.0</div>
+            <button class="update-button" id="updateButton" onclick="checkForUpdates()">🔄 Update Available</button>
+            <h1 class="main-title">🚛 Trucker Expense Tracker</h1>
+            <p class="subtitle">Professional expense management for owner-operators</p>
+        </div>
+
+        <!-- Update Notification -->
+        <div class="update-notification" id="updateNotification">
+            🔄 New version available! Click "Update Available" to refresh.
+        </div>
+
+        <!-- Today Section -->
+        <div class="section active" id="todaySection">
+            <div class="content-area">
+                <h2 class="section-title">📅 Log your expenses for today</h2>
+                
+                <!-- Fuel -->
+                <div class="expense-category" onclick="toggleCategory(this)">
+                    <div class="category-header">
+                        <div class="category-icon">⛽</div>
+                        <span>Fuel</span>
+                    </div>
+                    <div class="expense-form">
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" placeholder="Gas station name or location">
+                        </div>
+                        <div class="form-group">
+                            <label>Gallons</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Receipt</label>
+                            <div class="receipt-upload" onclick="uploadReceipt(this)">
+                                📷 Click to upload receipt
+                            </div>
+                        </div>
+                        <button class="save-btn" onclick="saveExpense('fuel', this)">💾 Save Expense</button>
+                    </div>
+                </div>
+
+                <!-- Maintenance & Repairs -->
+                <div class="expense-category" onclick="toggleCategory(this)">
+                    <div class="category-header">
+                        <div class="category-icon">🔧</div>
+                        <span>Maintenance & Repairs</span>
+                    </div>
+                    <div class="expense-form">
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Service Provider</label>
+                            <input type="text" placeholder="Shop name or mechanic">
+                        </div>
+                        <div class="form-group">
+                            <label>Service Type</label>
+                            <input type="text" placeholder="Oil change, tire repair, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Receipt</label>
+                            <div class="receipt-upload" onclick="uploadReceipt(this)">
+                                📷 Click to upload receipt
+                            </div>
+                        </div>
+                        <button class="save-btn" onclick="saveExpense('maintenance', this)">💾 Save Expense</button>
+                    </div>
+                </div>
+
+                <!-- Truck/Trailer Payments or Lease -->
+                <div class="expense-category" onclick="toggleCategory(this)">
+                    <div class="category-header">
+                        <div class="category-icon">🚚</div>
+                        <span>Truck/Trailer Payments or Lease</span>
+                    </div>
+                    <div class="expense-form">
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Type</label>
+                            <select>
+                                <option>Truck Payment</option>
+                                <option>Trailer Payment</option>
+                                <option>Truck Lease</option>
+                                <option>Trailer Lease</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Lender/Lessor</label>
+                            <input type="text" placeholder="Bank or leasing company">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Receipt</label>
+                            <div class="receipt-upload" onclick="uploadReceipt(this)">
+                                📷 Click to upload receipt
+                            </div>
+                        </div>
+                        <button class="save-btn" onclick="saveExpense('truck_payment', this)">💾 Save Expense</button>
+                    </div>
+                </div>
+
+                <!-- Insurance Premiums -->
+                <div class="expense-category" onclick="toggleCategory(this)">
+                    <div class="category-header">
+                        <div class="category-icon">🛡️</div>
+                        <span>Insurance Premiums</span>
+                    </div>
+                    <div class="expense-form">
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Insurance Type</label>
+                            <select>
+                                <option>Liability Insurance</option>
+                                <option>Physical Damage Insurance</option>
+                                <option>Cargo Insurance</option>
+                                <option>Health Insurance</option>
+                                <option>Other Insurance</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Insurance Company</label>
+                            <input type="text" placeholder="Insurance provider name">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Receipt</label>
+                            <div class="receipt-upload" onclick="uploadReceipt(this)">
+                                📷 Click to upload receipt
+                            </div>
+                        </div>
+                        <button class="save-btn" onclick="saveExpense('insurance', this)">💾 Save Expense</button>
+                    </div>
+                </div>
+
+                <!-- Licensing, Registration & Permits -->
+                <div class="expense-category" onclick="toggleCategory(this)">
+                    <div class="category-header">
+                        <div class="category-icon">📜</div>
+                        <span>Licensing, Registration & Permits</span>
+                    </div>
+                    <div class="expense-form">
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>License/Permit Type</label>
+                            <input type="text" placeholder="CDL renewal, DOT permit, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Issuing Authority</label>
+                            <input type="text" placeholder="DMV, DOT, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Receipt</label>
+                            <div class="receipt-upload" onclick="uploadReceipt(this)">
+                                📷 Click to upload receipt
+                            </div>
+                        </div>
+                        <button class="save-btn" onclick="saveExpense('licensing', this)">💾 Save Expense</button>
+                    </div>
+                </div>
+
+                <!-- Tolls & Parking Fees -->
+                <div class="expense-category" onclick="toggleCategory(this)">
+                    <div class="category-header">
+                        <div class="category-icon">🛣️</div>
+                        <span>Tolls & Parking Fees</span>
+                    </div>
+                    <div class="expense-form">
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" placeholder="Toll road or parking location">
+                        </div>
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select>
+                                <option>Toll Road</option>
+                                <option>Bridge Toll</option>
+                                <option>Parking Fee</option>
+                                <option>Truck Stop Parking</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Receipt</label>
+                            <div class="receipt-upload" onclick="uploadReceipt(this)">
+                                📷 Click to upload receipt
+                            </div>
+                        </div>
+                        <button class="save-btn" onclick="saveExpense('tolls', this)">💾 Save Expense</button>
+                    </div>
+                </div>
+
+                <!-- Lodging -->
+                <div class="expense-category" onclick="toggleCategory(this)">
+                    <div class="category-header">
+                        <div class="category-icon">🛏️</div>
+                        <span>Lodging</span>
+                    </div>
+                    <div class="expense-form">
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Hotel/Motel Name</label>
+                            <input type="text" placeholder="Hotel or motel name">
+                        </div>
+                        <div class="form-group">
+                            <label>Location</label>
+                            <input type="text" placeholder="City, State">
+                        </div>
+                        <div class="form-group">
+                            <label>Check-in Date</label>
+                            <input type="date">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Receipt</label>
+                            <div class="receipt-upload" onclick="uploadReceipt(this)">
+                                📷 Click to upload receipt
+                            </div>
+                        </div>
+                        <button class="save-btn" onclick="saveExpense('lodging', this)">💾 Save Expense</button>
+                    </div>
+                </div>
+
+                <!-- Meals -->
+                <div class="expense-category" onclick="toggleCategory(this)">
+                    <div class="category-header">
+                        <div class="category-icon">🍽️</div>
+                        <span>Meals</span>
+                    </div>
+                    <div class="expense-form">
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Restaurant/Location</label>
+                            <input type="text" placeholder="Restaurant name or location">
+                        </div>
+                        <div class="form-group">
+                            <label>Meal Type</label>
+                            <select>
+                                <option>Breakfast</option>
+                                <option>Lunch</option>
+                                <option>Dinner</option>
+                                <option>Snack</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Receipt</label>
+                            <div class="receipt-upload" onclick="uploadReceipt(this)">
+                                📷 Click to upload receipt
+                            </div>
+                        </div>
+                        <button class="save-btn" onclick="saveExpense('meals', this)">💾 Save Expense</button>
+                    </div>
+                </div>
+
+                <!-- Communication & Technology -->
+                <div class="expense-category" onclick="toggleCategory(this)">
+                    <div class="category-header">
+                        <div class="category-icon">📱</div>
+                        <span>Communication & Technology</span>
+                    </div>
+                    <div class="expense-form">
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Service Type</label>
+                            <select>
+                                <option>Cell Phone</option>
+                                <option>Internet</option>
+                                <option>GPS/Navigation</option>
+                                <option>CB Radio</option>
+                                <option>Satellite Radio</option>
+                                <option>Load Board Subscription</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Provider</label>
+                            <input type="text" placeholder="Service provider name">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Receipt</label>
+                            <div class="receipt-upload" onclick="uploadReceipt(this)">
+                                📷 Click to upload receipt
+                            </div>
+                        </div>
+                        <button class="save-btn" onclick="saveExpense('communication', this)">💾 Save Expense</button>
+                    </div>
+                </div>
+
+                <!-- Office Supplies & Subscriptions -->
+                <div class="expense-category" onclick="toggleCategory(this)">
+                    <div class="category-header">
+                        <div class="category-icon">📝</div>
+                        <span>Office Supplies & Subscriptions</span>
+                    </div>
+                    <div class="expense-form">
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Item/Service</label>
+                            <input type="text" placeholder="Logbooks, pens, software, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Vendor</label>
+                            <input type="text" placeholder="Store or service provider">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Receipt</label>
+                            <div class="receipt-upload" onclick="uploadReceipt(this)">
+                                📷 Click to upload receipt
+                            </div>
+                        </div>
+                        <button class="save-btn" onclick="saveExpense('office_supplies', this)">💾 Save Expense</button>
+                    </div>
+                </div>
+
+                <!-- Truck Supplies & Safety Gear -->
+                <div class="expense-category" onclick="toggleCategory(this)">
+                    <div class="category-header">
+                        <div class="category-icon">🧰</div>
+                        <span>Truck Supplies & Safety Gear</span>
+                    </div>
+                    <div class="expense-form">
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Item Type</label>
+                            <input type="text" placeholder="Tools, safety equipment, cleaning supplies, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Vendor</label>
+                            <input type="text" placeholder="Store or supplier">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Receipt</label>
+                            <div class="receipt-upload" onclick="uploadReceipt(this)">
+                                📷 Click to upload receipt
+                            </div>
+                        </div>
+                        <button class="save-btn" onclick="saveExpense('truck_supplies', this)">💾 Save Expense</button>
+                    </div>
+                </div>
+
+                <!-- Association Dues -->
+                <div class="expense-category" onclick="toggleCategory(this)">
+                    <div class="category-header">
+                        <div class="category-icon">🤝</div>
+                        <span>Association Dues</span>
+                    </div>
+                    <div class="expense-form">
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Association Name</label>
+                            <input type="text" placeholder="OOIDA, local trucking association, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Membership Type</label>
+                            <select>
+                                <option>Annual Dues</option>
+                                <option>Monthly Dues</option>
+                                <option>Registration Fee</option>
+                                <option>Event Fee</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Receipt</label>
+                            <div class="receipt-upload" onclick="uploadReceipt(this)">
+                                📷 Click to upload receipt
+                            </div>
+                        </div>
+                        <button class="save-btn" onclick="saveExpense('association_dues', this)">💾 Save Expense</button>
+                    </div>
+                </div>
+
+                <!-- Taxes Paid -->
+                <div class="expense-category" onclick="toggleCategory(this)">
+                    <div class="category-header">
+                        <div class="category-icon">💸</div>
+                        <span>Taxes Paid</span>
+                    </div>
+                    <div class="expense-form">
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Tax Type</label>
+                            <select>
+                                <option>Quarterly Estimated Tax</option>
+                                <option>State Tax</option>
+                                <option>Local Tax</option>
+                                <option>Property Tax</option>
+                                <option>Other Tax</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tax Authority</label>
+                            <input type="text" placeholder="IRS, state agency, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Receipt</label>
+                            <div class="receipt-upload" onclick="uploadReceipt(this)">
+                                📷 Click to upload receipt
+                            </div>
+                        </div>
+                        <button class="save-btn" onclick="saveExpense('taxes', this)">💾 Save Expense</button>
+                    </div>
+                </div>
+
+                <!-- Medical Exams -->
+                <div class="expense-category" onclick="toggleCategory(this)">
+                    <div class="category-header">
+                        <div class="category-icon">🩺</div>
+                        <span>Medical Exams</span>
+                    </div>
+                    <div class="expense-form">
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Exam Type</label>
+                            <select>
+                                <option>DOT Physical</option>
+                                <option>Drug Test</option>
+                                <option>Vision Test</option>
+                                <option>Other Medical Exam</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Medical Provider</label>
+                            <input type="text" placeholder="Doctor or clinic name">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Receipt</label>
+                            <div class="receipt-upload" onclick="uploadReceipt(this)">
+                                📷 Click to upload receipt
+                            </div>
+                        </div>
+                        <button class="save-btn" onclick="saveExpense('medical', this)">💾 Save Expense</button>
+                    </div>
+                </div>
+
+                <!-- Add New Category Section -->
+                <div class="add-category-section">
+                    <h3 style="margin-bottom: 20px; color: var(--text-primary);">➕ Add New Category</h3>
+                    <div class="form-group">
+                        <label>Category Name</label>
+                        <input type="text" id="newCategoryName" placeholder="Enter category name">
+                    </div>
+                    <div class="form-group">
+                        <label>Icon</label>
+                        <div class="icon-selector">
+                            <div class="icon-button" onclick="toggleIconList()">
+                                <span id="selectedIcon">📦 Click to choose an icon</span>
+                                <span>▼</span>
+                            </div>
+                            <div class="icon-list" id="iconList">
+                                <div class="icon-option" onclick="selectIcon('', 'No Icon')">
+                                    <span>❌</span>
+                                    <span>No Icon</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('⛽', 'Fuel')">
+                                    <span>⛽</span>
+                                    <span>Fuel</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🔧', 'Maintenance')">
+                                    <span>🔧</span>
+                                    <span>Maintenance</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🚚', 'Truck')">
+                                    <span>🚚</span>
+                                    <span>Truck</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🛡️', 'Insurance')">
+                                    <span>🛡️</span>
+                                    <span>Insurance</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('📜', 'Documents')">
+                                    <span>📜</span>
+                                    <span>Documents</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🛣️', 'Road')">
+                                    <span>🛣️</span>
+                                    <span>Road</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🛏️', 'Lodging')">
+                                    <span>🛏️</span>
+                                    <span>Lodging</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🍽️', 'Meals')">
+                                    <span>🍽️</span>
+                                    <span>Meals</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('📱', 'Technology')">
+                                    <span>📱</span>
+                                    <span>Technology</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('📝', 'Office')">
+                                    <span>📝</span>
+                                    <span>Office</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🧰', 'Tools')">
+                                    <span>🧰</span>
+                                    <span>Tools</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🤝', 'Association')">
+                                    <span>🤝</span>
+                                    <span>Association</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('💸', 'Money')">
+                                    <span>💸</span>
+                                    <span>Money</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🩺', 'Medical')">
+                                    <span>🩺</span>
+                                    <span>Medical</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🏪', 'Store')">
+                                    <span>🏪</span>
+                                    <span>Store</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🔋', 'Energy')">
+                                    <span>🔋</span>
+                                    <span>Energy</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('📦', 'Package')">
+                                    <span>📦</span>
+                                    <span>Package</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🎯', 'Target')">
+                                    <span>🎯</span>
+                                    <span>Target</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('⚙️', 'Settings')">
+                                    <span>⚙️</span>
+                                    <span>Settings</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('💼', 'Business')">
+                                    <span>💼</span>
+                                    <span>Business</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🏦', 'Bank')">
+                                    <span>🏦</span>
+                                    <span>Bank</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('📊', 'Chart')">
+                                    <span>📊</span>
+                                    <span>Chart</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🎓', 'Education')">
+                                    <span>🎓</span>
+                                    <span>Education</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🔒', 'Security')">
+                                    <span>🔒</span>
+                                    <span>Security</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🌟', 'Star')">
+                                    <span>🌟</span>
+                                    <span>Star</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🎨', 'Art')">
+                                    <span>🎨</span>
+                                    <span>Art</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🏃', 'Activity')">
+                                    <span>🏃</span>
+                                    <span>Activity</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🎵', 'Music')">
+                                    <span>🎵</span>
+                                    <span>Music</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🌍', 'World')">
+                                    <span>🌍</span>
+                                    <span>World</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('⭐', 'Favorite')">
+                                    <span>⭐</span>
+                                    <span>Favorite</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🔥', 'Hot')">
+                                    <span>🔥</span>
+                                    <span>Hot</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('💡', 'Idea')">
+                                    <span>💡</span>
+                                    <span>Idea</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🚀', 'Rocket')">
+                                    <span>🚀</span>
+                                    <span>Rocket</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🎪', 'Event')">
+                                    <span>🎪</span>
+                                    <span>Event</span>
+                                </div>
+                                <div class="icon-option" onclick="selectIcon('🏆', 'Trophy')">
+                                    <span>🏆</span>
+                                    <span>Trophy</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Default Cost Type</label>
+                        <select id="newCategoryCostType">
+                            <option value="variable">Variable</option>
+                            <option value="fixed">Fixed</option>
+                        </select>
+                    </div>
+                    <button class="save-btn" onclick="addNewCategory()">Add Category</button>
+                </div>
+
+                <!-- Summary Section -->
+                <div class="summary-section">
+                    <h3 class="summary-title">📊 Today's Summary</h3>
+                    <div class="summary-item">
+                        <span>Total Daily Expenses:</span>
+                        <span class="summary-amount" id="dailyTotal">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Total Expenses:</span>
+                        <span class="summary-amount" id="totalExpenses">$0.00</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="action-btn export-btn" onclick="exportToPDF()">📄 Export PDF</button>
+                    <button class="action-btn print-btn" onclick="printSection()">🖨️ Print</button>
+                    <button class="action-btn csv-btn" onclick="exportToCSV()">📊 Export CSV</button>
+                    <button class="action-btn feedback-btn" onclick="showFeedback()">💬 Feedback</button>
+                    <button class="action-btn faq-btn" onclick="showFAQ()">❓ FAQ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div class="section" id="historySection">
+            <div class="content-area">
+                <h2 class="section-title">📚 Expense History</h2>
+                <div class="form-group">
+                    <label>Filter by Date Range</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <input type="date" id="startDate" style="flex: 1;">
+                        <input type="date" id="endDate" style="flex: 1;">
+                        <button class="save-btn" onclick="filterExpenses()" style="width: auto; padding: 12px 20px;">Filter</button>
+                    </div>
+                </div>
+                <div id="historyList">
+                    <p style="text-align: center; color: var(--text-secondary); padding: 40px;">No expenses recorded yet. Start by adding some expenses in the Today section.</p>
+                </div>
+                
+                <!-- Action Buttons for History -->
+                <div class="action-buttons">
+                    <button class="action-btn export-btn" onclick="exportHistoryToPDF()">📄 Export PDF</button>
+                    <button class="action-btn print-btn" onclick="printHistory()">🖨️ Print</button>
+                    <button class="action-btn csv-btn" onclick="exportHistoryToCSV()">📊 Export CSV</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insights Section -->
+        <div class="section" id="insightsSection">
+            <div class="content-area">
+                <h2 class="section-title">📈 Expense Insights</h2>
+                <div id="insightsContent">
+                    <div style="text-align: center; padding: 40px;">
+                        <h3 style="color: var(--text-secondary); margin-bottom: 20px;">📊 Expense Breakdown</h3>
+                        <canvas id="expenseChart" width="400" height="200" style="max-width: 100%; background: var(--surface-color); border-radius: 10px; padding: 20px;"></canvas>
+                        <div id="categoryBreakdown" style="margin-top: 30px;">
+                            <h4 style="color: var(--text-primary); margin-bottom: 15px;">Category Summary</h4>
+                            <div id="categoryList">
+                                <p style="color: var(--text-secondary);">No expense data available yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons for Insights -->
+                <div class="action-buttons">
+                    <button class="action-btn export-btn" onclick="exportInsightsToPDF()">📄 Export PDF</button>
+                    <button class="action-btn print-btn" onclick="printInsights()">🖨️ Print</button>
+                    <button class="action-btn csv-btn" onclick="exportInsightsToCSV()">📊 Export CSV</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Privacy Notice -->
+        <div class="privacy-notice">
+            <h3 class="privacy-title">🔒 Privacy & Data Security</h3>
+            <p>Your expense data is stored securely on your device only. We never collect, transmit, or store your personal information on external servers. Your privacy is our priority.</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation">
+        <button class="nav-btn active" onclick="showSection('today')">📅 Today</button>
+        <button class="nav-btn" onclick="showSection('history')">📚 History</button>
+        <button class="nav-btn" onclick="showSection('insights')">📈 Insights</button>
+    </div>
+
+    <!-- FAQ Modal -->
+    <div class="modal" id="faqModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">❓ Frequently Asked Questions</h2>
+                <button class="close-btn" onclick="closeFAQ()">×</button>
+            </div>
+            <div class="faq-content">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What is the Trucker Expense Tracker?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>The Trucker Expense Tracker is a Progressive Web App (PWA) designed specifically for owner-operator truck drivers to easily track business expenses, manage receipts, and gain insights into their finances. It works offline and can be installed on your device like a native app.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I install this app on my device?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Desktop (Chrome/Edge):</strong> Look for the install icon in your browser's address bar and click it, or use the browser menu to find "Install app".</p>
+                        <p><strong>Android:</strong> Tap the "Add to Home Screen" prompt or use Chrome's menu → "Install app".</p>
+                        <p><strong>iOS (Safari):</strong> Tap the Share button → "Add to Home Screen".</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Where is my expense data stored?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Your expense data is stored locally on your device using your browser's secure storage. We never collect, transmit, or store your personal information on external servers. This ensures your privacy and allows the app to work offline.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I add a new expense?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Go to the "Today" tab and click on any expense category (like Fuel, Maintenance, etc.). Fill in the required information such as amount, location, and notes. You can also upload a receipt photo. Click "Save Expense" when done.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Can I use this app without an internet connection?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes! Once installed, the core functionality works completely offline. You can add expenses, view history, and access insights without an internet connection. The app will sync any updates when you regain connectivity.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I export my expense data?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>You can export your data in multiple formats: PDF reports, printable documents, or CSV files for spreadsheet analysis. Look for the "Export PDF", "Print", and "Export CSV" buttons in each section (Today, History, Insights).</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I create a custom expense category?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Scroll down to the "Add New Category" section on the Today tab. Enter a category name, choose an icon (or select "No Icon"), select whether it's a variable or fixed cost, and click "Add Category".</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What's the difference between the Today, History, and Insights sections?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Today:</strong> Add new expenses and view today's summary.</p>
+                        <p><strong>History:</strong> View all past expenses with filtering options by date range.</p>
+                        <p><strong>Insights:</strong> See visual charts and analytics of your spending patterns by category.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I backup my data?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Use the "Export CSV" feature to create a backup of all your expense data. Save this file to your cloud storage (Google Drive, iCloud, etc.) or email it to yourself. You can also use "Export PDF" for formatted reports.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Does this app provide tax advice?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>No, this app is a tool for tracking expenses only. It does not provide tax advice. Always consult with a qualified tax professional for personalized tax guidance and to understand which expenses may be deductible for your specific situation.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I switch between light and dark mode?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Click the moon/sun icon (🌙/☀️) in the top-right corner of the app to toggle between light and dark themes. Your preference will be saved automatically.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>What if I accidentally delete the app?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>If you delete the app or clear your browser data, your expense data will be lost unless you've exported it. We recommend regularly exporting your data as a backup. Simply reinstall the app from your browser to start fresh.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>How do I update the app?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>The app updates automatically when you open it and a new version is available. You may see an "Update Available" button - click it to refresh and get the latest features. No manual updates from app stores are needed.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Can I use this app on multiple devices?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Currently, data is stored locally on each device. To use the same data across multiple devices, export your data from one device and import it to another. Future versions may include cloud sync capabilities.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>I found a bug or have a feature request. How can I report it?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Click the "💬 Feedback" button to access our feedback form. Please provide as much detail as possible about bugs, including what you were doing when the issue occurred. For feature requests, describe how the feature would help your workflow.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="modal" id="feedbackModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">💬 Feedback & Support</h2>
+                <button class="close-btn" onclick="closeFeedback()">×</button>
+            </div>
+            <div style="text-align: center; padding: 20px;">
+                <h3 style="color: var(--text-primary); margin-bottom: 20px;">We'd love to hear from you!</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 30px;">Your feedback helps us improve the Trucker Expense Tracker for all owner-operators.</p>
+                
+                <div style="background: var(--background-color); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h4 style="color: var(--text-primary); margin-bottom: 15px;">📧 Contact Information</h4>
+                    <p style="color: var(--text-secondary); margin-bottom: 10px;">
+                        <strong>Support Email:</strong> support@truckerexpensetracker.com
+                    </p>
+                    <p style="color: var(--text-secondary); margin-bottom: 10px;">
+                        <strong>Feature Requests:</strong> features@truckerexpensetracker.com
+                    </p>
+                    <p style="color: var(--text-secondary);">
+                        <strong>Bug Reports:</strong> bugs@truckerexpensetracker.com
+                    </p>
+                </div>
+                
+                <div style="background: var(--background-color); padding: 20px; border-radius: 10px;">
+                    <h4 style="color: var(--text-primary); margin-bottom: 15px;">💡 What to Include</h4>
+                    <ul style="text-align: left; color: var(--text-secondary); margin-left: 20px;">
+                        <li>Detailed description of the issue or suggestion</li>
+                        <li>Steps to reproduce any bugs</li>
+                        <li>Your device type and browser version</li>
+                        <li>Screenshots if applicable</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Preview Modal -->
+    <div class="modal" id="receiptModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">📷 Receipt Preview</h2>
+                <button class="close-btn" onclick="closeReceiptModal()">×</button>
+            </div>
+            <div id="receiptPreview" style="text-align: center; padding: 20px;">
+                <!-- Receipt preview will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div class="success-message" id="successMessage">
+        Expense saved successfully!
+    </div>
+
+    <script>
+        // App version and update management
+        const APP_VERSION = '2.1.0';
+        let updateAvailable = false;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            loadExpenses();
+            updateSummary();
+            checkForUpdates();
+        });
+
+        function initializeApp() {
+            // Set version info
+            document.getElementById('versionInfo').textContent = `v${APP_VERSION}`;
+            
+            // Load theme preference
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeToggle();
+            
+            // Set default dates for history filter
+            const today = new Date().toISOString().split('T')[0];
+            const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            document.getElementById('startDate').value = thirtyDaysAgo;
+            document.getElementById('endDate').value = today;
+        }
+
+        // Service Worker and Update Management
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(registration => {
+                    console.log('SW registered:', registration);
+                    
+                    // Check for updates
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showUpdateAvailable();
+                            }
+                        });
+                    });
+                })
+                .catch(error => console.log('SW registration failed:', error));
+
+            // Listen for messages from service worker
+            navigator.serviceWorker.addEventListener('message', event => {
+                if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
+                    showUpdateAvailable();
+                }
+            });
+        }
+
+        function checkForUpdates() {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'CHECK_FOR_UPDATES'
+                });
+            }
+        }
+
+        function showUpdateAvailable() {
+            updateAvailable = true;
+            document.getElementById('updateButton').classList.add('show');
+            document.getElementById('updateNotification').classList.add('show');
+            
+            // Hide notification after 5 seconds
+            setTimeout(() => {
+                document.getElementById('updateNotification').classList.remove('show');
+            }, 5000);
+        }
+
+        function forceUpdate() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    registrations.forEach(registration => {
+                        registration.unregister();
+                    });
+                    
+                    // Clear all caches
+                    if ('caches' in window) {
+                        caches.keys().then(cacheNames => {
+                            return Promise.all(
+                                cacheNames.map(cacheName => caches.delete(cacheName))
+                            );
+                        }).then(() => {
+                            // Force reload from server
+                            window.location.reload(true);
+                        });
+                    } else {
+                        window.location.reload(true);
+                    }
+                });
+            } else {
+                window.location.reload(true);
+            }
+        }
+
+        // Theme management
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeToggle();
+        }
+
+        function updateThemeToggle() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            const toggle = document.querySelector('.theme-toggle');
+            toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+
+        // Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + 'Section').classList.add('active');
+            
+            // Add active class to selected nav button
+            event.target.classList.add('active');
+            
+            // Update content based on section
+            if (sectionName === 'history') {
+                loadHistory();
+            } else if (sectionName === 'insights') {
+                loadInsights();
+            }
+        }
+
+        // Expense category management
+        function toggleCategory(element) {
+            // Prevent event bubbling when clicking inside the form
+            if (event.target.closest('.expense-form')) {
+                return;
+            }
+            
+            const form = element.querySelector('.expense-form');
+            const isActive = form.classList.contains('active');
+            
+            // Close all other forms
+            document.querySelectorAll('.expense-form').forEach(f => {
+                f.classList.remove('active');
+            });
+            document.querySelectorAll('.expense-category').forEach(c => {
+                c.classList.remove('expanded');
+            });
+            
+            // Toggle current form
+            if (!isActive) {
+                form.classList.add('active');
+                element.classList.add('expanded');
+            }
+        }
+
+        // Icon selector management
+        let selectedIconValue = '';
+
+        function toggleIconList() {
+            const iconList = document.getElementById('iconList');
+            iconList.classList.toggle('show');
+        }
+
+        function selectIcon(icon, name) {
+            selectedIconValue = icon;
+            const selectedIcon = document.getElementById('selectedIcon');
+            selectedIcon.textContent = icon ? `${icon} ${name}` : name;
+            document.getElementById('iconList').classList.remove('show');
+        }
+
+        // Close icon list when clicking outside
+        document.addEventListener('click', function(event) {
+            const iconSelector = document.querySelector('.icon-selector');
+            if (!iconSelector.contains(event.target)) {
+                document.getElementById('iconList').classList.remove('show');
+            }
+        });
+
+        // Expense management
+        function saveExpense(category, button) {
+            const form = button.closest('.expense-form');
+            const inputs = form.querySelectorAll('input, select, textarea');
+            const expense = {
+                id: Date.now(),
+                category: category,
+                date: new Date().toISOString().split('T')[0],
+                timestamp: new Date().toISOString(),
+                data: {}
+            };
+
+            // Collect form data
+            inputs.forEach(input => {
+                if (input.type !== 'file' && input.value.trim()) {
+                    const label = input.previousElementSibling?.textContent || input.name || 'field';
+                    expense.data[label.replace(':', '')] = input.value.trim();
+                }
+            });
+
+            // Validate required amount field
+            const amountInput = form.querySelector('input[type="number"]');
+            if (!amountInput || !amountInput.value || parseFloat(amountInput.value) <= 0) {
+                alert('Please enter a valid amount.');
+                return;
+            }
+
+            expense.amount = parseFloat(amountInput.value);
+
+            // Save to localStorage
+            const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+            expenses.push(expense);
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+
+            // Clear form
+            inputs.forEach(input => {
+                if (input.type !== 'file') {
+                    input.value = '';
+                }
+            });
+
+            // Close form
+            form.classList.remove('active');
+            form.closest('.expense-category').classList.remove('expanded');
+
+            // Update summary
+            updateSummary();
+
+            // Show success message
+            showSuccessMessage('Expense saved successfully!');
+        }
+
+        function addNewCategory() {
+            const nameInput = document.getElementById('newCategoryName');
+            const costTypeSelect = document.getElementById('newCategoryCostType');
+            
+            const name = nameInput.value.trim();
+            const icon = selectedIconValue;
+            const costType = costTypeSelect.value;
+
+            if (!name) {
+                alert('Please enter a category name.');
+                return;
+            }
+
+            // Create new category element
+            const categoryElement = document.createElement('div');
+            categoryElement.className = 'expense-category';
+            categoryElement.onclick = function() { toggleCategory(this); };
+            
+            const categoryId = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+            
+            categoryElement.innerHTML = `
+                <div class="category-header">
+                    <div class="category-icon">${icon || '📦'}</div>
+                    <span>${name}</span>
+                </div>
+                <div class="expense-form">
+                    <div class="form-group">
+                        <label>Amount ($)</label>
+                        <input type="number" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" placeholder="Enter description">
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea placeholder="Additional notes..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Receipt</label>
+                        <div class="receipt-upload" onclick="uploadReceipt(this)">
+                            📷 Click to upload receipt
+                        </div>
+                    </div>
+                    <button class="save-btn" onclick="saveExpense('${categoryId}', this)">💾 Save Expense</button>
+                </div>
+            `;
+
+            // Insert before the add category section
+            const addCategorySection = document.querySelector('.add-category-section');
+            addCategorySection.parentNode.insertBefore(categoryElement, addCategorySection);
+
+            // Save custom category to localStorage
+            const customCategories = JSON.parse(localStorage.getItem('customCategories') || '[]');
+            customCategories.push({
+                id: categoryId,
+                name: name,
+                icon: icon,
+                costType: costType
+            });
+            localStorage.setItem('customCategories', JSON.stringify(customCategories));
+
+            // Clear form
+            nameInput.value = '';
+            selectedIconValue = '';
+            document.getElementById('selectedIcon').textContent = '📦 Click to choose an icon';
+            costTypeSelect.value = 'variable';
+
+            showSuccessMessage('Category added successfully!');
+        }
+
+        function loadExpenses() {
+            // Load custom categories
+            const customCategories = JSON.parse(localStorage.getItem('customCategories') || '[]');
+            const addCategorySection = document.querySelector('.add-category-section');
+            
+            customCategories.forEach(category => {
+                const categoryElement = document.createElement('div');
+                categoryElement.className = 'expense-category';
+                categoryElement.onclick = function() { toggleCategory(this); };
+                
+                categoryElement.innerHTML = `
+                    <div class="category-header">
+                        <div class="category-icon">${category.icon || '📦'}</div>
+                        <span>${category.name}</span>
+                    </div>
+                    <div class="expense-form">
+                        <div class="form-group">
+                            <label>Amount ($)</label>
+                            <input type="number" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <input type="text" placeholder="Enter description">
+                        </div>
+                        <div class="form-group">
+                            <label>Notes</label>
+                            <textarea placeholder="Additional notes..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Receipt</label>
+                            <div class="receipt-upload" onclick="uploadReceipt(this)">
+                                📷 Click to upload receipt
+                            </div>
+                        </div>
+                        <button class="save-btn" onclick="saveExpense('${category.id}', this)">💾 Save Expense</button>
+                    </div>
+                `;
+                
+                addCategorySection.parentNode.insertBefore(categoryElement, addCategorySection);
+            });
+        }
+
+        // Summary and calculations
+        function updateSummary() {
+            const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+            const today = new Date().toISOString().split('T')[0];
+            
+            const dailyExpenses = expenses.filter(expense => expense.date === today);
+            const dailyTotal = dailyExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            
+            document.getElementById('dailyTotal').textContent = `$${dailyTotal.toFixed(2)}`;
+            document.getElementById('totalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
+        }
+
+        // History management
+        function loadHistory() {
+            const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+            const historyList = document.getElementById('historyList');
+            
+            if (expenses.length === 0) {
+                historyList.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 40px;">No expenses recorded yet. Start by adding some expenses in the Today section.</p>';
+                return;
+            }
+            
+            // Sort expenses by date (newest first)
+            expenses.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            let historyHTML = '';
+            expenses.forEach(expense => {
+                historyHTML += `
+                    <div style="background: var(--surface-color); border: 2px solid var(--border-color); border-radius: 10px; padding: 20px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h4 style="color: var(--text-primary); margin: 0; text-transform: capitalize;">${expense.category.replace(/_/g, ' ')}</h4>
+                            <span style="color: var(--success-color); font-weight: bold; font-size: 1.2rem;">$${expense.amount.toFixed(2)}</span>
+                        </div>
+                        <p style="color: var(--text-secondary); margin: 5px 0;"><strong>Date:</strong> ${new Date(expense.date).toLocaleDateString()}</p>
+                        ${Object.entries(expense.data).map(([key, value]) => 
+                            `<p style="color: var(--text-secondary); margin: 5px 0;"><strong>${key}:</strong> ${value}</p>`
+                        ).join('')}
+                    </div>
+                `;
+            });
+            
+            historyList.innerHTML = historyHTML;
+        }
+
+        function filterExpenses() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+            const historyList = document.getElementById('historyList');
+            
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates.');
+                return;
+            }
+            
+            const filteredExpenses = expenses.filter(expense => {
+                const expenseDate = expense.date;
+                return expenseDate >= startDate && expenseDate <= endDate;
+            });
+            
+            if (filteredExpenses.length === 0) {
+                historyList.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 40px;">No expenses found for the selected date range.</p>';
+                return;
+            }
+            
+            // Sort by date (newest first)
+            filteredExpenses.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            let historyHTML = '';
+            filteredExpenses.forEach(expense => {
+                historyHTML += `
+                    <div style="background: var(--surface-color); border: 2px solid var(--border-color); border-radius: 10px; padding: 20px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h4 style="color: var(--text-primary); margin: 0; text-transform: capitalize;">${expense.category.replace(/_/g, ' ')}</h4>
+                            <span style="color: var(--success-color); font-weight: bold; font-size: 1.2rem;">$${expense.amount.toFixed(2)}</span>
+                        </div>
+                        <p style="color: var(--text-secondary); margin: 5px 0;"><strong>Date:</strong> ${new Date(expense.date).toLocaleDateString()}</p>
+                        ${Object.entries(expense.data).map(([key, value]) => 
+                            `<p style="color: var(--text-secondary); margin: 5px 0;"><strong>${key}:</strong> ${value}</p>`
+                        ).join('')}
+                    </div>
+                `;
+            });
+            
+            historyList.innerHTML = historyHTML;
+        }
+
+        // Insights and analytics
+        function loadInsights() {
+            const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+            
+            if (expenses.length === 0) {
+                document.getElementById('categoryList').innerHTML = '<p style="color: var(--text-secondary);">No expense data available yet.</p>';
+                return;
+            }
+            
+            // Calculate category totals
+            const categoryTotals = {};
+            expenses.forEach(expense => {
+                const category = expense.category.replace(/_/g, ' ');
+                categoryTotals[category] = (categoryTotals[category] || 0) + expense.amount;
+            });
+            
+            // Create category breakdown
+            let categoryHTML = '';
+            Object.entries(categoryTotals)
+                .sort(([,a], [,b]) => b - a)
+                .forEach(([category, total]) => {
+                    const percentage = ((total / expenses.reduce((sum, e) => sum + e.amount, 0)) * 100).toFixed(1);
+                    categoryHTML += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: var(--background-color); border-radius: 8px; margin-bottom: 10px;">
+                            <span style="color: var(--text-primary); text-transform: capitalize; font-weight: 600;">${category}</span>
+                            <div style="text-align: right;">
+                                <div style="color: var(--success-color); font-weight: bold;">$${total.toFixed(2)}</div>
+                                <div style="color: var(--text-secondary); font-size: 0.9rem;">${percentage}%</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            
+            document.getElementById('categoryList').innerHTML = categoryHTML;
+            
+            // Simple text-based chart (since we can't use Chart.js without external dependencies)
+            const canvas = document.getElementById('expenseChart');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw simple bar chart
+            const categories = Object.entries(categoryTotals).sort(([,a], [,b]) => b - a);
+            const maxAmount = Math.max(...Object.values(categoryTotals));
+            const barWidth = canvas.width / categories.length;
+            const maxBarHeight = canvas.height - 60;
+            
+            categories.forEach(([category, amount], index) => {
+                const barHeight = (amount / maxAmount) * maxBarHeight;
+                const x = index * barWidth;
+                const y = canvas.height - barHeight - 30;
+                
+                // Draw bar
+                ctx.fillStyle = `hsl(${index * 360 / categories.length}, 70%, 50%)`;
+                ctx.fillRect(x + 10, y, barWidth - 20, barHeight);
+                
+                // Draw category label
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(category.substring(0, 8), x + barWidth/2, canvas.height - 10);
+                
+                // Draw amount
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 10px Arial';
+                ctx.fillText(`$${amount.toFixed(0)}`, x + barWidth/2, y - 5);
+            });
+        }
+
+        // Export functions
+        function exportToPDF() {
+            const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+            const today = new Date().toISOString().split('T')[0];
+            const dailyExpenses = expenses.filter(expense => expense.date === today);
+            
+            let content = `TRUCKER EXPENSE TRACKER - TODAY'S REPORT\n`;
+            content += `Generated: ${new Date().toLocaleDateString()}\n\n`;
+            content += `DAILY SUMMARY:\n`;
+            content += `Total Daily Expenses: $${dailyExpenses.reduce((sum, e) => sum + e.amount, 0).toFixed(2)}\n`;
+            content += `Total All Expenses: $${expenses.reduce((sum, e) => sum + e.amount, 0).toFixed(2)}\n\n`;
+            
+            if (dailyExpenses.length > 0) {
+                content += `TODAY'S EXPENSES:\n`;
+                dailyExpenses.forEach(expense => {
+                    content += `\n${expense.category.replace(/_/g, ' ').toUpperCase()}: $${expense.amount.toFixed(2)}\n`;
+                    Object.entries(expense.data).forEach(([key, value]) => {
+                        content += `  ${key}: ${value}\n`;
+                    });
+                });
+            }
+            
+            downloadTextFile(content, `trucker-expenses-today-${today}.txt`);
+        }
+
+        function exportHistoryToPDF() {
+            const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+            
+            let content = `TRUCKER EXPENSE TRACKER - HISTORY REPORT\n`;
+            content += `Generated: ${new Date().toLocaleDateString()}\n\n`;
+            content += `TOTAL EXPENSES: $${expenses.reduce((sum, e) => sum + e.amount, 0).toFixed(2)}\n\n`;
+            
+            if (expenses.length > 0) {
+                content += `ALL EXPENSES:\n`;
+                expenses.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                expenses.forEach(expense => {
+                    content += `\n${expense.date} - ${expense.category.replace(/_/g, ' ').toUpperCase()}: $${expense.amount.toFixed(2)}\n`;
+                    Object.entries(expense.data).forEach(([key, value]) => {
+                        content += `  ${key}: ${value}\n`;
+                    });
+                });
+            }
+            
+            downloadTextFile(content, `trucker-expenses-history-${new Date().toISOString().split('T')[0]}.txt`);
+        }
+
+        function exportInsightsToPDF() {
+            const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+            
+            let content = `TRUCKER EXPENSE TRACKER - INSIGHTS REPORT\n`;
+            content += `Generated: ${new Date().toLocaleDateString()}\n\n`;
+            content += `TOTAL EXPENSES: $${expenses.reduce((sum, e) => sum + e.amount, 0).toFixed(2)}\n\n`;
+            
+            if (expenses.length > 0) {
+                // Calculate category totals
+                const categoryTotals = {};
+                expenses.forEach(expense => {
+                    const category = expense.category.replace(/_/g, ' ');
+                    categoryTotals[category] = (categoryTotals[category] || 0) + expense.amount;
+                });
+                
+                content += `CATEGORY BREAKDOWN:\n`;
+                Object.entries(categoryTotals)
+                    .sort(([,a], [,b]) => b - a)
+                    .forEach(([category, total]) => {
+                        const percentage = ((total / expenses.reduce((sum, e) => sum + e.amount, 0)) * 100).toFixed(1);
+                        content += `${category.toUpperCase()}: $${total.toFixed(2)} (${percentage}%)\n`;
+                    });
+            }
+            
+            downloadTextFile(content, `trucker-expenses-insights-${new Date().toISOString().split('T')[0]}.txt`);
+        }
+
+        function exportToCSV() {
+            const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+            const today = new Date().toISOString().split('T')[0];
+            const dailyExpenses = expenses.filter(expense => expense.date === today);
+            
+            if (dailyExpenses.length === 0) {
+                alert('No expenses for today to export.');
+                return;
+            }
+            
+            let csv = 'Date,Category,Amount,Details\n';
+            dailyExpenses.forEach(expense => {
+                const details = Object.entries(expense.data).map(([k,v]) => `${k}: ${v}`).join('; ');
+                csv += `${expense.date},"${expense.category.replace(/_/g, ' ')}",${expense.amount},"${details}"\n`;
+            });
+            
+            downloadTextFile(csv, `trucker-expenses-today-${today}.csv`);
+        }
+
+        function exportHistoryToCSV() {
+            const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+            
+            if (expenses.length === 0) {
+                alert('No expenses to export.');
+                return;
+            }
+            
+            let csv = 'Date,Category,Amount,Details\n';
+            expenses.forEach(expense => {
+                const details = Object.entries(expense.data).map(([k,v]) => `${k}: ${v}`).join('; ');
+                csv += `${expense.date},"${expense.category.replace(/_/g, ' ')}",${expense.amount},"${details}"\n`;
+            });
+            
+            downloadTextFile(csv, `trucker-expenses-all-${new Date().toISOString().split('T')[0]}.csv`);
+        }
+
+        function exportInsightsToCSV() {
+            const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+            
+            if (expenses.length === 0) {
+                alert('No expenses to export.');
+                return;
+            }
+            
+            // Calculate category totals
+            const categoryTotals = {};
+            expenses.forEach(expense => {
+                const category = expense.category.replace(/_/g, ' ');
+                categoryTotals[category] = (categoryTotals[category] || 0) + expense.amount;
+            });
+            
+            let csv = 'Category,Total Amount,Percentage\n';
+            const totalAmount = expenses.reduce((sum, e) => sum + e.amount, 0);
+            Object.entries(categoryTotals)
+                .sort(([,a], [,b]) => b - a)
+                .forEach(([category, total]) => {
+                    const percentage = ((total / totalAmount) * 100).toFixed(1);
+                    csv += `"${category}",${total.toFixed(2)},${percentage}%\n`;
+                });
+            
+            downloadTextFile(csv, `trucker-expenses-insights-${new Date().toISOString().split('T')[0]}.csv`);
+        }
+
+        function downloadTextFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Print functions
+        function printSection() {
+            window.print();
+        }
+
+        function printHistory() {
+            const originalContent = document.body.innerHTML;
+            const historyContent = document.getElementById('historySection').innerHTML;
+            
+            document.body.innerHTML = `
+                <div style="padding: 20px;">
+                    <h1>Trucker Expense Tracker - History Report</h1>
+                    <p>Generated: ${new Date().toLocaleDateString()}</p>
+                    ${historyContent}
+                </div>
+            `;
+            
+            window.print();
+            document.body.innerHTML = originalContent;
+            
+            // Reinitialize after restoring content
+            initializeApp();
+            loadExpenses();
+            updateSummary();
+        }
+
+        function printInsights() {
+            const originalContent = document.body.innerHTML;
+            const insightsContent = document.getElementById('insightsSection').innerHTML;
+            
+            document.body.innerHTML = `
+                <div style="padding: 20px;">
+                    <h1>Trucker Expense Tracker - Insights Report</h1>
+                    <p>Generated: ${new Date().toLocaleDateString()}</p>
+                    ${insightsContent}
+                </div>
+            `;
+            
+            window.print();
+            document.body.innerHTML = originalContent;
+            
+            // Reinitialize after restoring content
+            initializeApp();
+            loadExpenses();
+            updateSummary();
+        }
+
+        // Modal management
+        function showFAQ() {
+            document.getElementById('faqModal').classList.add('show');
+        }
+
+        function closeFAQ() {
+            document.getElementById('faqModal').classList.remove('show');
+        }
+
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('span:last-child');
+            
+            answer.classList.toggle('show');
+            icon.textContent = answer.classList.contains('show') ? '−' : '+';
+        }
+
+        function showFeedback() {
+            document.getElementById('feedbackModal').classList.add('show');
+        }
+
+        function closeFeedback() {
+            document.getElementById('feedbackModal').classList.remove('show');
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receiptModal').classList.remove('show');
+        }
+
+        // Receipt upload
+        function uploadReceipt(element) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        element.innerHTML = `📷 Receipt uploaded: ${file.name}`;
+                        element.style.background = 'rgba(16, 185, 129, 0.1)';
+                        element.style.borderColor = 'var(--success-color)';
+                        element.style.color = 'var(--success-color)';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+
+        // Success message
+        function showSuccessMessage(message) {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.textContent = message;
+            successMsg.classList.add('show');
+            
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+        });
+
+        // Prevent form submission on Enter key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && event.target.tagName !== 'TEXTAREA' && event.target.tagName !== 'BUTTON') {
+                event.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
+
