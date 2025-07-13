@@ -1,0 +1,121 @@
+{
+  "name": "Trucker Expense Tracker",
+  "short_name": "TruckerExpense",
+  "description": "Professional expense tracking for owner-operator truck drivers",
+  "version": "2.1.0",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e40af",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["business", "finance", "productivity"],
+  "screenshots": [
+    {
+      "src": "https://via.placeholder.com/540x720/2563eb/ffffff?text=Trucker+Expense+Tracker",
+      "sizes": "540x720",
+      "type": "image/png",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "https://via.placeholder.com/1024x768/2563eb/ffffff?text=Trucker+Expense+Tracker",
+      "sizes": "1024x768", 
+      "type": "image/png",
+      "form_factor": "wide"
+    }
+  ],
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/72x72/2563eb/ffffff?text=🚛",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "https://via.placeholder.com/96x96/2563eb/ffffff?text=🚛",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "https://via.placeholder.com/128x128/2563eb/ffffff?text=🚛",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "https://via.placeholder.com/144x144/2563eb/ffffff?text=🚛",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "https://via.placeholder.com/152x152/2563eb/ffffff?text=🚛",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "https://via.placeholder.com/192x192/2563eb/ffffff?text=🚛",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "https://via.placeholder.com/384x384/2563eb/ffffff?text=🚛",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/2563eb/ffffff?text=🚛",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Add Fuel Expense",
+      "short_name": "Add Fuel",
+      "description": "Quickly add a fuel expense",
+      "url": "/?action=add-fuel",
+      "icons": [
+        {
+          "src": "https://via.placeholder.com/96x96/2563eb/ffffff?text=⛽",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "View History",
+      "short_name": "History",
+      "description": "View expense history",
+      "url": "/?action=history",
+      "icons": [
+        {
+          "src": "https://via.placeholder.com/96x96/2563eb/ffffff?text=📊",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Export Data",
+      "short_name": "Export",
+      "description": "Export expense data",
+      "url": "/?action=export",
+      "icons": [
+        {
+          "src": "https://via.placeholder.com/96x96/2563eb/ffffff?text=📄",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}
+
