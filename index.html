@@ -386,8 +386,8 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            contain: layout style paint;
-            will-change: contents;
+            contain: layout style paint size;
+            will-change: auto;
         }
 
         .summary-item {
@@ -410,6 +410,8 @@
             gap: 15px;
             justify-content: center;
             margin: 25px 0;
+            min-height: 48px;
+            contain: layout;
         }
 
         .action-btn {
@@ -425,6 +427,9 @@
             gap: 8px;
             touch-action: manipulation;
             will-change: transform;
+            min-height: 48px;
+            min-width: 120px;
+            contain: layout style;
         }
 
         .action-btn:focus {
