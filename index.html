@@ -226,6 +226,7 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
             border-color: var(--primary-color);
+            will-change: transform;
         }
 
         .expense-card:focus {
@@ -375,13 +376,13 @@
         }
 
         .summary-card {
-            background: linear-gradient(135deg, var(--secondary-color), #059669);
+            background: linear-gradient(135deg, #047857, #059669);
             color: white;
             border-radius: 15px;
             padding: 25px;
             margin: 25px 0;
             text-align: center;
-            min-height: 120px;
+            min-height: 140px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -417,11 +418,12 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease;
             display: flex;
             align-items: center;
             gap: 8px;
             touch-action: manipulation;
+            will-change: transform;
         }
 
         .action-btn:focus {
@@ -430,8 +432,9 @@
         }
 
         .export-btn {
-            background: var(--secondary-color);
+            background: #047857;
             color: white;
+            font-weight: 600;
         }
 
         .export-btn:hover {
@@ -440,42 +443,46 @@
         }
 
         .print-btn {
-            background: var(--warning-color);
+            background: #d97706;
             color: white;
+            font-weight: 600;
         }
 
         .print-btn:hover {
-            background: #d97706;
+            background: #b45309;
             transform: translateY(-2px);
         }
 
         .csv-btn {
-            background: var(--info-color);
+            background: #2563eb;
             color: white;
+            font-weight: 600;
         }
 
         .csv-btn:hover {
-            background: #2563eb;
+            background: #1d4ed8;
             transform: translateY(-2px);
         }
 
         .feedback-btn {
-            background: #8b5cf6;
+            background: #7c3aed;
             color: white;
+            font-weight: 600;
         }
 
         .feedback-btn:hover {
-            background: #7c3aed;
+            background: #6d28d9;
             transform: translateY(-2px);
         }
 
         .faq-btn {
-            background: #06b6d4;
+            background: #0891b2;
             color: white;
+            font-weight: 600;
         }
 
         .faq-btn:hover {
-            background: #0891b2;
+            background: #0e7490;
             transform: translateY(-2px);
         }
 
@@ -543,11 +550,12 @@
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease;
             display: flex;
             align-items: center;
             gap: 8px;
             touch-action: manipulation;
+            will-change: transform;
         }
 
         .nav-btn:hover {
@@ -561,8 +569,9 @@
         }
 
         .nav-btn.active {
-            background: var(--secondary-color);
+            background: #047857;
             color: white;
+            font-weight: 600;
         }
 
         .hidden {
@@ -823,7 +832,7 @@
         <main id="main-content">
             <section id="todaySection" class="section">
                 <h2>📅 Log your expenses for today</h2>
-                <div class="expense-grid" id="expenseGrid" role="grid" aria-label="Expense categories">
+                <div class="expense-grid" id="expenseGrid" role="group" aria-label="Expense categories">
                     <!-- Expense categories will be populated by JavaScript -->
                 </div>
 
@@ -1126,8 +1135,7 @@
             localStorage.setItem('trialStartDate', trialStartDate);
         }
 
-        // Initialize the app
-        // Global toggleDarkMode function - moved outside DOMContentLoaded
+        // Global toggleDarkMode function
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
             document.body.classList.toggle('dark-mode', isDarkMode);
@@ -1139,6 +1147,8 @@
             }
         }
 
+        // Initialize the app
+        
         document.addEventListener('DOMContentLoaded', function() {
             // Check for trial reset parameter
             const urlParams = new URLSearchParams(window.location.search);
@@ -1158,10 +1168,7 @@
             updateTrialCountdown();
             populateExpenseGrid();
 
-            // Add sample data if no expenses exist (for testing)
-            if (expenses.length === 0) {
-                addSampleData();
-            }
+            // Sample data initialization removed
 
             updateSummary();
             updateInsights();
@@ -1175,44 +1182,7 @@
         });
 
         function addSampleData() {
-            const sampleExpenses = [
-                {
-                    id: Date.now() + 1,
-                    categoryId: 'fuel',
-                    categoryName: 'Fuel',
-                    icon: '⛽',
-                    amount: 245.67,
-                    description: 'Fuel at Flying J',
-                    location: 'Oklahoma City, OK',
-                    date: new Date().toISOString(),
-                    receipt: null
-                },
-                {
-                    id: Date.now() + 2,
-                    categoryId: 'meals',
-                    categoryName: 'Meals',
-                    icon: '🍽️',
-                    amount: 15.50,
-                    description: 'Lunch at truck stop',
-                    location: 'Denver, CO',
-                    date: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-                    receipt: null
-                },
-                {
-                    id: Date.now() + 3,
-                    categoryId: 'maintenance',
-                    categoryName: 'Maintenance & Repairs',
-                    icon: '🔧',
-                    amount: 89.99,
-                    description: 'Oil change',
-                    location: 'Phoenix, AZ',
-                    date: new Date(Date.now() - 2 * 86400000).toISOString(), // 2 days ago
-                    receipt: null
-                }
-            ];
-
-            expenses = sampleExpenses;
-            localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
+            // Sample data function removed - no longer adding test data
         }
 
         function initializeApp() {
@@ -1266,7 +1236,7 @@
                 const card = document.createElement('div');
                 card.className = 'expense-card';
                 card.id = `card-${category.id}`;
-                card.setAttribute('role', 'gridcell');
+                card.setAttribute('role', 'button');
                 card.setAttribute('tabindex', '0');
                 card.setAttribute('aria-label', `Add ${category.name} expense`);
 
