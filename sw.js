@@ -154,4 +154,3 @@ self.addEventListener('push', (event) => {
 });
 
 console.log('Service Worker: Loaded version', CACHE_VERSION);
-
