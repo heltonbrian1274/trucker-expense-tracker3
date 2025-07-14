@@ -481,7 +481,7 @@
 
         .action-buttons {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             margin: 25px 0;
         }
@@ -748,6 +748,56 @@
             max-height: 500px;
         }
 
+        .expense-subtitle {
+            color: var(--text-light);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        .dark-mode .expense-subtitle {
+            color: var(--text-dark);
+            opacity: 0.8;
+        }
+
+        .expense-amount {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .dark-mode .expense-amount {
+            color: var(--secondary-color);
+        }
+
+        .expense-description {
+            margin-top: 10px;
+            color: var(--text-light);
+            opacity: 0.8;
+        }
+
+        .dark-mode .expense-description {
+            color: var(--text-dark);
+            opacity: 0.9;
+        }
+
+        .btn-delete {
+            margin-top: 10px;
+            background: var(--error-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
         .receipt-preview {
             max-width: 100%;
             max-height: 300px;
@@ -800,6 +850,11 @@
             .action-buttons {
                 grid-template-columns: 1fr;
                 gap: 10px;
+            }
+
+            .insights-breakdown-section {
+                padding: 20px;
+                margin: 20px 0;
             }
 
             .navigation {
@@ -1747,17 +1802,17 @@
                         <div class="expense-icon">${expense.icon}</div>
                         <div style="flex: 1;">
                             <div class="expense-title">${expense.categoryName}</div>
-                            <div style="color: var(--text-light); opacity: 0.7; font-size: 0.9rem;">
+                            <div class="expense-subtitle">
                                 ${new Date(expense.date).toLocaleDateString()} ${expense.location ? `• ${expense.location}` : ''}
                             </div>
                         </div>
                         <div style="text-align: right;">
-                            <div style="font-size: 1.2rem; font-weight: 600; color: var(--primary-color);">$${expense.amount.toFixed(2)}</div>
+                            <div class="expense-amount">$${expense.amount.toFixed(2)}</div>
                         </div>
                     </div>
-                    ${expense.description ? `<div style="margin-top: 10px; color: var(--text-light); opacity: 0.8;">${expense.description}</div>` : ''}
+                    ${expense.description ? `<div class="expense-description">${expense.description}</div>` : ''}
                     ${expense.receipt ? `<div style="margin-top: 10px;"><img src="${expense.receipt}" class="receipt-preview" alt="Receipt"></div>` : ''}
-                    <button onclick="deleteExpense('${expense.id}')" style="margin-top: 10px; background: var(--error-color); color: white; border: none, padding: 5px 10px; border-radius: 5px; cursor: pointer;">Delete</button>
+                    <button onclick="deleteExpense('${expense.id}')" class="btn-delete">Delete</button>
                 </div></li>
             `).join('');
         }
@@ -2115,13 +2170,17 @@
             }
         }
 
-        // Ensure initial dark mode state is applied on load and icon is updated
-        document.addEventListener('DOMContentLoaded', () => {
+        // Initialize dark mode on page load
+        function initializeDarkMode() {
             if (localStorage.getItem('darkMode') === 'true') {
                 document.body.classList.add('dark-mode');
+                isDarkMode = true;
             }
             updateToggleIcon();
-        });
+        }
+
+        // Call initialization immediately
+        initializeDarkMode();
 
     </script>
 </body>
