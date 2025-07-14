@@ -486,7 +486,9 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 15px;
-            margin: 25px 0;
+            margin: 25px 20px;
+            max-width: calc(100% - 40px);
+            box-sizing: border-box;
         }
 
         .action-btn {
@@ -906,6 +908,8 @@
             .action-buttons {
                 grid-template-columns: repeat(3, 1fr);
                 gap: 10px;
+                margin: 25px 10px;
+                max-width: calc(100% - 20px);
             }
 
             .insights-breakdown-section {
@@ -2211,13 +2215,13 @@
         // Update trial countdown every minute
         setInterval(updateTrialCountdown, 60000);
 
-        // Dark mode functions - defined globally
-        function toggleDarkMode() {
+        // Dark mode functions - defined globally and accessible
+        window.toggleDarkMode = function() {
             isDarkMode = !isDarkMode;
             document.body.classList.toggle('dark-mode', isDarkMode);
             localStorage.setItem('darkMode', isDarkMode);
             updateToggleIcon();
-        }
+        };
 
         function updateToggleIcon() {
             const toggle = document.querySelector('.dark-mode-toggle');
@@ -2234,9 +2238,6 @@
             }
             updateToggleIcon();
         }
-
-        // Make functions globally accessible
-        window.toggleDarkMode = toggleDarkMode;
 
         // Call initialization immediately
         initializeDarkMode();
