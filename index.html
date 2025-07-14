@@ -87,6 +87,7 @@
             margin: 0 auto;
             padding: 20px;
             min-height: calc(100vh - 120px);
+            box-sizing: border-box;
         }
 
         .header {
@@ -176,9 +177,11 @@
             background: var(--card-light);
             border-radius: 15px;
             padding: 25px;
-            margin-bottom: 25px;
+            margin: 0 20px 25px 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
+            max-width: calc(100% - 40px);
+            box-sizing: border-box;
         }
 
         .dark-mode .section {
@@ -579,8 +582,10 @@
             color: white;
             border-radius: 15px;
             padding: 25px;
-            margin: 25px 0;
+            margin: 25px 20px;
             text-align: center;
+            max-width: calc(100% - 40px);
+            box-sizing: border-box;
         }
 
         .privacy-notice h3 {
@@ -595,8 +600,8 @@
         .navigation {
             position: fixed;
             bottom: 0;
-            left: 0;
-            right: 0;
+            left: 20px;
+            right: 20px;
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             padding: 15px;
             display: flex;
@@ -604,6 +609,8 @@
             gap: 20px;
             box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
             z-index: 1000;
+            border-radius: 15px 15px 0 0;
+            max-width: calc(100% - 40px);
         }
 
         .nav-btn {
@@ -756,7 +763,7 @@
 
         .dark-mode .expense-subtitle {
             color: var(--text-dark);
-            opacity: 0.8;
+            opacity: 0.9;
         }
 
         .expense-amount {
@@ -777,7 +784,38 @@
 
         .dark-mode .expense-description {
             color: var(--text-dark);
-            opacity: 0.9;
+            opacity: 1;
+            font-weight: 500;
+        }
+
+        .dark-mode .expense-title {
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .dark-mode .expense-subtitle {
+            color: rgba(241, 245, 249, 0.8);
+            font-weight: 500;
+        }
+
+        .dark-mode .expense-title {
+            color: var(--text-dark) !important;
+            font-weight: 600 !important;
+        }
+
+        .dark-mode .expense-subtitle {
+            color: rgba(241, 245, 249, 0.8) !important;
+            font-weight: 500 !important;
+        }
+
+        .dark-mode .expense-description {
+            color: var(--text-dark) !important;
+            opacity: 1 !important;
+            font-weight: 500 !important;
+        }
+
+        .dark-mode .expense-amount {
+            color: var(--secondary-color) !important;
         }
 
         .btn-delete {
@@ -823,7 +861,25 @@
 
         @media (max-width: 768px) {
             .container {
-                padding: 15px;
+                padding: 10px;
+            }
+
+            .section {
+                margin: 0 10px 25px 10px;
+                padding: 20px;
+                max-width: calc(100% - 20px);
+            }
+
+            .privacy-notice {
+                margin: 25px 10px;
+                padding: 20px;
+                max-width: calc(100% - 20px);
+            }
+
+            .navigation {
+                left: 10px;
+                right: 10px;
+                max-width: calc(100% - 20px);
             }
 
             .header h1 {
@@ -848,7 +904,7 @@
             }
 
             .action-buttons {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(3, 1fr);
                 gap: 10px;
             }
 
@@ -1801,16 +1857,16 @@
                     <div class="expense-header">
                         <div class="expense-icon">${expense.icon}</div>
                         <div style="flex: 1;">
-                            <div class="expense-title">${expense.categoryName}</div>
-                            <div class="expense-subtitle">
+                            <div class="expense-title" style="color: var(--text-light); font-weight: 600;">${expense.categoryName}</div>
+                            <div class="expense-subtitle" style="color: var(--text-light); opacity: 0.7; font-size: 0.9rem;">
                                 ${new Date(expense.date).toLocaleDateString()} ${expense.location ? `• ${expense.location}` : ''}
                             </div>
                         </div>
                         <div style="text-align: right;">
-                            <div class="expense-amount">$${expense.amount.toFixed(2)}</div>
+                            <div class="expense-amount" style="color: var(--primary-color); font-size: 1.2rem; font-weight: 600;">$${expense.amount.toFixed(2)}</div>
                         </div>
                     </div>
-                    ${expense.description ? `<div class="expense-description">${expense.description}</div>` : ''}
+                    ${expense.description ? `<div class="expense-description" style="margin-top: 10px; color: var(--text-light); opacity: 0.8;">${expense.description}</div>` : ''}
                     ${expense.receipt ? `<div style="margin-top: 10px;"><img src="${expense.receipt}" class="receipt-preview" alt="Receipt"></div>` : ''}
                     <button onclick="deleteExpense('${expense.id}')" class="btn-delete">Delete</button>
                 </div></li>
@@ -2155,7 +2211,7 @@
         // Update trial countdown every minute
         setInterval(updateTrialCountdown, 60000);
 
-        // Dark mode persistence and toggle
+        // Dark mode functions - defined globally
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
             document.body.classList.toggle('dark-mode', isDarkMode);
@@ -2178,6 +2234,9 @@
             }
             updateToggleIcon();
         }
+
+        // Make functions globally accessible
+        window.toggleDarkMode = toggleDarkMode;
 
         // Call initialization immediately
         initializeDarkMode();
