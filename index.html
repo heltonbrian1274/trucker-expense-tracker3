@@ -893,7 +893,6 @@
                             <span id="topCategory">None</span>
                         </div>
                     </div>
-
                     <div class="summary-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
                         <h3>📊 Spending Trends</h3>
                         <div class="summary-item">
@@ -950,7 +949,7 @@
         <div class="modal-content">
             <button class="modal-close" onclick="closeFAQ()">&times;</button>
             <h2>❓ Frequently Asked Questions</h2>
-            
+
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                     What expenses can I track? <span>+</span>
@@ -995,6 +994,60 @@
                     After the 30-day trial, you'll need to subscribe for $9.99/month to continue using the app. Your data will remain on your device during the trial period.
                 </div>
             </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I track per-mile expenses? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! You can use the "Other Business Expenses" category to track per-mile costs, or add mile information in the description field of fuel and maintenance entries.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I track expenses for multiple trucks? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Currently, the app tracks expenses in one account. You can use the description field to specify which truck/trailer an expense relates to, or use separate devices/browsers for different trucks.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What if I need to edit or delete an expense? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    You can delete expenses from the History section by clicking the "Delete" button on any expense entry. Currently, editing requires deleting and re-adding the expense.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    How do I backup my data if I switch devices? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Use the "Backup Data" button to download your expenses as a JSON file. On your new device, use "Restore Data" to import this backup file.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Does the app work on both mobile and desktop? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! This PWA is designed to work seamlessly on smartphones, tablets, and desktop computers. You can install it on your phone's home screen for easy access.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I print my expense reports? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! Each section (Today, History, Insights) has print functionality. You can also export PDF reports and CSV files for your records.
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1025,7 +1078,7 @@
                 </div>
                 <button type="submit" class="btn" id="feedbackSubmitBtn">Send Feedback</button>
             </form>
-            
+
             <div id="feedbackSuccess" style="display: none; text-align: center; padding: 30px;">
                 <div style="font-size: 4rem; margin-bottom: 20px; color: var(--success-color);">✓</div>
                 <h3 style="color: var(--success-color); margin-bottom: 15px;">Email Client Opening...</h3>
@@ -1038,6 +1091,8 @@
             </div>
         </div>
     </div>
+
+
 
     <script>
         // Expense categories with 15 different types
@@ -1072,19 +1127,45 @@
         }
 
         // Initialize the app
+        // Global toggleDarkMode function - moved outside DOMContentLoaded
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            localStorage.setItem('darkMode', isDarkMode);
+
+            const toggle = document.querySelector('.dark-mode-toggle');
+            if (toggle) {
+                toggle.textContent = isDarkMode ? '☀️' : '🌙';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Check for trial reset parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('reset') === 'trial') {
+                localStorage.removeItem('trialStartDate');
+                localStorage.removeItem('truckerExpenses');
+                localStorage.removeItem('darkMode');
+                trialStartDate = Date.now();
+                localStorage.setItem('trialStartDate', trialStartDate);
+                expenses = [];
+                alert('Trial has been reset! Redirecting...');
+                window.location.href = window.location.pathname;
+                return;
+            }
+
             initializeApp();
             updateTrialCountdown();
             populateExpenseGrid();
-            
+
             // Add sample data if no expenses exist (for testing)
             if (expenses.length === 0) {
                 addSampleData();
             }
-            
+
             updateSummary();
             updateInsights();
-            
+
             // Check for service worker support
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('./sw.js')
@@ -1129,7 +1210,7 @@
                     receipt: null
                 }
             ];
-            
+
             expenses = sampleExpenses;
             localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
         }
@@ -1144,7 +1225,7 @@
             // Handle URL parameters for shortcuts
             const urlParams = new URLSearchParams(window.location.search);
             const action = urlParams.get('action');
-            
+
             if (action === 'add-fuel') {
                 showSection('today');
                 setTimeout(() => toggleExpenseCard('fuel'), 500);
@@ -1160,11 +1241,11 @@
             const elapsed = Date.now() - parseInt(trialStartDate);
             const remaining = trialDuration - elapsed;
             const daysLeft = Math.max(0, Math.ceil(remaining / (24 * 60 * 60 * 1000)));
-            
+
             const trialElement = document.getElementById('trialCountdown');
             const daysElement = document.getElementById('daysLeft');
             const textElement = document.getElementById('trialText');
-            
+
             if (daysLeft <= 0) {
                 isTrialExpired = true;
                 trialElement.className = 'trial-countdown expired';
@@ -1188,7 +1269,7 @@
                 card.setAttribute('role', 'gridcell');
                 card.setAttribute('tabindex', '0');
                 card.setAttribute('aria-label', `Add ${category.name} expense`);
-                
+
                 card.innerHTML = `
                     <div class="expense-header">
                         <div class="expense-icon">${category.icon}</div>
@@ -1220,7 +1301,7 @@
                         </form>
                     </div>
                 `;
-                
+
                 card.addEventListener('click', (e) => {
                     // Don't toggle if clicking inside the form
                     if (e.target.closest('.expense-form')) {
@@ -1228,7 +1309,7 @@
                     }
                     toggleExpenseCard(category.id);
                 });
-                
+
                 card.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
@@ -1237,7 +1318,7 @@
                         }
                     }
                 });
-                
+
                 grid.appendChild(card);
             });
         }
@@ -1251,25 +1332,25 @@
             const card = document.getElementById(`card-${categoryId}`);
             const form = document.getElementById(`form-${categoryId}`);
             const allCards = document.querySelectorAll('.expense-card');
-            
+
             // If this card is already expanded, just close it
             if (card.classList.contains('expanded')) {
                 card.classList.remove('expanded');
                 form.classList.remove('active');
                 return;
             }
-            
+
             // Close all other cards
             allCards.forEach(c => {
                 c.classList.remove('expanded');
                 const otherForm = c.querySelector('.expense-form');
                 if (otherForm) otherForm.classList.remove('active');
             });
-            
+
             // Open current card
             card.classList.add('expanded');
             form.classList.add('active');
-            
+
             // Focus on amount input
             setTimeout(() => {
                 document.getElementById(`amount-${categoryId}`).focus();
@@ -1278,40 +1359,40 @@
 
         function addExpense(event, categoryId) {
             event.preventDefault();
-            
+
             if (isTrialExpired) {
                 alert('Your trial has expired. Please subscribe to continue adding expenses.');
                 return;
             }
-            
+
             const amountInput = document.getElementById(`amount-${categoryId}`);
             const amount = parseFloat(amountInput.value);
-            
+
             // Validate amount
             if (isNaN(amount) || amount <= 0) {
                 showNotification('Please enter a valid amount greater than $0.00', 'error');
                 amountInput.focus();
                 return;
             }
-            
+
             if (amount > 999999) {
                 showNotification('Amount cannot exceed $999,999.00', 'error');
                 amountInput.focus();
                 return;
             }
-            
+
             const description = document.getElementById(`description-${categoryId}`).value.trim();
             const location = document.getElementById(`location-${categoryId}`).value.trim();
             const receiptFile = document.getElementById(`receipt-${categoryId}`).files[0];
-            
+
             // Validate file size (max 5MB)
             if (receiptFile && receiptFile.size > 5 * 1024 * 1024) {
                 showNotification('Receipt file must be smaller than 5MB', 'error');
                 return;
             }
-            
+
             const category = expenseCategories.find(cat => cat.id === categoryId);
-            
+
             const expense = {
                 id: Date.now() + Math.random(),
                 categoryId: categoryId,
@@ -1323,7 +1404,7 @@
                 date: new Date().toISOString(),
                 receipt: null
             };
-            
+
             // Handle receipt file
             if (receiptFile) {
                 const reader = new FileReader();
@@ -1335,21 +1416,21 @@
             } else {
                 saveExpense(expense);
             }
-            
+
             function saveExpense(expense) {
                 expenses.push(expense);
                 localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
-                
+
                 // Reset form
                 event.target.reset();
                 document.getElementById(`receipt-preview-${categoryId}`).innerHTML = '';
                 toggleExpenseCard(categoryId);
-                
+
                 // Update displays
                 updateSummary();
                 updateInsights();
                 updateHistory();
-                
+
                 // Show success message
                 showNotification(`${category.name} expense added successfully!`, 'success');
             }
@@ -1358,7 +1439,7 @@
         function previewReceipt(categoryId) {
             const fileInput = document.getElementById(`receipt-${categoryId}`);
             const preview = document.getElementById(`receipt-preview-${categoryId}`);
-            
+
             if (fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -1375,10 +1456,10 @@
             const todayExpenses = expenses.filter(expense => 
                 new Date(expense.date).toDateString() === today
             );
-            
+
             const dailyTotal = todayExpenses.reduce((sum, expense) => sum + expense.amount, 0);
             const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-            
+
             document.getElementById('dailyTotal').textContent = `$${dailyTotal.toFixed(2)}`;
             document.getElementById('totalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
         }
@@ -1387,47 +1468,47 @@
             const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
             const uniqueDays = [...new Set(expenses.map(expense => new Date(expense.date).toDateString()))].length;
             const averageDaily = uniqueDays > 0 ? totalExpenses / uniqueDays : 0;
-            
+
             // Find top category
             const categoryTotals = {};
             expenses.forEach(expense => {
                 categoryTotals[expense.categoryName] = (categoryTotals[expense.categoryName] || 0) + expense.amount;
             });
-            
+
             const topCategory = Object.keys(categoryTotals).reduce((a, b) => 
                 categoryTotals[a] > categoryTotals[b] ? a : b, 'None'
             );
-            
+
             // Calculate monthly comparisons
             const now = new Date();
             const currentMonth = now.getMonth();
             const currentYear = now.getFullYear();
             const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
             const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-            
+
             const currentMonthExpenses = expenses.filter(expense => {
                 const expenseDate = new Date(expense.date);
                 return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
             }).reduce((sum, expense) => sum + expense.amount, 0);
-            
+
             const lastMonthExpenses = expenses.filter(expense => {
                 const expenseDate = new Date(expense.date);
                 return expenseDate.getMonth() === lastMonth && expenseDate.getFullYear() === lastMonthYear;
             }).reduce((sum, expense) => sum + expense.amount, 0);
-            
+
             const monthlyChange = lastMonthExpenses > 0 ? 
                 ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses * 100).toFixed(1) : 
                 (currentMonthExpenses > 0 ? '∞' : '0');
-            
+
             // Update financial overview
             document.getElementById('insightsTotalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
             document.getElementById('averageDailyExpense').textContent = `$${averageDaily.toFixed(2)}`;
             document.getElementById('topCategory').textContent = topCategory;
-            
+
             // Update spending trends
             document.getElementById('currentMonthTotal').textContent = `$${currentMonthExpenses.toFixed(2)}`;
             document.getElementById('lastMonthTotal').textContent = `$${lastMonthExpenses.toFixed(2)}`;
-            
+
             const changeElement = document.getElementById('monthlyChange');
             if (monthlyChange === '∞') {
                 changeElement.textContent = 'New spending';
@@ -1440,33 +1521,33 @@
                 changeElement.textContent = `${changeValue > 0 ? '+' : ''}${changeValue}%`;
                 changeElement.style.color = changeValue > 0 ? '#ef4444' : '#10b981';
             }
-            
+
             // Update category breakdown
             updateCategoryBreakdown(categoryTotals);
-            
+
             // Update monthly breakdown
             updateMonthlyBreakdown();
         }
 
         function updateCategoryBreakdown(categoryTotals) {
             const categoryList = document.getElementById('categoryList');
-            
+
             if (Object.keys(categoryTotals).length === 0) {
                 categoryList.innerHTML = '<p style="text-align: center; color: #666; margin: 20px 0;">No expense data available for analysis.</p>';
                 return;
             }
-            
+
             const sortedCategories = Object.entries(categoryTotals)
                 .sort(([,a], [,b]) => b - a)
                 .slice(0, 10);
-            
+
             const totalAmount = Object.values(categoryTotals).reduce((a, b) => a + b, 0);
-            
+
             categoryList.innerHTML = sortedCategories.map(([category, amount]) => {
                 const percentage = ((amount / totalAmount) * 100).toFixed(1);
                 const categoryData = expenseCategories.find(cat => cat.name === category);
                 const icon = categoryData ? categoryData.icon : '💼';
-                
+
                 return `
                     <div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light);">
                         <span style="display: flex; align-items: center; gap: 10px;">
@@ -1484,33 +1565,33 @@
 
         function updateMonthlyBreakdown() {
             const monthlyBreakdown = document.getElementById('monthlyBreakdown');
-            
+
             if (expenses.length === 0) {
                 monthlyBreakdown.innerHTML = '<p style="text-align: center; color: #666; margin: 20px 0;">No expense data available for monthly analysis.</p>';
                 return;
             }
-            
+
             // Group expenses by month
             const monthlyTotals = {};
             expenses.forEach(expense => {
                 const date = new Date(expense.date);
                 const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
                 const monthName = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-                
+
                 if (!monthlyTotals[monthKey]) {
                     monthlyTotals[monthKey] = { name: monthName, total: 0, count: 0 };
                 }
                 monthlyTotals[monthKey].total += expense.amount;
                 monthlyTotals[monthKey].count += 1;
             });
-            
+
             const sortedMonths = Object.entries(monthlyTotals)
                 .sort(([a], [b]) => b.localeCompare(a))
                 .slice(0, 6);
-            
+
             monthlyBreakdown.innerHTML = sortedMonths.map(([monthKey, data]) => {
                 const average = data.total / data.count;
-                
+
                 return `
                     <div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light);">
                         <span style="display: flex; align-items: center; gap: 10px;">
@@ -1530,10 +1611,10 @@
             const historyList = document.getElementById('historyList');
             const filterElement = document.getElementById('dateFilter');
             const filter = filterElement ? filterElement.value : 'all';
-            
+
             let filteredExpenses = [...expenses];
             const now = new Date();
-            
+
             switch (filter) {
                 case 'today':
                     filteredExpenses = expenses.filter(expense => 
@@ -1561,15 +1642,15 @@
                     // 'all' - no filtering needed
                     break;
             }
-            
+
             if (filteredExpenses.length === 0) {
                 historyList.innerHTML = '<p style="text-align: center; color: #666; margin: 40px 0;">No expenses found for the selected period.</p>';
                 return;
             }
-            
+
             // Sort by date (newest first)
             filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
-            
+
             historyList.innerHTML = filteredExpenses.map(expense => `
                 <div class="expense-card" style="margin-bottom: 15px;">
                     <div class="expense-header">
@@ -1611,18 +1692,18 @@
             document.querySelectorAll('.section').forEach(section => {
                 section.classList.add('hidden');
             });
-            
+
             // Show selected section
             document.getElementById(`${sectionName}Section`).classList.remove('hidden');
-            
+
             // Update navigation
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
-            
+
             currentSection = sectionName;
-            
+
             // Update content based on section
             if (sectionName === 'history') {
                 updateHistory();
@@ -1631,17 +1712,7 @@
             }
         }
 
-        function toggleDarkMode() {
-            isDarkMode = !isDarkMode;
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('darkMode', isDarkMode);
-            
-            const toggle = document.querySelector('.dark-mode-toggle');
-            toggle.textContent = isDarkMode ? '☀️' : '🌙';
-        }
-        
-        // Make toggleDarkMode available globally
-        window.toggleDarkMode = toggleDarkMode;
+
 
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
@@ -1660,13 +1731,13 @@
                 transition: transform 0.3s ease;
             `;
             notification.textContent = message;
-            
+
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 notification.style.transform = 'translateX(0)';
             }, 100);
-            
+
             setTimeout(() => {
                 notification.style.transform = 'translateX(100%)';
                 setTimeout(() => {
@@ -1689,7 +1760,7 @@
                 alert('No expenses to export.');
                 return;
             }
-            
+
             const headers = ['Date', 'Category', 'Amount', 'Description', 'Location'];
             const csvContent = [
                 headers.join(','),
@@ -1701,7 +1772,7 @@
                     `"${expense.location || ''}"`,
                 ].join(','))
             ].join('\n');
-            
+
             const blob = new Blob([csvContent], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1750,7 +1821,7 @@
         function toggleFAQ(element) {
             const answer = element.nextElementSibling;
             const icon = element.querySelector('span');
-            
+
             answer.classList.toggle('active');
             icon.textContent = answer.classList.contains('active') ? '-' : '+';
         }
@@ -1770,7 +1841,7 @@
         function updateEmailDisplay() {
             const type = document.getElementById('feedbackType').value;
             const emailDisplay = document.getElementById('emailDisplay');
-            
+
             if (type === 'feature') {
                 emailDisplay.textContent = '📧 Will be sent to: features@truckerexpensetracker.com';
                 emailDisplay.style.color = '#10b981';
@@ -1784,61 +1855,61 @@
 
         function submitFeedback(event) {
             event.preventDefault();
-            
+
             const submitBtn = document.getElementById('feedbackSubmitBtn');
             const form = document.getElementById('feedbackForm');
             const successDiv = document.getElementById('feedbackSuccess');
-            
+
             // Show loading state
             submitBtn.textContent = 'Sending...';
             submitBtn.disabled = true;
             submitBtn.style.background = '#6b7280';
-            
+
             const type = document.getElementById('feedbackType').value;
             const message = document.getElementById('feedbackMessage').value;
             const email = document.getElementById('feedbackEmail').value;
-            
+
             // Determine which email to use based on feedback type
             let recipientEmail = 'support@truckerexpensetracker.com';
             if (type === 'feature') {
                 recipientEmail = 'features@truckerexpensetracker.com';
             }
-            
+
             // Create subject line
             const subject = `Trucker Expense Tracker - ${type.charAt(0).toUpperCase() + type.slice(1)} ${type === 'bug' ? 'Report' : type === 'feature' ? 'Request' : 'Feedback'}`;
-            
+
             // Create email body
             const body = `Feedback Type: ${type}\n\nMessage:\n${message}\n\n${email ? `Reply to: ${email}\n\n` : ''}Sent from Trucker Expense Tracker PWA`;
-            
+
             // Create mailto link
             const mailtoLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            
+
             // Simulate processing time for better UX
             setTimeout(() => {
                 // Hide form and show success message
                 form.style.display = 'none';
                 successDiv.style.display = 'block';
-                
+
                 // Open email client
                 window.location.href = mailtoLink;
-                
+
                 showNotification('Your email client should open shortly...', 'success');
             }, 1000);
         }
-        
+
         function resetFeedbackForm() {
             const form = document.getElementById('feedbackForm');
             const successDiv = document.getElementById('feedbackSuccess');
             const submitBtn = document.getElementById('feedbackSubmitBtn');
-            
+
             // Reset form display
             form.style.display = 'block';
             successDiv.style.display = 'none';
-            
+
             // Reset form fields
             form.reset();
             document.getElementById('emailDisplay').textContent = '';
-            
+
             // Reset button state
             submitBtn.textContent = 'Send Feedback';
             submitBtn.disabled = false;
@@ -1858,16 +1929,16 @@
                     version: '2.1.0',
                     timestamp: new Date().toISOString()
                 };
-                
+
                 const dataStr = JSON.stringify(backupData, null, 2);
                 const blob = new Blob([dataStr], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
-                
+
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = `trucker-expenses-backup-${new Date().toISOString().split('T')[0]}.json`;
                 a.click();
-                
+
                 URL.revokeObjectURL(url);
                 showNotification('Data backup downloaded successfully!', 'success');
             } catch (error) {
@@ -1880,27 +1951,27 @@
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.json';
-            
+
             input.onchange = function(event) {
                 const file = event.target.files[0];
                 if (!file) return;
-                
+
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     try {
                         const backupData = JSON.parse(e.target.result);
-                        
+
                         if (confirm('This will replace all current data. Are you sure you want to restore from backup?')) {
                             if (backupData.expenses && Array.isArray(backupData.expenses)) {
                                 expenses = backupData.expenses;
                                 localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
                             }
-                            
+
                             if (backupData.trialStartDate) {
                                 localStorage.setItem('trialStartDate', backupData.trialStartDate);
                                 trialStartDate = backupData.trialStartDate;
                             }
-                            
+
                             if (backupData.darkMode) {
                                 localStorage.setItem('darkMode', backupData.darkMode);
                                 isDarkMode = backupData.darkMode === 'true';
@@ -1909,13 +1980,13 @@
                                     document.querySelector('.dark-mode-toggle').textContent = '☀️';
                                 }
                             }
-                            
+
                             // Refresh displays
                             updateSummary();
                             updateInsights();
                             updateHistory();
                             updateTrialCountdown();
-                            
+
                             showNotification('Data restored successfully!', 'success');
                         }
                     } catch (error) {
@@ -1925,7 +1996,7 @@
                 };
                 reader.readAsText(file);
             };
-            
+
             input.click();
         }
 
