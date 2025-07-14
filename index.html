@@ -186,6 +186,20 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
+        /* Dark mode styling for insights breakdown sections */
+        .dark-mode .section .section {
+            background: var(--card-dark) !important;
+            border-color: var(--border-dark) !important;
+        }
+
+        .dark-mode .section .section h3 {
+            color: var(--secondary-color) !important;
+        }
+
+        .dark-mode .section .section p {
+            color: var(--text-dark) !important;
+        }
+
         .section h2 {
             color: var(--primary-color);
             margin-bottom: 20px;
@@ -300,6 +314,15 @@
             color: white;
         }
 
+        /* Special styling for labels in regular sections (not expense forms) */
+        .section .form-group label {
+            color: var(--text-light);
+        }
+
+        .dark-mode .section .form-group label {
+            color: var(--text-dark);
+        }
+
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -311,6 +334,23 @@
             color: white;
             font-size: 16px;
             transition: all 0.3s ease;
+        }
+
+        /* Special styling for inputs in regular sections (not expense forms) */
+        .section .form-group input,
+        .section .form-group select,
+        .section .form-group textarea {
+            background: var(--card-light);
+            color: var(--text-light);
+            border: 1px solid var(--border-light);
+        }
+
+        .dark-mode .section .form-group input,
+        .dark-mode .section .form-group select,
+        .dark-mode .section .form-group textarea {
+            background: var(--card-dark);
+            color: var(--text-dark);
+            border: 1px solid var(--border-dark);
         }
 
         .form-group input::placeholder,
@@ -327,6 +367,25 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
+        /* Special focus states for inputs in regular sections */
+        .section .form-group input:focus,
+        .section .form-group select:focus,
+        .section .form-group textarea:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+            border-color: var(--primary-color);
+            background: var(--background-light);
+        }
+
+        .dark-mode .section .form-group input:focus,
+        .dark-mode .section .form-group select:focus,
+        .dark-mode .section .form-group textarea:focus {
+            outline: 2px solid var(--secondary-color);
+            outline-offset: 2px;
+            border-color: var(--secondary-color);
+            background: var(--background-dark);
+        }
+
         .form-group select option {
             background: #2d3748;
             color: white;
@@ -337,6 +396,17 @@
         .form-group select option:focus {
             background: #4a5568;
             color: white;
+        }
+
+        /* Better select option colors for regular sections */
+        .section .form-group select option {
+            background: var(--card-light);
+            color: var(--text-light);
+        }
+
+        .dark-mode .section .form-group select option {
+            background: var(--card-dark);
+            color: var(--text-dark);
         }
 
         .btn {
@@ -894,7 +964,7 @@
                     </select>
                 </div>
                 <ul id="historyList" aria-label="Expense history" style="list-style: none; padding: 0; margin: 0;">
-                    <p style="text-align: center; color: #666; margin: 40px 0;">No expenses recorded yet. Start by adding some expenses in the Today section!</p>
+                    <p style="text-align: center; color: var(--text-light); opacity: 0.7; margin: 40px 0;">No expenses recorded yet. Start by adding some expenses in the Today section!</p>
                 </div>
 
                 <div class="action-buttons">
@@ -938,14 +1008,14 @@
                         </div>
                     </div>
 
-                    <div class="section" style="margin: 30px 0; background: var(--background-light); border: 1px solid var(--border-light);">
+                    <div class="section" style="margin: 30px 0; background: var(--card-light); border: 1px solid var(--border-light);">
                         <h3 style="color: var(--primary-color); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">📊 Category Breakdown</h3>
                         <ul id="categoryList" aria-label="Category breakdown" style="list-style: none; padding: 0; margin: 0;">
                             <p style="text-align: center; color: #666; margin: 20px 0;">No expense data available for analysis.</p>
                         </div>
                     </div>
 
-                    <div class="section" style="margin: 30px 0; background: var(--background-light); border: 1px solid var(--border-light);">
+                    <div class="section" style="margin: 30px 0; background: var(--card-light); border: 1px solid var(--border-light);">
                         <h3 style="color: var(--primary-color); margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">📅 Monthly Breakdown</h3>
                         <ul id="monthlyBreakdown" aria-label="Monthly expense breakdown" style="list-style: none; padding: 0; margin: 0;">
                             <p style="text-align: center; color: #666; margin: 20px 0;">No expense data available for monthly analysis.</p>
@@ -1155,20 +1225,10 @@
             localStorage.setItem('trialStartDate', trialStartDate);
         }
 
-        // Global toggleDarkMode function
-        function toggleDarkMode() {
-            isDarkMode = !isDarkMode;
-            document.body.classList.toggle('dark-mode', isDarkMode);
-            localStorage.setItem('darkMode', isDarkMode);
-
-            const toggle = document.querySelector('.dark-mode-toggle');
-            if (toggle) {
-                toggle.textContent = isDarkMode ? '☀️' : '🌙';
-            }
-        }
+        
 
         // Initialize the app
-        
+
         document.addEventListener('DOMContentLoaded', function() {
             // Check for trial reset parameter
             const urlParams = new URLSearchParams(window.location.search);
@@ -1540,13 +1600,13 @@
 
                 return `
                     <li><div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light);">
-                        <span style="display: flex; align-items: center; gap: 10px;">
+                        <span style="display: flex; align-items: center; gap: 10px; color: var(--text-light);">
                             <span style="font-size: 1.2rem;">${icon}</span>
                             <span>${category}</span>
                         </span>
                         <span style="text-align: right;">
                             <div style="font-weight: 600; color: var(--primary-color);">$${amount.toFixed(2)}</div>
-                            <div style="font-size: 0.9rem; color: #666;">${percentage}%</div>
+                            <div style="font-size: 0.9rem; color: var(--text-light); opacity: 0.7;">${percentage}%</div>
                         </span>
                     </div></li>
                 `;
@@ -1584,13 +1644,13 @@
 
                 return `
                     <li><div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light);">
-                        <span style="display: flex; align-items: center; gap: 10px;">
+                        <span style="display: flex; align-items: center; gap: 10px; color: var(--text-light);">
                             <span style="font-size: 1.2rem;">📅</span>
                             <span>${data.name}</span>
                         </span>
                         <span style="text-align: right;">
                             <div style="font-weight: 600; color: var(--primary-color);">$${data.total.toFixed(2)}</div>
-                            <div style="font-size: 0.9rem; color: #666;">${data.count} transactions • Avg: $${average.toFixed(2)}</div>
+                            <div style="font-size: 0.9rem; color: var(--text-light); opacity: 0.7;">${data.count} transactions • Avg: $${average.toFixed(2)}</div>
                         </span>
                     </div></li>
                 `;
@@ -1634,7 +1694,7 @@
             }
 
             if (filteredExpenses.length === 0) {
-                historyList.innerHTML = '<li><p style="text-align: center; color: #666; margin: 40px 0;">No expenses found for the selected period.</p></li>';
+                historyList.innerHTML = '<li><p style="text-align: center; color: var(--text-light); opacity: 0.7; margin: 40px 0;">No expenses found for the selected period.</p></li>';
                 return;
             }
 
@@ -1647,7 +1707,7 @@
                         <div class="expense-icon">${expense.icon}</div>
                         <div style="flex: 1;">
                             <div class="expense-title">${expense.categoryName}</div>
-                            <div style="color: #666; font-size: 0.9rem;">
+                            <div style="color: var(--text-light); opacity: 0.7; font-size: 0.9rem;">
                                 ${new Date(expense.date).toLocaleDateString()} ${expense.location ? `• ${expense.location}` : ''}
                             </div>
                         </div>
@@ -1655,9 +1715,9 @@
                             <div style="font-size: 1.2rem; font-weight: 600; color: var(--primary-color);">$${expense.amount.toFixed(2)}</div>
                         </div>
                     </div>
-                    ${expense.description ? `<div style="margin-top: 10px; color: #666;">${expense.description}</div>` : ''}
+                    ${expense.description ? `<div style="margin-top: 10px; color: var(--text-light); opacity: 0.8;">${expense.description}</div>` : ''}
                     ${expense.receipt ? `<div style="margin-top: 10px;"><img src="${expense.receipt}" class="receipt-preview" alt="Receipt"></div>` : ''}
-                    <button onclick="deleteExpense('${expense.id}')" style="margin-top: 10px; background: var(--error-color); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Delete</button>
+                    <button onclick="deleteExpense('${expense.id}')" style="margin-top: 10px; background: var(--error-color); color: white; border: none, padding: 5px 10px; border-radius: 5px; cursor: pointer;">Delete</button>
                 </div></li>
             `).join('');
         }
@@ -1999,6 +2059,30 @@
 
         // Update trial countdown every minute
         setInterval(updateTrialCountdown, 60000);
+
+        // Dark mode persistence and toggle
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            localStorage.setItem('darkMode', isDarkMode);
+            updateToggleIcon();
+        }
+
+        function updateToggleIcon() {
+            const toggle = document.querySelector('.dark-mode-toggle');
+            if (toggle) {
+                toggle.textContent = isDarkMode ? '☀️' : '🌙';
+            }
+        }
+
+        // Ensure initial dark mode state is applied on load and icon is updated
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            updateToggleIcon();
+        });
+
     </script>
 </body>
 </html>
