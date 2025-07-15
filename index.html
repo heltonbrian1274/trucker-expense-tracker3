@@ -1678,7 +1678,16 @@
                     toggleExpenseCard(category.id);
                 });
 
+                // CORRECTED KEYDOWN LISTENER
                 card.addEventListener('keydown', (e) => {
+                    // If the keydown event originates from within the form,
+                    // let it proceed normally (e.g., typing spaces in an input).
+                    if (e.target.closest('.expense-form')) {
+                        return;
+                    }
+
+                    // If the key is Enter or Space, and the event is on the card itself,
+                    // prevent default browser action and toggle the card open.
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
                         if (!card.classList.contains('expanded')) {
