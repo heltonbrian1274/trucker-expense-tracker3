@@ -153,6 +153,7 @@
             font-size: 0.9rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            /* CLS Fix: Reserve vertical space */
             min-height: 42px;
             display: flex;
             align-items: center;
@@ -190,6 +191,8 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
+
+
         .section h2 {
             color: var(--primary-color);
             margin-bottom: 20px;
@@ -197,14 +200,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-        
-        /* CLS Fix: Reserve space for icons in headers */
-        .section h2 .icon,
-        .privacy-notice h3 .icon {
-            display: inline-block;
-            width: 1.2em;
-            text-align: center;
         }
 
         .dark-mode .section h2 {
@@ -312,6 +307,7 @@
             color: white;
         }
 
+        /* Special styling for labels in regular sections (not expense forms) */
         .section .form-group label {
             color: var(--text-light);
         }
@@ -333,6 +329,7 @@
             transition: all 0.3s ease;
         }
 
+        /* Special styling for inputs in regular sections (not expense forms) */
         .section .form-group input,
         .section .form-group select,
         .section .form-group textarea {
@@ -363,6 +360,7 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
+        /* Special focus states for inputs in regular sections */
         .section .form-group input:focus,
         .section .form-group select:focus,
         .section .form-group textarea:focus {
@@ -384,8 +382,16 @@
         .form-group select option {
             background: #2d3748;
             color: white;
+            padding: 8px;
         }
 
+        .form-group select option:hover,
+        .form-group select option:focus {
+            background: #4a5568;
+            color: white;
+        }
+
+        /* Better select option colors for regular sections */
         .section .form-group select option {
             background: var(--card-light);
             color: var(--text-light);
@@ -450,12 +456,9 @@
             margin-bottom: 20px;
             font-size: 1.3rem;
             text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
         }
 
+        /* CLS FIX: Use CSS Grid for a stable two-column layout */
         .summary-item {
             display: grid;
             grid-template-columns: 1fr auto;
@@ -486,8 +489,9 @@
             white-space: nowrap;
         }
         
+        /* CLS FIX: Reserve horizontal space for values, especially on desktop */
         .summary-value {
-            min-width: 90px;
+            min-width: 120px;
         }
 
         .action-buttons {
@@ -516,17 +520,6 @@
             color: var(--text-light);
             height: 80px;
         }
-        
-        /* CLS Fix: Reserve space for button icons */
-        .action-btn .icon {
-            flex-shrink: 0;
-            width: 1.5em;
-            height: 1.5em;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
 
         .dark-mode .action-btn {
             background: linear-gradient(135deg, #334155, #475569);
@@ -545,12 +538,46 @@
             outline-offset: 2px;
         }
 
-        .export-btn { background: linear-gradient(135deg, #047857, #059669) !important; color: white !important; border-color: #047857 !important; }
-        .print-btn { background: linear-gradient(135deg, #d97706, #b45309) !important; color: white !important; border-color: #d97706 !important; }
-        .csv-btn { background: linear-gradient(135deg, #2563eb, #1d4ed8) !important; color: white !important; border-color: #2563eb !important; }
-        .feedback-btn { background: linear-gradient(135deg, #7c3aed, #6d28d9) !important; color: white !important; border-color: #7c3aed !important; }
-        .faq-btn { background: linear-gradient(135deg, #0891b2, #0e7490) !important; color: white !important; border-color: #0891b2 !important; }
-        .update-btn { background: linear-gradient(135deg, #92400e, #78350f) !important; color: white !important; border-color: #92400e !important; }
+        .action-btn:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #047857, #059669) !important;
+            color: white !important;
+            border-color: #047857 !important;
+        }
+
+        .print-btn {
+            background: linear-gradient(135deg, #d97706, #b45309) !important;
+            color: white !important;
+            border-color: #d97706 !important;
+        }
+
+        .csv-btn {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+            color: white !important;
+            border-color: #2563eb !important;
+        }
+
+        .feedback-btn {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+            color: white !important;
+            border-color: #7c3aed !important;
+        }
+
+        .faq-btn {
+            background: linear-gradient(135deg, #0891b2, #0e7490) !important;
+            color: white !important;
+            border-color: #0891b2 !important;
+        }
+
+        .update-btn {
+            background: linear-gradient(135deg, #92400e, #78350f) !important;
+            color: white !important;
+            border-color: #92400e !important;
+        }
 
         .subscribe-btn {
             background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
@@ -742,13 +769,101 @@
             max-height: 500px;
         }
         
+        /* CLS Fix: Reserve space for dynamically loaded lists */
         #historyList, #categoryList, #monthlyBreakdown {
             min-height: 150px;
         }
 
-        .expense-subtitle, .expense-amount, .expense-description,
-        .dark-mode .expense-title, .dark-mode .expense-subtitle, .dark-mode .expense-description, .dark-mode .expense-amount {
-            /* Styles removed for brevity as they are not part of the fix */
+        .expense-subtitle {
+            color: var(--text-light);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        .dark-mode .expense-subtitle {
+            color: var(--text-dark);
+            opacity: 0.9;
+        }
+
+        .expense-amount {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .dark-mode .expense-amount {
+            color: var(--secondary-color);
+        }
+
+        .expense-description {
+            margin-top: 10px;
+            color: var(--text-light);
+            opacity: 0.8;
+        }
+
+        .dark-mode .expense-description {
+            color: var(--text-dark);
+            opacity: 1;
+            font-weight: 500;
+        }
+
+        .dark-mode .expense-title {
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .dark-mode .expense-subtitle {
+            color: rgba(241, 245, 249, 0.8);
+            font-weight: 500;
+        }
+
+        .dark-mode .expense-title {
+            color: var(--text-dark) !important;
+            font-weight: 600 !important;
+        }
+
+        .dark-mode .expense-subtitle {
+            color: rgba(241, 245, 249, 0.8) !important;
+            font-weight: 500 !important;
+        }
+
+        .dark-mode .expense-description {
+            color: var(--text-dark) !important;
+            opacity: 1 !important;
+            font-weight: 500 !important;
+        }
+
+        .dark-mode .expense-amount {
+            color: var(--secondary-color) !important;
+        }
+
+        /* Fix insights section cards in dark mode */
+        .dark-mode .insights-breakdown-section .summary-item span:first-child {
+            color: white !important;
+        }
+
+        .dark-mode .insights-breakdown-section .summary-item span:last-child {
+            color: white !important;
+        }
+
+        .dark-mode .insights-breakdown-section .summary-item span:last-child div {
+            color: white !important;
+        }
+
+        .dark-mode #categoryList .summary-item span {
+            color: var(--text-dark) !important;
+        }
+
+        .dark-mode #categoryList .summary-item span:last-child div:first-child {
+            color: var(--secondary-color) !important;
+        }
+
+        .dark-mode #monthlyBreakdown .summary-item span {
+            color: var(--text-dark) !important;
+        }
+
+        .dark-mode #monthlyBreakdown .summary-item span:last-child div:first-child {
+            color: var(--secondary-color) !important;
         }
 
         .btn-delete {
@@ -768,7 +883,8 @@
             background: #dc2626;
             transform: translateY(-1px);
         }
-        
+
+        /* CLS Fix: Style the container for receipt previews */
         #receipt-preview-container {
             width: 100%;
             min-height: 150px;
@@ -804,23 +920,179 @@
         }
 
         @media (max-width: 768px) {
-            .container { padding: 10px; }
-            .section { margin: 0 10px 25px 10px; padding: 20px; max-width: calc(100% - 20px); }
-            .privacy-notice { margin: 25px 10px; padding: 20px; max-width: calc(100% - 20px); }
-            .navigation { left: 10px; right: 10px; max-width: calc(100% - 20px); }
-            .header h1 { font-size: 1.8rem; }
-            .header .subtitle { font-size: 1rem; }
-            .header-controls { position: relative; top: 0; right: 0; justify-content: center; margin-bottom: 15px; gap: 15px; }
-            .dark-mode-toggle, .version-display { padding: 6px 10px; font-size: 14px; }
-            .action-buttons { grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 25px 10px; max-width: calc(100% - 20px); }
-            .action-btn { padding: 15px 8px; font-size: 12px; height: 70px; flex-direction: column; gap: 5px; }
-            .navigation { padding: 10px; gap: 10px; flex-wrap: nowrap; }
-            .nav-btn { padding: 12px 8px; font-size: 12px; flex: 1; min-width: 90px; text-align: center; }
-            .form-group input, .form-group select, .form-group textarea { font-size: 16px; }
-            .modal-content { margin: 10px; padding: 20px; max-height: 90vh; }
-            body { padding-bottom: 120px; }
-            .summary-card { padding: 16px; margin: 20px 0; min-height: 110px; }
-            .summary-card h3 { font-size: 1.05rem; }
+            .container {
+                padding: 10px;
+            }
+
+            .section {
+                margin: 0 10px 25px 10px;
+                padding: 20px;
+                max-width: calc(100% - 20px);
+            }
+
+            .privacy-notice {
+                margin: 25px 10px;
+                padding: 20px;
+                max-width: calc(100% - 20px);
+            }
+
+            .navigation {
+                left: 10px;
+                right: 10px;
+                max-width: calc(100% - 20px);
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+                margin-bottom: 8px;
+            }
+
+            .header .subtitle {
+                font-size: 1rem;
+            }
+
+            .header-controls {
+                position: relative;
+                top: 0;
+                right: 0;
+                justify-content: center;
+                margin-bottom: 15px;
+                gap: 15px;
+            }
+
+            .dark-mode-toggle,
+            .version-display {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+
+            .expense-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .expense-card {
+                padding: 18px;
+            }
+
+            .expense-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+
+            .expense-title {
+                font-size: 1.1rem;
+            }
+
+            .action-buttons {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                margin: 25px 10px;
+                max-width: calc(100% - 20px);
+            }
+
+            .action-btn {
+                padding: 15px 8px;
+                font-size: 12px;
+                height: 70px;
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .insights-breakdown-section {
+                padding: 20px;
+                margin: 20px 0;
+            }
+
+            .navigation {
+                padding: 10px;
+                gap: 10px;
+                flex-wrap: nowrap;
+            }
+
+            .nav-btn {
+                padding: 12px 8px;
+                font-size: 12px;
+                flex: 1;
+                min-width: 90px;
+                text-align: center;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .modal-content {
+                margin: 10px;
+                padding: 20px;
+                max-height: 90vh;
+            }
+
+            body {
+                padding-bottom: 120px;
+            }
+
+            .summary-card {
+                padding: 16px;
+                margin: 20px 0;
+                min-height: 110px;
+            }
+
+            .summary-card h3 {
+                font-size: 1.05rem;
+                margin-bottom: 12px;
+            }
+
+            .summary-item {
+                font-size: 0.85rem;
+                gap: 8px;
+                padding: 8px 0;
+                line-height: 1.3;
+            }
+
+            .summary-item:last-child {
+                font-size: 0.95rem;
+                padding-top: 12px;
+            }
+
+            .summary-item span:first-child {
+                font-size: 0.85rem;
+                line-height: 1.3;
+            }
+
+            .summary-item span:last-child {
+                font-size: 0.85rem;
+                line-height: 1.3;
+            }
+
+            .insights-breakdown-section {
+                padding: 18px;
+                margin: 20px 0;
+            }
+
+            .insights-breakdown-section h3 {
+                font-size: 1.1rem;
+                margin-bottom: 15px;
+            }
+
+            .insights-breakdown-section .summary-card {
+                padding: 18px;
+                min-height: 120px;
+            }
+
+            .insights-breakdown-section .summary-item {
+                padding: 8px 0;
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+
+            .insights-breakdown-section .summary-item:last-child {
+                font-size: 0.95rem;
+                padding-top: 10px;
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -831,17 +1103,105 @@
             }
         }
 
-        .insights-breakdown-section { margin: 30px 0; }
-        .no-data-message { text-align: center; color: var(--text-light); opacity: 0.7; margin: 20px 0; padding: 20px; }
-        .dark-mode .no-data-message { color: var(--text-dark); }
-        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+        .insights-breakdown-section {
+            background: var(--card-light);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            overflow: hidden;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        .dark-mode .insights-breakdown-section {
+            background: var(--card-dark);
+            border-color: var(--border-dark);
+        }
+
+        .insights-breakdown-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+        }
+
+        .dark-mode .insights-breakdown-section h3 {
+            color: var(--secondary-color);
+        }
+
+        .insights-breakdown-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        /* CLS Fix: Style the summary cards inside the insights section */
+        .insights-breakdown-section .summary-card {
+            min-height: 150px;
+            margin: 0;
+        }
+
+        .no-data-message {
+            text-align: center;
+            color: var(--text-light);
+            opacity: 0.7;
+            margin: 20px 0;
+            padding: 20px; /* Add padding to better fill the min-height */
+        }
+
+        .dark-mode .no-data-message {
+            color: var(--text-dark);
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
 
         @media print {
-            body { background: white !important; color: black !important; padding-bottom: 0; }
-            .navigation, .action-buttons, .dark-mode-toggle, .version-display { display: none !important; }
-            .section { background: white !important; box-shadow: none !important; border: 1px solid #ccc; page-break-inside: avoid; }
-            .expense-card { background: white !important; color: black !important; border: 1px solid #ccc !important; }
-            .summary-card, .privacy-notice { background: white !important; color: black !important; border: 1px solid #ccc; }
+            body {
+                background: white !important;
+                color: black !important;
+                padding-bottom: 0;
+            }
+
+            .navigation,
+            .action-buttons,
+            .dark-mode-toggle,
+            .version-display {
+                display: none !important;
+            }
+
+            .section {
+                background: white !important;
+                box-shadow: none !important;
+                border: 1px solid #ccc;
+                page-break-inside: avoid;
+            }
+
+            .expense-card {
+                background: white !important;
+                color: black !important;
+                border: 1px solid #ccc !important;
+            }
+
+            .summary-card,
+            .privacy-notice {
+                background: white !important;
+                color: black !important;
+                border: 1px solid #ccc;
+            }
         }
     </style>
 </head>
@@ -854,7 +1214,7 @@
                 <button class="dark-mode-toggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode">🌙</button>
                 <div class="version-display">v2.1.0</div>
             </div>
-            <h1><span class="icon">🚛</span> Trucker Expense Tracker</h1>
+            <h1>🚛 Trucker Expense Tracker</h1>
             <p class="subtitle">Professional expense management for owner-operators</p>
 
             <div id="trialCountdown" class="trial-countdown">
@@ -864,14 +1224,14 @@
 
         <main id="main-content">
             <section id="todaySection" class="section">
-                <h2><span class="icon">📅</span> Log your expenses for today</h2>
+                <h2>📅 Log your expenses for today</h2>
                 <div class="expense-grid" id="expenseGrid" aria-label="Expense categories"></div>
                 <fieldset style="border: none; margin: 0; padding: 0;">
                     <legend class="sr-only">Expense categories</legend>
-                </fieldset>
+                    </fieldset>
 
                 <div class="summary-card">
-                    <h3><span class="icon">📊</span> Today's Summary</h3>
+                    <h3>📊 Today's Summary</h3>
                     <div class="summary-item">
                         <span>Total Daily Expenses:</span>
                         <span id="dailyTotal" class="summary-value">$0.00</span>
@@ -883,20 +1243,20 @@
                 </div>
 
                 <div class="action-buttons">
-                    <button class="action-btn export-btn" onclick="exportToPDF()"><span class="icon">📄</span> Export PDF</button>
-                    <button class="action-btn print-btn" onclick="printSection()"><span class="icon">🖨️</span> Print</button>
-                    <button class="action-btn csv-btn" onclick="exportToCSV()"><span class="icon">📊</span> Export CSV</button>
-                    <button class="action-btn feedback-btn" onclick="showFeedback()"><span class="icon">💬</span> Feedback</button>
-                    <button class="action-btn faq-btn" onclick="showFAQ()"><span class="icon">❓</span> FAQ</button>
-                    <button class="action-btn update-btn" onclick="checkForUpdates()"><span class="icon">🔄</span> Check for Updates</button>
-                    <button class="action-btn" style="background: #8b5cf6;" onclick="backupData()"><span class="icon">💾</span> Backup Data</button>
-                    <button class="action-btn" style="background: #06b6d4;" onclick="restoreData()"><span class="icon">📥</span> Restore Data</button>
-                    <button class="action-btn subscribe-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')"><span class="icon">💳</span> Subscribe - $9.99/mo</button>
+                    <button class="action-btn export-btn" onclick="exportToPDF()">📄 Export PDF</button>
+                    <button class="action-btn print-btn" onclick="printSection()">🖨️ Print</button>
+                    <button class="action-btn csv-btn" onclick="exportToCSV()">📊 Export CSV</button>
+                    <button class="action-btn feedback-btn" onclick="showFeedback()">💬 Feedback</button>
+                    <button class="action-btn faq-btn" onclick="showFAQ()">❓ FAQ</button>
+                    <button class="action-btn update-btn" onclick="checkForUpdates()">🔄 Check for Updates</button>
+                    <button class="action-btn" style="background: #8b5cf6;" onclick="backupData()">💾 Backup Data</button>
+                    <button class="action-btn" style="background: #06b6d4;" onclick="restoreData()">📥 Restore Data</button>
+                    <button class="action-btn subscribe-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')">💳 Subscribe - $9.99/mo</button>
                 </div>
             </section>
 
             <section id="historySection" class="section hidden">
-                <h2><span class="icon">📚</span> Expense History</h2>
+                <h2>📚 Expense History</h2>
                 <div class="form-group">
                     <label for="dateFilter">Filter by Date Range:</label>
                     <select id="dateFilter" onchange="filterExpenses()">
@@ -907,172 +1267,832 @@
                         <option value="year">This Year</option>
                     </select>
                 </div>
-                <ul id="historyList" aria-label="Expense history" style="list-style: none; padding: 0; margin: 0;"></ul>
+                <ul id="historyList" aria-label="Expense history" style="list-style: none; padding: 0; margin: 0;">
+                    <p style="text-align: center; color: var(--text-light); opacity: 0.7; margin: 40px 0;">No expenses recorded yet. Start by adding some expenses in the Today section!</p>
+                </ul>
+
                 <div class="action-buttons">
-                    <button class="action-btn export-btn" onclick="exportHistoryToPDF()"><span class="icon">📄</span> Export PDF</button>
-                    <button class="action-btn print-btn" onclick="printHistory()"><span class="icon">🖨️</span> Print</button>
-                    <button class="action-btn csv-btn" onclick="exportHistoryToCSV()"><span class="icon">📊</span> Export CSV</button>
+                    <button class="action-btn export-btn" onclick="exportHistoryToPDF()">📄 Export PDF</button>
+                    <button class="action-btn print-btn" onclick="printHistory()">🖨️ Print</button>
+                    <button class="action-btn csv-btn" onclick="exportHistoryToCSV()">📊 Export CSV</button>
                 </div>
             </section>
 
             <section id="insightsSection" class="section hidden">
-                <h2><span class="icon">📈</span> Expense Insights</h2>
+                <h2>📈 Expense Insights</h2>
                 <div id="insightsContent">
                     <div class="insights-breakdown-section">
-                        <h3><span class="icon">💰</span> Financial Overview</h3>
+                        <h3>💰 Financial Overview</h3>
                         <div class="summary-card" style="background: linear-gradient(135deg, #047857, #059669);">
-                            <div class="summary-item"><span>Total Expenses:</span><span id="insightsTotalExpenses" class="summary-value">$0.00</span></div>
-                            <div class="summary-item"><span>Average Daily Expense:</span><span id="averageDailyExpense" class="summary-value">$0.00</span></div>
-                            <div class="summary-item"><span>Most Expensive Category:</span><span id="topCategory" class="summary-value">None</span></div>
+                            <div class="summary-item">
+                                <span>Total Expenses:</span>
+                                <span id="insightsTotalExpenses" class="summary-value">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Average Daily Expense:</span>
+                                <span id="averageDailyExpense" class="summary-value">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Most Expensive Category:</span>
+                                <span id="topCategory" class="summary-value">None</span>
+                            </div>
                         </div>
                     </div>
+
                     <div class="insights-breakdown-section">
-                        <h3><span class="icon">📊</span> Spending Trends</h3>
+                        <h3>📊 Spending Trends</h3>
                         <div class="summary-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-                            <div class="summary-item"><span>This Month's Total:</span><span id="currentMonthTotal" class="summary-value">$0.00</span></div>
-                            <div class="summary-item"><span>Last Month's Total:</span><span id="lastMonthTotal" class="summary-value">$0.00</span></div>
-                            <div class="summary-item"><span>Monthly Change:</span><span id="monthlyChange" class="summary-value">--</span></div>
+                            <div class="summary-item">
+                                <span>This Month's Total:</span>
+                                <span id="currentMonthTotal" class="summary-value">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Last Month's Total:</span>
+                                <span id="lastMonthTotal" class="summary-value">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Monthly Change:</span>
+                                <span id="monthlyChange" class="summary-value">--</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="insights-breakdown-section"><h3><span class="icon">📊</span> Category Breakdown</h3><ul id="categoryList"></ul></div>
-                    <div class="insights-breakdown-section"><h3><span class="icon">📅</span> Monthly Breakdown</h3><ul id="monthlyBreakdown"></ul></div>
+
+                    <div class="insights-breakdown-section">
+                        <h3>📊 Category Breakdown</h3>
+                        <ul id="categoryList" aria-label="Category breakdown">
+                            <p class="no-data-message">No expense data available for analysis.</p>
+                        </ul>
+                    </div>
+
+                    <div class="insights-breakdown-section">
+                        <h3>📅 Monthly Breakdown</h3>
+                        <ul id="monthlyBreakdown" aria-label="Monthly expense breakdown">
+                            <p class="no-data-message">No expense data available for monthly analysis.</p>
+                        </ul>
+                    </div>
                 </div>
+
                 <div class="action-buttons">
-                    <button class="action-btn export-btn" onclick="exportInsightsToPDF()"><span class="icon">📄</span> Export PDF</button>
-                    <button class="action-btn print-btn" onclick="printInsights()"><span class="icon">🖨️</span> Print</button>
-                    <button class="action-btn csv-btn" onclick="exportInsightsToCSV()"><span class="icon">📊</span> Export CSV</button>
+                    <button class="action-btn export-btn" onclick="exportInsightsToPDF()">📄 Export PDF</button>
+                    <button class="action-btn print-btn" onclick="printInsights()">🖨️ Print</button>
+                    <button class="action-btn csv-btn" onclick="exportInsightsToCSV()">📊 Export CSV</button>
                 </div>
             </section>
         </main>
 
         <nav class="navigation">
-            <button class="nav-btn active" onclick="showSection('today')" data-section="today"><span class="icon">📅</span> Today</button>
-            <button class="nav-btn" onclick="showSection('history')" data-section="history"><span class="icon">📚</span> History</button>
-            <button class="nav-btn" onclick="showSection('insights')" data-section="insights"><span class="icon">📈</span> Insights</button>
+            <button class="nav-btn active" onclick="showSection('today')" data-section="today">📅 Today</button>
+            <button class="nav-btn" onclick="showSection('history')" data-section="history">📚 History</button>
+            <button class="nav-btn" onclick="showSection('insights')" data-section="insights">📈 Insights</button>
         </nav>
 
         <div class="privacy-notice">
-            <h3><span class="icon">🔒</span> Privacy First</h3>
+            <h3>🔒 Privacy First</h3>
             <p>All your data is stored locally on your device. Nothing is sent to our servers, ensuring complete privacy and security of your expense information.</p>
         </div>
     </div>
-    
+
     <div id="faqModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeFAQ()">&times;</button>
-            <h2><span class="icon">❓</span> Frequently Asked Questions</h2>
+            <h2>❓ Frequently Asked Questions</h2>
 
-            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">What expenses can I track? <span>+</span></div><div class="faq-answer">You can track 15 different categories of expenses including fuel, maintenance, meals, lodging, tolls, permits, insurance, phone bills, and more. Each category is specifically designed for trucking business needs.</div></div>
-            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">When did my 30-day free trial start? <span>+</span></div><div class="faq-answer"><p>Your trial started on: <strong id="trial-start-date-display">loading...</strong></p></div></div>
-            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">Is my data secure? <span>+</span></div><div class="faq-answer">Yes! All your data is stored locally on your device using your browser's local storage. Nothing is sent to our servers, ensuring complete privacy and security.</div></div>
-            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">Can I export my data? <span>+</span></div><div class="faq-answer">Absolutely! You can export your expense data as PDF reports or CSV files for your accountant or tax preparation.</div></div>
-            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">Does this work offline? <span>+</span></div><div class="faq-answer">Yes! This is a Progressive Web App (PWA) that works offline. You can add expenses even without an internet connection.</div></div>
-            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">What happens after the trial period? <span>+</span></div><div class="faq-answer">After the 30-day trial, you'll need to subscribe for $9.99/month to continue using the app. Your data will remain on your device during the trial period.</div></div>
-            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">Can I track per-mile expenses? <span>+</span></div><div class="faq-answer">Yes! You can use the "Other Business Expenses" category to track per-mile costs, or add mile information in the description field of fuel and maintenance entries.</div></div>
-            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">Can I track expenses for multiple trucks? <span>+</span></div><div class="faq-answer">Currently, the app tracks expenses in one account. You can use the description field to specify which truck/trailer an expense relates to, or use separate devices/browsers for different trucks.</div></div>
-            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">What if I need to edit or delete an expense? <span>+</span></div><div class="faq-answer">You can delete expenses from the History section by clicking the "Delete" button on any expense entry. Currently, editing requires deleting and re-adding the expense.</div></div>
-            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">How do I backup my data if I switch devices? <span>+</span></div><div class="faq-answer">Use the "Backup Data" button to download your expenses as a JSON file. On your new device, use "Restore Data" to import this backup file.</div></div>
-            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">Does the app work on both mobile and desktop? <span>+</span></div><div class="faq-answer">Yes! This PWA is designed to work seamlessly on smartphones, tablets, and desktop computers. You can install it on your phone's home screen for easy access.</div></div>
-            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">Can I print my expense reports? <span>+</span></div><div class="faq-answer">Absolutely! Each section (Today, History, Insights) has print functionality. You can also export PDF reports and CSV files for your records.</div></div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What expenses can I track? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    You can track 15 different categories of expenses including fuel, maintenance, meals, lodging, tolls, permits, insurance, phone bills, and more. Each category is specifically designed for trucking business needs.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    When did my 30-day free trial start? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Your trial started on: <strong id="trial-start-date-display">loading...</strong></p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Is my data secure? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! All your data is stored locally on your device using your browser's local storage. Nothing is sent to our servers, ensuring complete privacy and security.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I export my data? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! You can export your expense data as PDF reports or CSV files for your accountant or tax preparation.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Does this work offline? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! This is a Progressive Web App (PWA) that works offline. You can add expenses even without an internet connection.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What happens after the trial period? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    After the 30-day trial, you'll need to subscribe for $9.99/month to continue using the app. Your data will remain on your device during the trial period.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I track per-mile expenses? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! You can use the "Other Business Expenses" category to track per-mile costs, or add mile information in the description field of fuel and maintenance entries.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I track expenses for multiple trucks? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Currently, the app tracks expenses in one account. You can use the description field to specify which truck/trailer an expense relates to, or use separate devices/browsers for different trucks.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What if I need to edit or delete an expense? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    You can delete expenses from the History section by clicking the "Delete" button on any expense entry. Currently, editing requires deleting and re-adding the expense.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    How do I backup my data if I switch devices? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Use the "Backup Data" button to download your expenses as a JSON file. On your new device, use "Restore Data" to import this backup file.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Does the app work on both mobile and desktop? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! This PWA is designed to work seamlessly on smartphones, tablets, and desktop computers. You can install it on your phone's home screen for easy access.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I print my expense reports? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! Each section (Today, History, Insights) has print functionality. You can also export PDF reports and CSV files for your records.
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="feedbackModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeFeedback()">&times;</button>
-            <h2><span class="icon">💬</span> Send Feedback</h2>
+            <h2>💬 Send Feedback</h2>
             <form onsubmit="submitFeedback(event)" id="feedbackForm">
-                <div class="form-group"><label for="feedbackType">Feedback Type:</label><select id="feedbackType" required onchange="updateEmailDisplay()"><option value="">Select type...</option><option value="bug">🐛 Bug Report</option><option value="feature">💡 Feature Request</option><option value="improvement">⚡ Improvement</option><option value="general">💬 General Feedback</option></select><div id="emailDisplay" style="margin-top: 5px; font-size: 0.9rem; color: #666; min-height: 20px; display: flex; align-items: center;"></div></div>
-                <div class="form-group"><label for="feedbackMessage">Message:</label><textarea id="feedbackMessage" rows="5" required placeholder="Tell us what you think..."></textarea></div>
-                <div class="form-group"><label for="feedbackEmail">Email (optional):</label><input type="email" id="feedbackEmail" placeholder="your@email.com"></div>
+                <div class="form-group">
+                    <label for="feedbackType">Feedback Type:</label>
+                    <select id="feedbackType" required onchange="updateEmailDisplay()">
+                        <option value="">Select type...</option>
+                        <option value="bug">🐛 Bug Report</option>
+                        <option value="feature">💡 Feature Request</option>
+                        <option value="improvement">⚡ Improvement</option>
+                        <option value="general">💬 General Feedback</option>
+                    </select>
+                    <div id="emailDisplay" style="margin-top: 5px; font-size: 0.9rem; color: #666; min-height: 20px; display: flex; align-items: center;"></div>
+                </div>
+                <div class="form-group">
+                    <label for="feedbackMessage">Message:</label>
+                    <textarea id="feedbackMessage" rows="5" required placeholder="Tell us what you think..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="feedbackEmail">Email (optional):</label>
+                    <input type="email" id="feedbackEmail" placeholder="your@email.com">
+                </div>
                 <button type="submit" class="btn" id="feedbackSubmitBtn">Send Feedback</button>
             </form>
-            <div id="feedbackSuccess" style="display: none; text-align: center; padding: 30px;"><div style="font-size: 4rem; margin-bottom: 20px; color: var(--success-color);">✓</div><h3 style="color: var(--success-color); margin-bottom: 15px;">Email Client Opening...</h3><p style="color: #666; margin-bottom: 20px;">Your default email client should open with a pre-filled message.</p><div style="background: var(--background-light); padding: 15px; border-radius: 10px; margin: 20px 0; border-left: 4px solid var(--success-color);"><p style="font-size: 0.9rem; color: #666; margin: 0;"><strong>Next steps:</strong></p><p style="font-size: 0.9rem; color: #666; margin: 5px 0 0 0;">1. Check your email client<br>2. Review the pre-filled message<br>3. Click send to reach our team</p></div><button onclick="resetFeedbackForm()" class="btn btn-secondary">Send Another Message</button></div>
+
+            <div id="feedbackSuccess" style="display: none; text-align: center; padding: 30px;">
+                <div style="font-size: 4rem; margin-bottom: 20px; color: var(--success-color);">✓</div>
+                <h3 style="color: var(--success-color); margin-bottom: 15px;">Email Client Opening...</h3>
+                <p style="color: #666; margin-bottom: 20px;">Your default email client should open with a pre-filled message.</p>
+                <div style="background: var(--background-light); padding: 15px; border-radius: 10px; margin: 20px 0; border-left: 4px solid var(--success-color);">
+                    <p style="font-size: 0.9rem; color: #666; margin: 0;"><strong>Next steps:</strong></p>
+                    <p style="font-size: 0.9rem; color: #666; margin: 5px 0 0 0;">1. Check your email client<br>2. Review the pre-filled message<br>3. Click send to reach our team</p>
+                </div>
+                <button onclick="resetFeedbackForm()" class="btn btn-secondary">Send Another Message</button>
+            </div>
         </div>
     </div>
 
+
+
     <script>
-        // All JavaScript remains the same as the previous version.
-        // The changes are purely in the HTML and CSS.
-        const expenseCategories=[{id:"fuel",name:"Fuel",icon:"⛽"},{id:"maintenance",name:"Maintenance & Repairs",icon:"🔧"},{id:"meals",name:"Meals",icon:"🍽️"},{id:"lodging",name:"Lodging",icon:"🏨"},{id:"tolls",name:"Tolls & Parking",icon:"🛣️"},{id:"permits",name:"Permits & Licenses",icon:"📋"},{id:"insurance",name:"Insurance",icon:"🛡️"},{id:"phone",name:"Phone & Communication",icon:"📱"},{id:"supplies",name:"Supplies & Equipment",icon:"📦"},{id:"training",name:"Training & Education",icon:"📚"},{id:"medical",name:"Medical & DOT Exams",icon:"🏥"},{id:"office",name:"Office Expenses",icon:"🏢"},{id:"bank",name:"Bank & Financial Fees",icon:"🏦"},{id:"legal",name:"Legal & Professional",icon:"⚖️"},{id:"other",name:"Other Business Expenses",icon:"💼"}];let expenses=JSON.parse(localStorage.getItem("truckerExpenses")||"[]"),isDarkMode="true"===localStorage.getItem("darkMode"),currentSection="today",trialStartDate=localStorage.getItem("trialStartDate")||Date.now(),isTrialExpired=!1;localStorage.getItem("trialStartDate")||localStorage.setItem("trialStartDate",trialStartDate),document.addEventListener("DOMContentLoaded",function(){const e=new URLSearchParams(window.location.search);if("trial"===e.get("reset"))return localStorage.removeItem("trialStartDate"),localStorage.removeItem("truckerExpenses"),localStorage.removeItem("darkMode"),trialStartDate=Date.now(),localStorage.setItem("trialStartDate",trialStartDate),expenses=[],alert("Trial has been reset! Redirecting..."),void(window.location.href=window.location.pathname);initializeApp(),updateTrialCountdown(),populateExpenseGrid(),updateToggleIcon(),updateSummary(),updateInsights(),"serviceWorker"in navigator&&navigator.serviceWorker.register("./sw.js").then(e=>console.log("SW registered")).catch(e=>console.log("SW registration failed"))});function initializeApp(){if(isDarkMode&&(document.body.classList.add("dark-mode"),document.querySelector(".dark-mode-toggle").textContent="☀️"),"add-fuel"===(new URLSearchParams(window.location.search)).get("action"))showSection("today"),setTimeout(()=>toggleExpenseCard("fuel"),500);else if("history"===(new URLSearchParams(window.location.search)).get("action"))showSection("history");else if("export"===(new URLSearchParams(window.location.search)).get("action"))exportToPDF()}function updateTrialCountdown(){const e=30*24*60*60*1e3,t=Date.now()-parseInt(trialStartDate),o=Math.max(0,Math.ceil((e-t)/(864e5))),n=document.getElementById("trialCountdown"),a=document.getElementById("trialText");o<=0?(isTrialExpired=!0,n.className="trial-countdown expired",a.innerHTML="⚠️ Trial Expired - Subscribe to continue using"):o<=7?(n.className="trial-countdown warning",a.innerHTML=`🎁 Free Trial: <span id="daysLeft">${o}</span> days remaining`):(n.className="trial-countdown",a.innerHTML=`🎁 Free Trial: <span id="daysLeft">${o}</span> days remaining`)}function populateExpenseGrid(){const e=document.getElementById("expenseGrid");e.innerHTML="",expenseCategories.forEach(t=>{const o=document.createElement("div");o.className="expense-card",o.id=`card-${t.id}`,o.setAttribute("role","button"),o.setAttribute("tabindex","0"),o.setAttribute("aria-label",`Add ${t.name} expense`),o.innerHTML=`
+        // Expense categories with 15 different types
+        const expenseCategories = [
+            { id: 'fuel', name: 'Fuel', icon: '⛽' },
+            { id: 'maintenance', name: 'Maintenance & Repairs', icon: '🔧' },
+            { id: 'meals', name: 'Meals', icon: '🍽️' },
+            { id: 'lodging', name: 'Lodging', icon: '🏨' },
+            { id: 'tolls', name: 'Tolls & Parking', icon: '🛣️' },
+            { id: 'permits', name: 'Permits & Licenses', icon: '📋' },
+            { id: 'insurance', name: 'Insurance', icon: '🛡️' },
+            { id: 'phone', name: 'Phone & Communication', icon: '📱' },
+            { id: 'supplies', name: 'Supplies & Equipment', icon: '📦' },
+            { id: 'training', name: 'Training & Education', icon: '📚' },
+            { id: 'medical', name: 'Medical & DOT Exams', icon: '🏥' },
+            { id: 'office', name: 'Office Expenses', icon: '🏢' },
+            { id: 'bank', name: 'Bank & Financial Fees', icon: '🏦' },
+            { id: 'legal', name: 'Legal & Professional', icon: '⚖️' },
+            { id: 'other', name: 'Other Business Expenses', icon: '💼' }
+        ];
+
+        // Application state
+        let expenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
+        let isDarkMode = localStorage.getItem('darkMode') === 'true';
+        let currentSection = 'today';
+        let trialStartDate = localStorage.getItem('trialStartDate') || Date.now();
+        let isTrialExpired = false;
+
+        // Initialize trial start date if not set
+        if (!localStorage.getItem('trialStartDate')) {
+            localStorage.setItem('trialStartDate', trialStartDate);
+        }
+
+
+
+        // Initialize the app
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for trial reset parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('reset') === 'trial') {
+                localStorage.removeItem('trialStartDate');
+                localStorage.removeItem('truckerExpenses');
+                localStorage.removeItem('darkMode');
+                trialStartDate = Date.now();
+                localStorage.setItem('trialStartDate', trialStartDate);
+                expenses = [];
+                alert('Trial has been reset! Redirecting...');
+                window.location.href = window.location.pathname;
+                return;
+            }
+
+            initializeApp();
+            updateTrialCountdown();
+            populateExpenseGrid();
+            updateToggleIcon(); // Update icon after DOM is loaded
+
+            // Sample data initialization removed
+
+            updateSummary();
+            updateInsights();
+
+            // Check for service worker support
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(error => console.log('SW registration failed'));
+            }
+        });
+
+        function addSampleData() {
+            // Sample data function removed - no longer adding test data
+        }
+
+        function initializeApp() {
+            // Apply dark mode if enabled
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.dark-mode-toggle').textContent = '☀️';
+            }
+
+            // Handle URL parameters for shortcuts
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action');
+
+            if (action === 'add-fuel') {
+                showSection('today');
+                setTimeout(() => toggleExpenseCard('fuel'), 500);
+            } else if (action === 'history') {
+                showSection('history');
+            } else if (action === 'export') {
+                exportToPDF();
+            }
+        }
+
+        function updateTrialCountdown() {
+            const trialDuration = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+            const elapsed = Date.now() - parseInt(trialStartDate);
+            const remaining = trialDuration - elapsed;
+            const daysLeft = Math.max(0, Math.ceil(remaining / (24 * 60 * 60 * 1000)));
+
+            const trialElement = document.getElementById('trialCountdown');
+            const daysElement = document.getElementById('daysLeft');
+            const textElement = document.getElementById('trialText');
+
+            if (daysLeft <= 0) {
+                isTrialExpired = true;
+                trialElement.className = 'trial-countdown expired';
+                textElement.innerHTML = '⚠️ Trial Expired - Subscribe to continue using';
+            } else if (daysLeft <= 7) {
+                trialElement.className = 'trial-countdown warning';
+                textElement.innerHTML = `🎁 Free Trial: <span id="daysLeft">${daysLeft}</span> days remaining`;
+            } else {
+                trialElement.className = 'trial-countdown';
+                textElement.innerHTML = `🎁 Free Trial: <span id="daysLeft">${daysLeft}</span> days remaining`;
+            }
+        }
+
+        function populateExpenseGrid() {
+            const grid = document.getElementById('expenseGrid');
+            grid.innerHTML = '';
+
+            expenseCategories.forEach(category => {
+                const card = document.createElement('div');
+                card.className = 'expense-card';
+                card.id = `card-${category.id}`;
+                card.setAttribute('role', 'button');
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('aria-label', `Add ${category.name} expense`);
+
+                card.innerHTML = `
                     <div class="expense-header">
-                        <div class="expense-icon">${t.icon}</div>
-                        <div class="expense-title">${t.name}</div>
+                        <div class="expense-icon">${category.icon}</div>
+                        <div class="expense-title">${category.name}</div>
                     </div>
-                    <div class="expense-form" id="form-${t.id}">
-                        <form onsubmit="addExpense(event, '${t.id}')">
+                    <div class="expense-form" id="form-${category.id}">
+                        <form onsubmit="addExpense(event, '${category.id}')">
                             <div class="form-group">
-                                <label for="amount-${t.id}">Amount ($):</label>
-                                <input type="number" id="amount-${t.id}" step="0.01" min="0" required>
+                                <label for="amount-${category.id}">Amount ($):</label>
+                                <input type="number" id="amount-${category.id}" step="0.01" min="0" required>
                             </div>
                             <div class="form-group">
-                                <label for="description-${t.id}">Description:</label>
-                                <input type="text" id="description-${t.id}" placeholder="Enter expense details...">
+                                <label for="description-${category.id}">Description:</label>
+                                <input type="text" id="description-${category.id}" placeholder="Enter expense details...">
                             </div>
                             <div class="form-group">
-                                <label for="location-${t.id}">Location:</label>
-                                <input type="text" id="location-${t.id}" placeholder="City, State">
+                                <label for="location-${category.id}">Location:</label>
+                                <input type="text" id="location-${category.id}" placeholder="City, State">
                             </div>
                             <div class="form-group">
-                                <label for="receipt-${t.id}">Receipt (optional):</label>
-                                <input type="file" id="receipt-${t.id}" accept="image/*" onchange="previewReceipt('${t.id}')">
-                                <div id="receipt-preview-container-${t.id}"></div>
+                                <label for="receipt-${category.id}">Receipt (optional):</label>
+                                <input type="file" id="receipt-${category.id}" accept="image/*" onchange="previewReceipt('${category.id}')">
+                                <div id="receipt-preview-container-${category.id}"></div>
                             </div>
                             <div style="display: flex; gap: 10px; margin-top: 15px;">
                                 <button type="submit" class="btn">Add Expense</button>
-                                <button type="button" class="btn btn-secondary" onclick="toggleExpenseCard('${t.id}')">Cancel</button>
+                                <button type="button" class="btn btn-secondary" onclick="toggleExpenseCard('${category.id}')">Cancel</button>
                             </div>
                         </form>
                     </div>
-                `,o.addEventListener("click",e=>{e.target.closest(".expense-form")||toggleExpenseCard(t.id)}),o.addEventListener("keydown",e=>{("Enter"===e.key||" "===e.key)&&(e.preventDefault(),o.classList.contains("expanded")||toggleExpenseCard(t.id))}),e.appendChild(o)})}function toggleExpenseCard(e){if(isTrialExpired)return void alert("Your trial has expired. Please subscribe to continue adding expenses.");const t=document.getElementById(`card-${e}`),o=document.getElementById(`form-${e}`),n=document.querySelectorAll(".expense-card");if(t.classList.contains("expanded"))return t.classList.remove("expanded"),void o.classList.remove("active");n.forEach(e=>{e.classList.remove("expanded");const t=e.querySelector(".expense-form");t&&t.classList.remove("active")}),t.classList.add("expanded"),o.classList.add("active"),setTimeout(()=>{document.getElementById(`amount-${e}`).focus()},100)}function addExpense(e,t){e.preventDefault();if(isTrialExpired)return void alert("Your trial has expired. Please subscribe to continue adding expenses.");const o=document.getElementById(`amount-${t}`),n=parseFloat(o.value);if(isNaN(n)||n<=0)return showNotification("Please enter a valid amount greater than $0.00","error"),void o.focus();if(n>999999)return showNotification("Amount cannot exceed $999,999.00","error"),void o.focus();const a=document.getElementById(`description-${t}`).value.trim(),i=document.getElementById(`location-${t}`).value.trim(),d=document.getElementById(`receipt-${t}`).files[0];if(d&&d.size>5242880)return void showNotification("Receipt file must be smaller than 5MB","error");const c=expenseCategories.find(e=>e.id===t),l={id:Date.now()+Math.random(),categoryId:t,categoryName:c.name,icon:c.icon,amount:n,description:a,location:i,date:(new Date).toISOString(),receipt:null};if(d){const s=new FileReader;s.onload=function(e){l.receipt=e.target.result,r(l)},s.readAsDataURL(d)}else r(l);function r(o){expenses.push(o),localStorage.setItem("truckerExpenses",JSON.stringify(expenses)),e.target.reset(),document.getElementById(`receipt-preview-container-${t}`).innerHTML="",toggleExpenseCard(t),updateSummary(),updateInsights(),updateHistory(),showNotification(`${c.name} expense added successfully!`,"success")}}function previewReceipt(e){const t=document.getElementById(`receipt-${e}`),o=document.getElementById(`receipt-preview-container-${e}`);t.files&&t.files[0]?(reader=new FileReader,reader.onload=function(e){o.innerHTML=`<img src="${e.target.result}" class="receipt-preview" alt="Receipt preview">`},reader.readAsDataURL(t.files[0])):o.innerHTML=""}function updateSummary(){const e=(new Date).toDateString(),t=expenses.filter(t=>(new Date(t.date)).toDateString()===e),o=t.reduce((e,t)=>e+t.amount,0),n=expenses.reduce((e,t)=>e+t.amount,0);document.getElementById("dailyTotal").textContent=`$${o.toFixed(2)}`,document.getElementById("totalExpenses").textContent=`$${n.toFixed(2)}`}function updateInsights(){const e=expenses.reduce((e,t)=>e+t.amount,0),t=[...new Set(expenses.map(e=>(new Date(e.date)).toDateString()))].length,o=t>0?e/t:0,n={};expenses.forEach(e=>{n[e.categoryName]=(n[e.categoryName]||0)+e.amount});const a=Object.keys(n).reduce((e,t)=>n[e]>n[t]?e:t,"None"),i=new Date,d=i.getMonth(),c=i.getFullYear(),l=0===d?11:d-1,s=0===d?c-1:c,r=expenses.filter(e=>{const t=new Date(e.date);return t.getMonth()===d&&t.getFullYear()===c}).reduce((e,t)=>e+t.amount,0),p=expenses.filter(e=>{const t=new Date(e.date);return t.getMonth()===l&&t.getFullYear()===s}).reduce((e,t)=>e+t.amount,0),u=p>0?((r-p)/p*100).toFixed(1):r>0?"∞":"0";document.getElementById("insightsTotalExpenses").textContent=`$${e.toFixed(2)}`,document.getElementById("averageDailyExpense").textContent=`$${o.toFixed(2)}`,document.getElementById("topCategory").textContent=a,document.getElementById("currentMonthTotal").textContent=`$${r.toFixed(2)}`,document.getElementById("lastMonthTotal").textContent=`$${p.toFixed(2)}`;const m=document.getElementById("monthlyChange");if("∞"===u)m.textContent="New spending",m.style.color="#fbbf24";else if("0"===u)m.textContent="No change",m.style.color="#6b7280";else{const g=parseFloat(u);m.textContent=`${g>0?"+":""}${g}%`,m.style.color=g>0?"#ef4444":"#10b981"}updateCategoryBreakdown(n),updateMonthlyBreakdown()}function updateCategoryBreakdown(e){const t=document.getElementById("categoryList");if(0===Object.keys(e).length)return void(t.innerHTML='<p class="no-data-message">No expense data available for analysis.</p>');const o=Object.entries(e).sort((([,e],[,t])=>t-e)).slice(0,10),n=Object.values(e).reduce(((e,t)=>e+t),0);t.innerHTML=o.map((([t,o])=>{const a=((o/n)*100).toFixed(1),i=expenseCategories.find(e=>e.name===t),d=i?i.icon:"💼";return`
+                `;
+
+                card.addEventListener('click', (e) => {
+                    // Don't toggle if clicking inside the form
+                    if (e.target.closest('.expense-form')) {
+                        return;
+                    }
+                    toggleExpenseCard(category.id);
+                });
+
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (!card.classList.contains('expanded')) {
+                            toggleExpenseCard(category.id);
+                        }
+                    }
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleExpenseCard(categoryId) {
+            if (isTrialExpired) {
+                alert('Your trial has expired. Please subscribe to continue adding expenses.');
+                return;
+            }
+
+            const card = document.getElementById(`card-${categoryId}`);
+            const form = document.getElementById(`form-${categoryId}`);
+            const allCards = document.querySelectorAll('.expense-card');
+
+            // If this card is already expanded, just close it
+            if (card.classList.contains('expanded')) {
+                card.classList.remove('expanded');
+                form.classList.remove('active');
+                return;
+            }
+
+            // Close all other cards
+            allCards.forEach(c => {
+                c.classList.remove('expanded');
+                const otherForm = c.querySelector('.expense-form');
+                if (otherForm) otherForm.classList.remove('active');
+            });
+
+            // Open current card
+            card.classList.add('expanded');
+            form.classList.add('active');
+
+            // Focus on amount input
+            setTimeout(() => {
+                document.getElementById(`amount-${categoryId}`).focus();
+            }, 100);
+        }
+
+        function addExpense(event, categoryId) {
+            event.preventDefault();
+
+            if (isTrialExpired) {
+                alert('Your trial has expired. Please subscribe to continue adding expenses.');
+                return;
+            }
+
+            const amountInput = document.getElementById(`amount-${categoryId}`);
+            const amount = parseFloat(amountInput.value);
+
+            // Validate amount
+            if (isNaN(amount) || amount <= 0) {
+                showNotification('Please enter a valid amount greater than $0.00', 'error');
+                amountInput.focus();
+                return;
+            }
+
+            if (amount > 999999) {
+                showNotification('Amount cannot exceed $999,999.00', 'error');
+                amountInput.focus();
+                return;
+            }
+
+            const description = document.getElementById(`description-${categoryId}`).value.trim();
+            const location = document.getElementById(`location-${categoryId}`).value.trim();
+            const receiptFile = document.getElementById(`receipt-${categoryId}`).files[0];
+
+            // Validate file size (max 5MB)
+            if (receiptFile && receiptFile.size > 5 * 1024 * 1024) {
+                showNotification('Receipt file must be smaller than 5MB', 'error');
+                return;
+            }
+
+            const category = expenseCategories.find(cat => cat.id === categoryId);
+
+            const expense = {
+                id: Date.now() + Math.random(),
+                categoryId: categoryId,
+                categoryName: category.name,
+                icon: category.icon,
+                amount: amount,
+                description: description,
+                location: location,
+                date: new Date().toISOString(),
+                receipt: null
+            };
+
+            // Handle receipt file
+            if (receiptFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    expense.receipt = e.target.result;
+                    saveExpense(expense);
+                };
+                reader.readAsDataURL(receiptFile);
+            } else {
+                saveExpense(expense);
+            }
+
+            function saveExpense(expense) {
+                expenses.push(expense);
+                localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
+
+                // Reset form
+                event.target.reset();
+                document.getElementById(`receipt-preview-container-${categoryId}`).innerHTML = '';
+                toggleExpenseCard(categoryId);
+
+                // Update displays
+                updateSummary();
+                updateInsights();
+                updateHistory();
+
+                // Show success message
+                showNotification(`${category.name} expense added successfully!`, 'success');
+            }
+        }
+
+        function previewReceipt(categoryId) {
+            const fileInput = document.getElementById(`receipt-${categoryId}`);
+            const previewContainer = document.getElementById(`receipt-preview-container-${categoryId}`);
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewContainer.innerHTML = `<img src="${e.target.result}" class="receipt-preview" alt="Receipt preview">`;
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                previewContainer.innerHTML = '';
+            }
+        }
+
+        function updateSummary() {
+            const today = new Date().toDateString();
+            const todayExpenses = expenses.filter(expense => 
+                new Date(expense.date).toDateString() === today
+            );
+
+            const dailyTotal = todayExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+            document.getElementById('dailyTotal').textContent = `$${dailyTotal.toFixed(2)}`;
+            document.getElementById('totalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
+        }
+
+        function updateInsights() {
+            const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const uniqueDays = [...new Set(expenses.map(expense => new Date(expense.date).toDateString()))].length;
+            const averageDaily = uniqueDays > 0 ? totalExpenses / uniqueDays : 0;
+
+            // Find top category
+            const categoryTotals = {};
+            expenses.forEach(expense => {
+                categoryTotals[expense.categoryName] = (categoryTotals[expense.categoryName] || 0) + expense.amount;
+            });
+
+            const topCategory = Object.keys(categoryTotals).reduce((a, b) => 
+                categoryTotals[a] > categoryTotals[b] ? a : b, 'None'
+            );
+
+            // Calculate monthly comparisons
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+            const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+            const currentMonthExpenses = expenses.filter(expense => {
+                const expenseDate = new Date(expense.date);
+                return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
+            }).reduce((sum, expense) => sum + expense.amount, 0);
+
+            const lastMonthExpenses = expenses.filter(expense => {
+                const expenseDate = new Date(expense.date);
+                return expenseDate.getMonth() === lastMonth && expenseDate.getFullYear() === lastMonthYear;
+            }).reduce((sum, expense) => sum + expense.amount, 0);
+
+            const monthlyChange = lastMonthExpenses > 0 ? 
+                ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses * 100).toFixed(1) : 
+                (currentMonthExpenses > 0 ? '∞' : '0');
+
+            // Update financial overview
+            document.getElementById('insightsTotalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
+            document.getElementById('averageDailyExpense').textContent = `$${averageDaily.toFixed(2)}`;
+            document.getElementById('topCategory').textContent = topCategory;
+
+            // Update spending trends
+            document.getElementById('currentMonthTotal').textContent = `$${currentMonthExpenses.toFixed(2)}`;
+            document.getElementById('lastMonthTotal').textContent = `$${lastMonthExpenses.toFixed(2)}`;
+
+            const changeElement = document.getElementById('monthlyChange');
+            if (monthlyChange === '∞') {
+                changeElement.textContent = 'New spending';
+                changeElement.style.color = '#fbbf24';
+            } else if (monthlyChange === '0') {
+                changeElement.textContent = 'No change';
+                changeElement.style.color = '#6b7280';
+            } else {
+                const changeValue = parseFloat(monthlyChange);
+                changeElement.textContent = `${changeValue > 0 ? '+' : ''}${changeValue}%`;
+                changeElement.style.color = changeValue > 0 ? '#ef4444' : '#10b981';
+            }
+
+            // Update category breakdown
+            updateCategoryBreakdown(categoryTotals);
+
+            // Update monthly breakdown
+            updateMonthlyBreakdown();
+        }
+
+        function updateCategoryBreakdown(categoryTotals) {
+            const categoryList = document.getElementById('categoryList');
+
+            if (Object.keys(categoryTotals).length === 0) {
+                categoryList.innerHTML = '<p class="no-data-message">No expense data available for analysis.</p>';
+                return;
+            }
+
+            const sortedCategories = Object.entries(categoryTotals)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 10);
+
+            const totalAmount = Object.values(categoryTotals).reduce((a, b) => a + b, 0);
+
+            categoryList.innerHTML = sortedCategories.map(([category, amount]) => {
+                const percentage = ((amount / totalAmount) * 100).toFixed(1);
+                const categoryData = expenseCategories.find(cat => cat.name === category);
+                const icon = categoryData ? categoryData.icon : '💼';
+
+                return `
                     <li>
                         <div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light); align-items: flex-start; gap: 10px;">
                             <span style="display: flex; align-items: center; gap: 8px; color: var(--text-light); flex: 1; min-width: 0;">
-                                <span style="font-size: 1.2rem; flex-shrink: 0;">${d}</span>
-                                <span style="word-wrap: break-word; overflow-wrap: break-word; font-size: 1rem; line-height: 1.3;">${t}</span>
+                                <span style="font-size: 1.2rem; flex-shrink: 0;">${icon}</span>
+                                <span style="word-wrap: break-word; overflow-wrap: break-word; font-size: 1rem; line-height: 1.3;">${category}</span>
                             </span>
                             <span style="text-align: right; flex-shrink: 0; min-width: 80px;">
-                                <div style="font-weight: 600; color: var(--primary-color); font-size: 1rem;">$${o.toFixed(2)}</div>
-                                <div style="font-size: 0.85rem; color: var(--text-light); opacity: 0.8;">${a}%</div>
+                                <div style="font-weight: 600; color: var(--primary-color); font-size: 1rem;">$${amount.toFixed(2)}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-light); opacity: 0.8;">${percentage}%</div>
                             </span>
                         </div>
                     </li>
-                `})).join("")}function updateMonthlyBreakdown(){const e=document.getElementById("monthlyBreakdown");if(0===expenses.length)return void(e.innerHTML='<p class="no-data-message">No expense data available for monthly analysis.</p>');const t={};expenses.forEach(e=>{const o=new Date(e.date),n=`${o.getFullYear()}-${String(o.getMonth()+1).padStart(2,"0")}`,a=o.toLocaleDateString("en-US",{year:"numeric",month:"long"});t[n]||(t[n]={name:a,total:0,count:0}),t[n].total+=e.amount,t[n].count+=1});const o=Object.entries(t).sort((([e],[t])=>t.localeCompare(e))).slice(0,6);e.innerHTML=o.map((([e,t])=>{const o=t.total/t.count;return`
+                `;
+            }).join('');
+        }
+
+        function updateMonthlyBreakdown() {
+            const monthlyBreakdown = document.getElementById('monthlyBreakdown');
+
+            if (expenses.length === 0) {
+                monthlyBreakdown.innerHTML = '<p class="no-data-message">No expense data available for monthly analysis.</p>';
+                return;
+            }
+
+            // Group expenses by month
+            const monthlyTotals = {};
+            expenses.forEach(expense => {
+                const date = new Date(expense.date);
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                const monthName = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+
+                if (!monthlyTotals[monthKey]) {
+                    monthlyTotals[monthKey] = { name: monthName, total: 0, count: 0 };
+                }
+                monthlyTotals[monthKey].total += expense.amount;
+                monthlyTotals[monthKey].count += 1;
+            });
+
+            const sortedMonths = Object.entries(monthlyTotals)
+                .sort(([a], [b]) => b.localeCompare(a))
+                .slice(0, 6);
+
+            monthlyBreakdown.innerHTML = sortedMonths.map(([monthKey, data]) => {
+                const average = data.total / data.count;
+
+                return `
                     <li>
                         <div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light); align-items: flex-start; gap: 10px;">
                             <span style="display: flex; align-items: center; gap: 8px; color: var(--text-light); flex: 1; min-width: 0;">
                                 <span style="font-size: 1.2rem; flex-shrink: 0;">📅</span>
-                                <span style="word-wrap: break-word; overflow-wrap: break-word; font-size: 1rem; line-height: 1.3;">${t.name}</span>
+                                <span style="word-wrap: break-word; overflow-wrap: break-word; font-size: 1rem; line-height: 1.3;">${data.name}</span>
                             </span>
                             <span style="text-align: right; flex-shrink: 0; min-width: 90px;">
-                                <div style="font-weight: 600; color: var(--primary-color); font-size: 1rem;">$${t.total.toFixed(2)}</div>
-                                <div style="font-size: 0.85rem; color: var(--text-light); opacity: 0.8; line-height: 1.3;">${t.count} trans • $${o.toFixed(2)} avg</div>
+                                <div style="font-weight: 600; color: var(--primary-color); font-size: 1rem;">$${data.total.toFixed(2)}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-light); opacity: 0.8; line-height: 1.3;">${data.count} trans • $${average.toFixed(2)} avg</div>
                             </span>
                         </div>
                     </li>
-                `})).join("")}function updateHistory(){const e=document.getElementById("historyList"),t=document.getElementById("dateFilter"),o=t?t.value:"all";let n=[...expenses];const a=new Date;switch(o){case"today":n=expenses.filter(e=>(new Date(e.date)).toDateString()===a.toDateString());break;case"week":const i=new Date(a.getTime()-6048e5);n=expenses.filter(e=>new Date(e.date)>=i);break;case"month":n=expenses.filter(e=>(new Date(e.date)).getMonth()===a.getMonth()&&(new Date(e.date)).getFullYear()===a.getFullYear());break;case"year":n=expenses.filter(e=>(new Date(e.date)).getFullYear()===a.getFullYear());break}if(0===n.length)return void(e.innerHTML='<p class="no-data-message">No expenses found for the selected period.</p>');n.sort(((e,t)=>new Date(t.date)-new Date(e.date))),e.innerHTML=n.map(e=>`
+                `;
+            }).join('');
+        }
+
+        function updateHistory() {
+            const historyList = document.getElementById('historyList');
+            const filterElement = document.getElementById('dateFilter');
+            const filter = filterElement ? filterElement.value : 'all';
+
+            let filteredExpenses = [...expenses];
+            const now = new Date();
+
+            switch (filter) {
+                case 'today':
+                    filteredExpenses = expenses.filter(expense => 
+                        new Date(expense.date).toDateString() === now.toDateString()
+                    );
+                    break;
+                case 'week':
+                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    filteredExpenses = expenses.filter(expense => 
+                        new Date(expense.date) >= weekAgo
+                    );
+                    break;
+                case 'month':
+                    filteredExpenses = expenses.filter(expense => 
+                        new Date(expense.date).getMonth() === now.getMonth() &&
+                        new Date(expense.date).getFullYear() === now.getFullYear()
+                    );
+                    break;
+                case 'year':
+                    filteredExpenses = expenses.filter(expense => 
+                        new Date(expense.date).getFullYear() === now.getFullYear()
+                    );
+                    break;
+                default:
+                    // 'all' - no filtering needed
+                    break;
+            }
+
+            if (filteredExpenses.length === 0) {
+                historyList.innerHTML = '<p class="no-data-message">No expenses found for the selected period.</p>';
+                return;
+            }
+
+            // Sort by date (newest first)
+            filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            historyList.innerHTML = filteredExpenses.map(expense => `
                 <li><div class="expense-card" style="margin-bottom: 15px;">
                     <div class="expense-header">
-                        <div class="expense-icon">${e.icon}</div>
+                        <div class="expense-icon">${expense.icon}</div>
                         <div style="flex: 1;">
-                            <div class="expense-title" style="color: var(--text-light); font-weight: 600;">${e.categoryName}</div>
+                            <div class="expense-title" style="color: var(--text-light); font-weight: 600;">${expense.categoryName}</div>
                             <div class="expense-subtitle" style="color: var(--text-light); opacity: 0.7; font-size: 0.9rem;">
-                                ${(new Date(e.date)).toLocaleDateString()} ${e.location?`• ${e.location}`:""}
+                                ${new Date(expense.date).toLocaleDateString()} ${expense.location ? `• ${expense.location}` : ''}
                             </div>
                         </div>
                         <div style="text-align: right;">
-                            <div class="expense-amount" style="color: var(--primary-color); font-size: 1.2rem; font-weight: 600;">$${e.amount.toFixed(2)}</div>
+                            <div class="expense-amount" style="color: var(--primary-color); font-size: 1.2rem; font-weight: 600;">$${expense.amount.toFixed(2)}</div>
                         </div>
                     </div>
-                    ${e.description?`<div class="expense-description" style="margin-top: 10px; color: var(--text-light); opacity: 0.8;">${e.description}</div>`:""}
-                    ${e.receipt?`<div style="margin-top: 10px;"><img src="${e.receipt}" class="receipt-preview" alt="Receipt"></div>`:""}
-                    <button onclick="deleteExpense('${e.id}')" class="btn-delete">Delete</button>
+                    ${expense.description ? `<div class="expense-description" style="margin-top: 10px; color: var(--text-light); opacity: 0.8;">${expense.description}</div>` : ''}
+                    ${expense.receipt ? `<div style="margin-top: 10px;"><img src="${expense.receipt}" class="receipt-preview" alt="Receipt"></div>` : ''}
+                    <button onclick="deleteExpense('${expense.id}')" class="btn-delete">Delete</button>
                 </div></li>
-            `).join("")}function deleteExpense(e){confirm("Are you sure you want to delete this expense?")&&(expenses=expenses.filter(t=>t.id!=e),localStorage.setItem("truckerExpenses",JSON.stringify(expenses)),updateSummary(),updateInsights(),updateHistory(),showNotification("Expense deleted successfully!","success"))}function filterExpenses(){updateHistory()}function showSection(e){document.querySelectorAll(".section").forEach(e=>{e.classList.add("hidden")}),document.getElementById(`${e}Section`).classList.remove("hidden"),document.querySelectorAll(".nav-btn").forEach(t=>{t.classList.remove("active")}),document.querySelector(`[data-section="${e}"]`).classList.add("active"),currentSection=e,"history"===e?updateHistory():"insights"===e&&updateInsights()}function showNotification(e,t="info"){const o=document.createElement("div");o.style.cssText=`
+            `).join('');
+        }
+
+        function deleteExpense(expenseId) {
+            if (confirm('Are you sure you want to delete this expense?')) {
+                expenses = expenses.filter(expense => expense.id != expenseId);
+                localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
+                updateSummary();
+                updateInsights();
+                updateHistory();
+                showNotification('Expense deleted successfully!', 'success');
+            }
+        }
+
+        function filterExpenses() {
+            updateHistory();
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show selected section
+            document.getElementById(`${sectionName}Section`).classList.remove('hidden');
+
+            // Update navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
+
+            currentSection = sectionName;
+
+            // Update content based on section
+            if (sectionName === 'history') {
+                updateHistory();
+            } else if (sectionName === 'insights') {
+                updateInsights();
+            }
+        }
+
+
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: ${"success"===t?"var(--success-color)":"var(--info-color)"};
+                background: ${type === 'success' ? 'var(--success-color)' : 'var(--info-color)'};
                 color: white;
                 padding: 15px 20px;
                 border-radius: 8px;
@@ -1081,7 +2101,325 @@
                 font-weight: 600;
                 transform: translateX(100%);
                 transition: transform 0.3s ease;
-            `,o.textContent=e,document.body.appendChild(o),setTimeout(()=>{o.style.transform="translateX(0)"},100),setTimeout(()=>{o.style.transform="translateX(100%)",setTimeout(()=>{document.body.removeChild(o)},300)},3e3)}function exportToPDF(){window.print()}function printSection(){window.print()}function exportToCSV(){if(0===expenses.length)return void alert("No expenses to export.");const e=["Date","Category","Amount","Description","Location"],t=[e.join(","),...expenses.map(e=>[(new Date(e.date)).toLocaleDateString(),e.categoryName,e.amount,`"${e.description||""}"`,`"${e.location||""}"`].join(","))].join("\n"),o=new Blob([t],{type:"text/csv"}),n=window.URL.createObjectURL(o),a=document.createElement("a");a.href=n,a.download=`trucker-expenses-${(new Date).toISOString().split("T")[0]}.csv`,a.click(),window.URL.revokeObjectURL(n)}function exportHistoryToPDF(){showSection("history"),setTimeout(()=>window.print(),500)}function printHistory(){showSection("history"),setTimeout(()=>window.print(),500)}function exportHistoryToCSV(){exportToCSV()}function exportInsightsToPDF(){showSection("insights"),setTimeout(()=>window.print(),500)}function printInsights(){showSection("insights"),setTimeout(()=>window.print(),500)}function exportInsightsToCSV(){exportToCSV()}function updateFAQWithTrialDate(){const e=document.getElementById("trial-start-date-display");if(e){const t=localStorage.getItem("trialStartDate");t?e.textContent=(new Date(parseInt(t))).toLocaleString():e.textContent="Not started yet."}}function showFAQ(){document.getElementById("faqModal").classList.add("active"),updateFAQWithTrialDate()}function closeFAQ(){document.getElementById("faqModal").classList.remove("active")}function toggleFAQ(e){const t=e.nextElementSibling,o=e.querySelector("span");t.classList.toggle("active"),o.textContent=t.classList.contains("active")?"-":"+"}function showFeedback(){document.getElementById("feedbackModal").classList.add("active")}function closeFeedback(){document.getElementById("feedbackModal").classList.remove("active"),setTimeout(()=>{resetFeedbackForm()},300)}function updateEmailDisplay(){const e=document.getElementById("feedbackType").value,t=document.getElementById("emailDisplay");"feature"===e?(t.textContent="📧 Will be sent to: features@truckerexpensetracker.com",t.style.color="#10b981"):e?(t.textContent="📧 Will be sent to: support@truckerexpensetracker.com",t.style.color="#10b981"):t.textContent=""}function submitFeedback(e){e.preventDefault();const t=document.getElementById("feedbackSubmitBtn"),o=document.getElementById("feedbackForm"),n=document.getElementById("feedbackSuccess");t.textContent="Sending...",t.disabled=!0,t.style.background="#6b7280";const a=document.getElementById("feedbackType").value,i=document.getElementById("feedbackMessage").value,d=document.getElementById("feedbackEmail").value;let c="support@truckerexpensetracker.com";"feature"===a&&(c="features@truckerexpensetracker.com");const l=`Trucker Expense Tracker - ${a.charAt(0).toUpperCase()+a.slice(1)} ${"bug"===a?"Report":"feature"===a?"Request":"Feedback"}`,s=`Feedback Type: ${a}\n\nMessage:\n${i}\n\n${d?`Reply to: ${d}\n\n`:""}Sent from Trucker Expense Tracker PWA`,r=`mailto:${c}?subject=${encodeURIComponent(l)}&body=${encodeURIComponent(s)}`;setTimeout(()=>{o.style.display="none",n.style.display="block",window.location.href=r,showNotification("Your email client should open shortly...","success")},1e3)}function resetFeedbackForm(){const e=document.getElementById("feedbackForm"),t=document.getElementById("feedbackSuccess"),o=document.getElementById("feedbackSubmitBtn");e.style.display="block",t.style.display="none",e.reset(),document.getElementById("emailDisplay").textContent="",o.textContent="Send Feedback",o.disabled=!1,o.style.background=""}function checkForUpdates(){showNotification("You are using the latest version (v2.1.0)","success")}function backupData(){try{const e={expenses:expenses,trialStartDate:localStorage.getItem("trialStartDate"),darkMode:localStorage.getItem("darkMode"),version:"2.1.0",timestamp:(new Date).toISOString()},t=JSON.stringify(e,null,2),o=new Blob([t],{type:"application/json"}),n=URL.createObjectURL(o),a=document.createElement("a");a.href=n,a.download=`trucker-expenses-backup-${(new Date).toISOString().split("T")[0]}.json`,a.click(),URL.revokeObjectURL(n),showNotification("Data backup downloaded successfully!","success")}catch(e){showNotification("Failed to create backup. Please try again.","error"),console.error("Backup error:",e)}}function restoreData(){const e=document.createElement("input");e.type="file",e.accept=".json",e.onchange=function(t){const o=t.target.files[0];if(o){const n=new FileReader;n.onload=function(t){try{const o=JSON.parse(t.target.result);if(confirm("This will replace all current data. Are you sure you want to restore from backup?")){o.expenses&&Array.isArray(o.expenses)&&(expenses=o.expenses,localStorage.setItem("truckerExpenses",JSON.stringify(expenses))),o.trialStartDate&&(localStorage.setItem("trialStartDate",o.trialStartDate),trialStartDate=o.trialStartDate),o.darkMode&&(localStorage.setItem("darkMode",o.darkMode),isDarkMode="true"===o.darkMode,isDarkMode&&(document.body.classList.add("dark-mode"),document.querySelector(".dark-mode-toggle").textContent="☀️")),updateSummary(),updateInsights(),updateHistory(),updateTrialCountdown(),showNotification("Data restored successfully!","success")}}catch(e){showNotification("Invalid backup file. Please check the file format.","error"),console.error("Restore error:",e)}},n.readAsText(o)}},e.click()}document.addEventListener("click",function(e){e.target.classList.contains("modal")&&e.target.classList.remove("active")}),setInterval(updateTrialCountdown,6e4);function toggleDarkMode(){isDarkMode=!isDarkMode,document.body.classList.toggle("dark-mode",isDarkMode),localStorage.setItem("darkMode",isDarkMode),updateToggleIcon()}function updateToggleIcon(){const e=document.querySelector(".dark-mode-toggle");e&&(e.textContent=isDarkMode?"☀️":"🌙")}"true"===localStorage.getItem("darkMode")&&(document.body.classList.add("dark-mode"),isDarkMode=!0);
+            `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Export functions
+        function exportToPDF() {
+            window.print();
+        }
+
+        function printSection() {
+            window.print();
+        }
+
+        function exportToCSV() {
+            if (expenses.length === 0) {
+                alert('No expenses to export.');
+                return;
+            }
+
+            const headers = ['Date', 'Category', 'Amount', 'Description', 'Location'];
+            const csvContent = [
+                headers.join(','),
+                ...expenses.map(expense => [
+                    new Date(expense.date).toLocaleDateString(),
+                    expense.categoryName,
+                    expense.amount,
+                    `"${expense.description || ''}"`,
+                    `"${expense.location || ''}"`,
+                ].join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `trucker-expenses-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function exportHistoryToPDF() {
+            showSection('history');
+            setTimeout(() => window.print(), 500);
+        }
+
+        function printHistory() {
+            showSection('history');
+            setTimeout(() => window.print(), 500);
+        }
+
+        function exportHistoryToCSV() {
+            exportToCSV();
+        }
+
+        function exportInsightsToPDF() {
+            showSection('insights');
+            setTimeout(() => window.print(), 500);
+        }
+
+        function printInsights() {
+            showSection('insights');
+            setTimeout(() => window.print(), 500);
+        }
+
+        function exportInsightsToCSV() {
+            exportToCSV();
+        }
+        
+        // --- FAQ LOGIC ---
+        function updateFAQWithTrialDate() {
+            const displayElement = document.getElementById('trial-start-date-display');
+            if (displayElement) {
+                const storedDate = localStorage.getItem('trialStartDate');
+                if (storedDate) {
+                    // Format the date and time to be readable
+                    const date = new Date(parseInt(storedDate));
+                    displayElement.textContent = date.toLocaleString();
+                } else {
+                    displayElement.textContent = "Not started yet.";
+                }
+            }
+        }
+
+        function showFAQ() {
+            document.getElementById('faqModal').classList.add('active');
+            // Update the trial start date every time the FAQ is opened
+            updateFAQWithTrialDate();
+        }
+
+        function closeFAQ() {
+            document.getElementById('faqModal').classList.remove('active');
+        }
+
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('span');
+
+            answer.classList.toggle('active');
+            icon.textContent = answer.classList.contains('active') ? '-' : '+';
+        }
+
+        function showFeedback() {
+            document.getElementById('feedbackModal').classList.add('active');
+        }
+
+        function closeFeedback() {
+            document.getElementById('feedbackModal').classList.remove('active');
+            // Reset form state when closing
+            setTimeout(() => {
+                resetFeedbackForm();
+            }, 300);
+        }
+
+        function updateEmailDisplay() {
+            const type = document.getElementById('feedbackType').value;
+            const emailDisplay = document.getElementById('emailDisplay');
+
+            if (type === 'feature') {
+                emailDisplay.textContent = '📧 Will be sent to: features@truckerexpensetracker.com';
+                emailDisplay.style.color = '#10b981';
+            } else if (type) {
+                emailDisplay.textContent = '📧 Will be sent to: support@truckerexpensetracker.com';
+                emailDisplay.style.color = '#10b981';
+            } else {
+                emailDisplay.textContent = '';
+            }
+        }
+
+        function submitFeedback(event) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById('feedbackSubmitBtn');
+            const form = document.getElementById('feedbackForm');
+            const successDiv = document.getElementById('feedbackSuccess');
+
+            // Show loading state
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            submitBtn.style.background = '#6b7280';
+
+            const type = document.getElementById('feedbackType').value;
+            const message = document.getElementById('feedbackMessage').value;
+            const email = document.getElementById('feedbackEmail').value;
+
+            // Determine which email to use based on feedback type
+            let recipientEmail = 'support@truckerexpensetracker.com';
+            if (type === 'feature') {
+                recipientEmail = 'features@truckerexpensetracker.com';
+            }
+
+            // Create subject line
+            const subject = `Trucker Expense Tracker - ${type.charAt(0).toUpperCase() + type.slice(1)} ${type === 'bug' ? 'Report' : type === 'feature' ? 'Request' : 'Feedback'}`;
+
+            // Create email body
+            const body = `Feedback Type: ${type}\n\nMessage:\n${message}\n\n${email ? `Reply to: ${email}\n\n` : ''}Sent from Trucker Expense Tracker PWA`;
+
+            // Create mailto link
+            const mailtoLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+            // Simulate processing time for better UX
+            setTimeout(() => {
+                // Hide form and show success message
+                form.style.display = 'none';
+                successDiv.style.display = 'block';
+
+                // Open email client
+                window.location.href = mailtoLink;
+
+                showNotification('Your email client should open shortly...', 'success');
+            }, 1000);
+        }
+
+        function resetFeedbackForm() {
+            const form = document.getElementById('feedbackForm');
+            const successDiv = document.getElementById('feedbackSuccess');
+            const submitBtn = document.getElementById('feedbackSubmitBtn');
+
+            // Reset form display
+            form.style.display = 'block';
+            successDiv.style.display = 'none';
+
+            // Reset form fields
+            form.reset();
+            document.getElementById('emailDisplay').textContent = '';
+
+            // Reset button state
+            submitBtn.textContent = 'Send Feedback';
+            submitBtn.disabled = false;
+            submitBtn.style.background = '';
+        }
+
+        function checkForUpdates() {
+            showNotification('You are using the latest version (v2.1.0)', 'success');
+        }
+
+        function backupData() {
+            try {
+                const backupData = {
+                    expenses: expenses,
+                    trialStartDate: localStorage.getItem('trialStartDate'),
+                    darkMode: localStorage.getItem('darkMode'),
+                    version: '2.1.0',
+                    timestamp: new Date().toISOString()
+                };
+
+                const dataStr = JSON.stringify(backupData, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `trucker-expenses-backup-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+
+                URL.revokeObjectURL(url);
+                showNotification('Data backup downloaded successfully!', 'success');
+            } catch (error) {
+                showNotification('Failed to create backup. Please try again.', 'error');
+                console.error('Backup error:', error);
+            }
+        }
+
+        function restoreData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const backupData = JSON.parse(e.target.result);
+
+                        if (confirm('This will replace all current data. Are you sure you want to restore from backup?')) {
+                            if (backupData.expenses && Array.isArray(backupData.expenses)) {
+                                expenses = backupData.expenses;
+                                localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
+                            }
+
+                            if (backupData.trialStartDate) {
+                                localStorage.setItem('trialStartDate', backupData.trialStartDate);
+                                trialStartDate = backupData.trialStartDate;
+                            }
+
+                            if (backupData.darkMode) {
+                                localStorage.setItem('darkMode', backupData.darkMode);
+                                isDarkMode = backupData.darkMode === 'true';
+                                if (isDarkMode) {
+                                    document.body.classList.add('dark-mode');
+                                    document.querySelector('.dark-mode-toggle').textContent = '☀️';
+                                }
+                            }
+
+                            // Refresh displays
+                            updateSummary();
+                            updateInsights();
+                            updateHistory();
+                            updateTrialCountdown();
+
+                            showNotification('Data restored successfully!', 'success');
+                        }
+                    } catch (error) {
+                        showNotification('Invalid backup file. Please check the file format.', 'error');
+                        console.error('Restore error:', error);
+                    }
+                };
+                reader.readAsText(file);
+            };
+
+            input.click();
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        });
+
+        // Update trial countdown every minute
+        setInterval(updateTrialCountdown, 60000);
+
+        // Dark mode functions - defined globally and accessible immediately
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            localStorage.setItem('darkMode', isDarkMode);
+            updateToggleIcon();
+        }
+
+        function updateToggleIcon() {
+            const toggle = document.querySelector('.dark-mode-toggle');
+            if (toggle) {
+                toggle.textContent = isDarkMode ? '☀️' : '🌙';
+            }
+        }
+
+        // Initialize dark mode immediately
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            isDarkMode = true;
+        }
+
     </script>
 </body>
 </html>
