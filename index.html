@@ -489,9 +489,9 @@
             white-space: nowrap;
         }
         
-        /* CLS FIX: Reserve horizontal space for values as a fallback */
+        /* CLS FIX: Reserve horizontal space for values, especially on desktop */
         .summary-value {
-            min-width: 90px;
+            min-width: 120px;
         }
 
         .action-buttons {
@@ -2402,7 +2402,7 @@
         // Dark mode functions - defined globally and accessible immediately
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
-            document.body.classList.toggle('-mode', isDarkMode);
+            document.body.classList.toggle('dark-mode', isDarkMode);
             localStorage.setItem('darkMode', isDarkMode);
             updateToggleIcon();
         }
