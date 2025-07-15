@@ -8,21 +8,18 @@
     <meta name="author" content="Trucker Expense Tracker">
     <meta name="robots" content="index, follow">
 
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://trucker-expense-tracker.vercel.app/">
     <meta property="og:title" content="Trucker Expense Tracker - Professional Expense Management">
     <meta property="og:description" content="Track your trucking expenses professionally with our PWA designed for owner-operators.">
     <meta property="og:image" content="https://trucker-expense-tracker.vercel.app/icon-512x512.png">
 
-    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://trucker-expense-tracker.vercel.app/">
     <meta property="twitter:title" content="Trucker Expense Tracker - Professional Expense Management">
     <meta property="twitter:description" content="Track your trucking expenses professionally with our PWA designed for owner-operators.">
     <meta property="twitter:image" content="https://trucker-expense-tracker.vercel.app/icon-512x512.png">
 
-    <!-- Security Headers -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self';">
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
@@ -156,6 +153,11 @@
             font-size: 0.9rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            /* CLS Fix: Reserve vertical space */
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .trial-countdown.warning {
@@ -443,6 +445,7 @@
             padding: 20px;
             margin: 25px 0;
             text-align: left;
+            /* CLS Fix: Ensure consistent height */
             min-height: 140px;
             display: flex;
             flex-direction: column;
@@ -763,6 +766,11 @@
             padding: 15px 20px;
             max-height: 500px;
         }
+        
+        /* CLS Fix: Reserve space for dynamically loaded lists */
+        #historyList, #categoryList, #monthlyBreakdown {
+            min-height: 150px;
+        }
 
         .expense-subtitle {
             color: var(--text-light);
@@ -874,11 +882,23 @@
             transform: translateY(-1px);
         }
 
-        .receipt-preview {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 8px;
+        /* CLS Fix: Style the container for receipt previews */
+        #receipt-preview-container {
+            width: 100%;
+            min-height: 150px;
             margin-top: 10px;
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .receipt-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .skip-link {
@@ -1116,12 +1136,19 @@
             padding: 0;
             margin: 0;
         }
+        
+        /* CLS Fix: Style the summary cards inside the insights section */
+        .insights-breakdown-section .summary-card {
+            min-height: 150px;
+            margin: 0;
+        }
 
         .no-data-message {
             text-align: center;
             color: var(--text-light);
             opacity: 0.7;
             margin: 20px 0;
+            padding: 20px; /* Add padding to better fill the min-height */
         }
 
         .dark-mode .no-data-message {
@@ -1199,8 +1226,7 @@
                 <div class="expense-grid" id="expenseGrid" aria-label="Expense categories"></div>
                 <fieldset style="border: none; margin: 0; padding: 0;">
                     <legend class="sr-only">Expense categories</legend>
-                    <!-- Expense categories will be populated by JavaScript -->
-                </fieldset>
+                    </fieldset>
 
                 <div class="summary-card">
                     <h3>📊 Today's Summary</h3>
@@ -1241,7 +1267,7 @@
                 </div>
                 <ul id="historyList" aria-label="Expense history" style="list-style: none; padding: 0; margin: 0;">
                     <p style="text-align: center; color: var(--text-light); opacity: 0.7; margin: 40px 0;">No expenses recorded yet. Start by adding some expenses in the Today section!</p>
-                </div>
+                </ul>
 
                 <div class="action-buttons">
                     <button class="action-btn export-btn" onclick="exportHistoryToPDF()">📄 Export PDF</button>
@@ -1255,7 +1281,7 @@
                 <div id="insightsContent">
                     <div class="insights-breakdown-section">
                         <h3>💰 Financial Overview</h3>
-                        <div class="summary-card" style="background: linear-gradient(135deg, #047857, #059669); margin: 0;">
+                        <div class="summary-card" style="background: linear-gradient(135deg, #047857, #059669);">
                             <div class="summary-item">
                                 <span>Total Expenses:</span>
                                 <span id="insightsTotalExpenses">$0.00</span>
@@ -1273,7 +1299,7 @@
 
                     <div class="insights-breakdown-section">
                         <h3>📊 Spending Trends</h3>
-                        <div class="summary-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); margin: 0;">
+                        <div class="summary-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
                             <div class="summary-item">
                                 <span>This Month's Total:</span>
                                 <span id="currentMonthTotal">$0.00</span>
@@ -1324,7 +1350,6 @@
         </div>
     </div>
 
-    <!-- FAQ Modal -->
     <div id="faqModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeFAQ()">&times;</button>
@@ -1336,6 +1361,15 @@
                 </div>
                 <div class="faq-answer">
                     You can track 15 different categories of expenses including fuel, maintenance, meals, lodging, tolls, permits, insurance, phone bills, and more. Each category is specifically designed for trucking business needs.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    When did my 30-day free trial start? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Your trial started on: <strong id="trial-start-date-display">loading...</strong></p>
                 </div>
             </div>
 
@@ -1431,7 +1465,6 @@
         </div>
     </div>
 
-    <!-- Feedback Modal -->
     <div id="feedbackModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeFeedback()">&times;</button>
@@ -1584,9 +1617,10 @@
                 textElement.innerHTML = '⚠️ Trial Expired - Subscribe to continue using';
             } else if (daysLeft <= 7) {
                 trialElement.className = 'trial-countdown warning';
-                daysElement.textContent = daysLeft;
+                textElement.innerHTML = `🎁 Free Trial: <span id="daysLeft">${daysLeft}</span> days remaining`;
             } else {
-                daysElement.textContent = daysLeft;
+                trialElement.className = 'trial-countdown';
+                textElement.innerHTML = `🎁 Free Trial: <span id="daysLeft">${daysLeft}</span> days remaining`;
             }
         }
 
@@ -1624,7 +1658,7 @@
                             <div class="form-group">
                                 <label for="receipt-${category.id}">Receipt (optional):</label>
                                 <input type="file" id="receipt-${category.id}" accept="image/*" onchange="previewReceipt('${category.id}')">
-                                <div id="receipt-preview-${category.id}"></div>
+                                <div id="receipt-preview-container-${category.id}"></div>
                             </div>
                             <div style="display: flex; gap: 10px; margin-top: 15px;">
                                 <button type="submit" class="btn">Add Expense</button>
@@ -1755,7 +1789,7 @@
 
                 // Reset form
                 event.target.reset();
-                document.getElementById(`receipt-preview-${categoryId}`).innerHTML = '';
+                document.getElementById(`receipt-preview-container-${categoryId}`).innerHTML = '';
                 toggleExpenseCard(categoryId);
 
                 // Update displays
@@ -1770,16 +1804,16 @@
 
         function previewReceipt(categoryId) {
             const fileInput = document.getElementById(`receipt-${categoryId}`);
-            const preview = document.getElementById(`receipt-preview-${categoryId}`);
+            const previewContainer = document.getElementById(`receipt-preview-container-${categoryId}`);
 
             if (fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    preview.innerHTML = `<img src="${e.target.result}" class="receipt-preview" alt="Receipt preview">`;
+                    previewContainer.innerHTML = `<img src="${e.target.result}" class="receipt-preview" alt="Receipt preview">`;
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
-                preview.innerHTML = '';
+                previewContainer.innerHTML = '';
             }
         }
 
@@ -1865,7 +1899,7 @@
             const categoryList = document.getElementById('categoryList');
 
             if (Object.keys(categoryTotals).length === 0) {
-                categoryList.innerHTML = '<li><p class="no-data-message">No expense data available for analysis.</p></li>';
+                categoryList.innerHTML = '<p class="no-data-message">No expense data available for analysis.</p>';
                 return;
             }
 
@@ -1901,7 +1935,7 @@
             const monthlyBreakdown = document.getElementById('monthlyBreakdown');
 
             if (expenses.length === 0) {
-                monthlyBreakdown.innerHTML = '<li><p class="no-data-message">No expense data available for monthly analysis.</p></li>';
+                monthlyBreakdown.innerHTML = '<p class="no-data-message">No expense data available for monthly analysis.</p>';
                 return;
             }
 
@@ -1980,7 +2014,7 @@
             }
 
             if (filteredExpenses.length === 0) {
-                historyList.innerHTML = '<li><p style="text-align: center; color: var(--text-light); opacity: 0.7; margin: 40px 0;">No expenses found for the selected period.</p></li>';
+                historyList.innerHTML = '<p class="no-data-message">No expenses found for the selected period.</p>';
                 return;
             }
 
@@ -2145,9 +2179,26 @@
         function exportInsightsToCSV() {
             exportToCSV();
         }
+        
+        // --- FAQ LOGIC ---
+        function updateFAQWithTrialDate() {
+            const displayElement = document.getElementById('trial-start-date-display');
+            if (displayElement) {
+                const storedDate = localStorage.getItem('trialStartDate');
+                if (storedDate) {
+                    // Format the date and time to be readable
+                    const date = new Date(parseInt(storedDate));
+                    displayElement.textContent = date.toLocaleString();
+                } else {
+                    displayElement.textContent = "Not started yet.";
+                }
+            }
+        }
 
         function showFAQ() {
             document.getElementById('faqModal').classList.add('active');
+            // Update the trial start date every time the FAQ is opened
+            updateFAQWithTrialDate();
         }
 
         function closeFAQ() {
