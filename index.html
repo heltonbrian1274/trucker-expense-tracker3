@@ -445,7 +445,6 @@
             padding: 20px;
             margin: 25px 0;
             text-align: left;
-            /* CLS Fix: Ensure consistent height */
             min-height: 140px;
             display: flex;
             flex-direction: column;
@@ -459,9 +458,10 @@
             text-align: center;
         }
 
+        /* CLS FIX: Use CSS Grid for a stable two-column layout */
         .summary-item {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto;
             align-items: center;
             padding: 12px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -479,8 +479,6 @@
 
         .summary-item span:first-child {
             font-weight: 500;
-            flex: 1;
-            min-width: 0;
             word-wrap: break-word;
             overflow-wrap: break-word;
         }
@@ -488,8 +486,12 @@
         .summary-item span:last-child {
             font-weight: 600;
             text-align: right;
-            flex-shrink: 0;
             white-space: nowrap;
+        }
+        
+        /* CLS FIX: Reserve horizontal space for values as a fallback */
+        .summary-value {
+            min-width: 90px;
         }
 
         .action-buttons {
@@ -1232,11 +1234,11 @@
                     <h3>📊 Today's Summary</h3>
                     <div class="summary-item">
                         <span>Total Daily Expenses:</span>
-                        <span id="dailyTotal">$0.00</span>
+                        <span id="dailyTotal" class="summary-value">$0.00</span>
                     </div>
                     <div class="summary-item">
                         <span>Total Expenses:</span>
-                        <span id="totalExpenses">$0.00</span>
+                        <span id="totalExpenses" class="summary-value">$0.00</span>
                     </div>
                 </div>
 
@@ -1284,15 +1286,15 @@
                         <div class="summary-card" style="background: linear-gradient(135deg, #047857, #059669);">
                             <div class="summary-item">
                                 <span>Total Expenses:</span>
-                                <span id="insightsTotalExpenses">$0.00</span>
+                                <span id="insightsTotalExpenses" class="summary-value">$0.00</span>
                             </div>
                             <div class="summary-item">
                                 <span>Average Daily Expense:</span>
-                                <span id="averageDailyExpense">$0.00</span>
+                                <span id="averageDailyExpense" class="summary-value">$0.00</span>
                             </div>
                             <div class="summary-item">
                                 <span>Most Expensive Category:</span>
-                                <span id="topCategory">None</span>
+                                <span id="topCategory" class="summary-value">None</span>
                             </div>
                         </div>
                     </div>
@@ -1302,15 +1304,15 @@
                         <div class="summary-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
                             <div class="summary-item">
                                 <span>This Month's Total:</span>
-                                <span id="currentMonthTotal">$0.00</span>
+                                <span id="currentMonthTotal" class="summary-value">$0.00</span>
                             </div>
                             <div class="summary-item">
                                 <span>Last Month's Total:</span>
-                                <span id="lastMonthTotal">$0.00</span>
+                                <span id="lastMonthTotal" class="summary-value">$0.00</span>
                             </div>
                             <div class="summary-item">
                                 <span>Monthly Change:</span>
-                                <span id="monthlyChange">--</span>
+                                <span id="monthlyChange" class="summary-value">--</span>
                             </div>
                         </div>
                     </div>
@@ -2400,7 +2402,7 @@
         // Dark mode functions - defined globally and accessible immediately
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
-            document.body.classList.toggle('dark-mode', isDarkMode);
+            document.body.classList.toggle('-mode', isDarkMode);
             localStorage.setItem('darkMode', isDarkMode);
             updateToggleIcon();
         }
