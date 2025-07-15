@@ -330,6 +330,54 @@
         .form-group textarea::placeholder {
             color: rgba(255, 255, 255, 0.7);
         }
+        
+        .section .form-group input::placeholder,
+        .section .form-group textarea::placeholder {
+            color: #a0aec0;
+        }
+
+        .dark-mode .section .form-group input::placeholder,
+        .dark-mode .section .form-group textarea::placeholder {
+            color: #718096;
+        }
+
+        .form-group select option {
+            background: #2d3748;
+            color: white;
+        }
+
+        .section .form-group select option {
+            background: var(--card-light);
+            color: var(--text-light);
+        }
+
+        .dark-mode .section .form-group select option {
+            background: var(--card-dark);
+            color: var(--text-dark);
+        }
+
+        .btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: #059669;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
 
         .summary-card {
             background: linear-gradient(135deg, #047857, #059669);
@@ -374,36 +422,19 @@
             cursor: pointer;
             text-align: center;
             color: var(--text-light);
-        }
-
-        .navigation {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            padding: 15px;
             display: flex;
-            justify-content: space-around;
-            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .nav-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .nav-btn.active {
-            background: var(--secondary-color);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            height: 80px;
         }
         
-        .hidden { display: none !important; }
-
+        .dark-mode .action-btn {
+            background: #334155;
+            color: var(--text-dark);
+        }
+        
         .is-updating {
             color: transparent !important;
             background-color: rgba(255, 255, 255, 0.2);
@@ -413,7 +444,7 @@
         }
         
         #trialText.is-updating {
-            min-width: 0;
+            min-width: auto;
         }
 
         .sr-only {
@@ -426,6 +457,39 @@
             clip: rect(0, 0, 0, 0);
             white-space: nowrap;
             border: 0;
+        }
+        
+        .navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            padding: 15px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn.active {
+            background: var(--secondary-color);
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
@@ -461,20 +525,20 @@
                     </div>
                 </div>
                 <div class="action-buttons">
-                    <button class="action-btn export-btn" onclick="exportToPDF()">📄 Export PDF</button>
-                    <button class="action-btn print-btn" onclick="printSection()">🖨️ Print</button>
-                    <button class="action-btn csv-btn" onclick="exportToCSV()">📊 Export CSV</button>
-                    <button class="action-btn feedback-btn" onclick="showFeedback()">💬 Feedback</button>
-                    <button class="action-btn faq-btn" onclick="showFAQ()">❓ FAQ</button>
-                    <button class="action-btn update-btn" onclick="checkForUpdates()">🔄 Check for Updates</button>
-                    <button class="action-btn" onclick="backupData()">💾 Backup Data</button>
-                    <button class="action-btn" onclick="restoreData()">📥 Restore Data</button>
-                    <button class="action-btn subscribe-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')">💳 Subscribe</button>
+                    <button class="action-btn" onclick="exportToPDF()">📄 Export PDF</button>
+                    <button class="action-btn" onclick="printSection()">🖨️ Print</button>
+                    <button class="action-btn" onclick="exportToCSV()">📊 Export CSV</button>
+                    <button class="action-btn" onclick="showFeedback()">💬 Feedback</button>
+                    <button class="action-btn" onclick="showFAQ()">❓ FAQ</button>
+                    <button class="action-btn" onclick="checkForUpdates()">🔄 Updates</button>
+                    <button class="action-btn" onclick="backupData()">💾 Backup</button>
+                    <button class="action-btn" onclick="restoreData()">📥 Restore</button>
+                    <button class="action-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')">💳 Subscribe</button>
                 </div>
             </section>
 
             <section id="historySection" class="section hidden">
-                 <h2>📚 Expense History</h2>
+                <h2>📚 Expense History</h2>
             </section>
 
             <section id="insightsSection" class="section hidden">
@@ -511,12 +575,17 @@
         let expenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
         let isDarkMode = localStorage.getItem('darkMode') === 'true';
         let trialStartDate = localStorage.getItem('trialStartDate') || Date.now();
+        let isTrialExpired = false;
 
         if (!localStorage.getItem('trialStartDate')) {
             localStorage.setItem('trialStartDate', trialStartDate);
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
             if (isDarkMode) {
                 document.body.classList.add('dark-mode');
                 updateToggleIcon();
@@ -524,7 +593,8 @@
             populateExpenseGrid();
             updateSummary();
             updateTrialCountdown();
-        });
+            showSection('today');
+        }
 
         function updateTrialCountdown() {
             const trialDuration = 30 * 24 * 60 * 60 * 1000;
@@ -535,6 +605,7 @@
             const trialElement = document.getElementById('trialCountdown');
 
             if (daysLeft <= 0) {
+                isTrialExpired = true;
                 trialElement.className = 'trial-countdown expired';
                 textElement.innerHTML = '⚠️ Trial Expired';
             } else {
@@ -608,6 +679,7 @@
 
         function addExpense(event, categoryId) {
             event.preventDefault();
+            if(isTrialExpired) { alert('Your trial has expired. Please subscribe.'); return; }
             const amount = parseFloat(document.getElementById(`amount-${categoryId}`).value);
             if(isNaN(amount) || amount <= 0) { alert('Please enter a valid amount.'); return; }
             const description = document.getElementById(`description-${categoryId}`).value.trim();
@@ -656,6 +728,16 @@
             const activeBtn = document.querySelector(`[data-section="${sectionName}"]`);
             if (activeBtn) activeBtn.classList.add('active');
         }
+
+        // --- Dummy Functions for non-implemented features ---
+        function exportToPDF() { window.print(); }
+        function printSection() { window.print(); }
+        function exportToCSV() { alert('Exporting to CSV...'); }
+        function showFeedback() { alert('Feedback form coming soon!'); }
+        function showFAQ() { alert('FAQ coming soon!'); }
+        function checkForUpdates() { alert('You are on the latest version!'); }
+        function backupData() { alert('Backup data...'); }
+        function restoreData() { alert('Restore data...'); }
     </script>
 </body>
 </html>
