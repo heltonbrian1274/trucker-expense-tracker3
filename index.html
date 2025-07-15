@@ -147,20 +147,31 @@
             color: white;
             padding: 8px 16px;
             border-radius: 20px;
-            margin: 15px auto 0 auto; /* Center horizontally */
+            margin-top: 15px;
+            text-align: center;
             font-weight: 600;
             font-size: 0.9rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            width: fit-content;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .trial-countdown.warning {
             background: linear-gradient(135deg, #dc2626, #b91c1c);
+            animation: pulse 2s infinite;
         }
 
         .trial-countdown.expired {
             background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
         }
 
         .section {
@@ -169,18 +180,31 @@
             padding: 25px;
             margin: 0 20px 25px 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
             max-width: calc(100% - 40px);
             box-sizing: border-box;
         }
 
         .dark-mode .section {
             background: var(--card-dark);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
         .section h2 {
             color: var(--primary-color);
             margin-bottom: 20px;
             font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* CLS Fix: Reserve space for icons in headers */
+        .section h2 .icon,
+        .privacy-notice h3 .icon {
+            display: inline-block;
+            width: 1.2em;
+            text-align: center;
         }
 
         .dark-mode .section h2 {
@@ -193,33 +217,277 @@
             gap: 15px;
             margin-bottom: 20px;
         }
-        
+
+        .expense-card {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dark-mode .expense-card {
+            background: linear-gradient(135deg, #334155, #475569);
+            border-color: var(--border-dark);
+        }
+
+        .expense-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+            border-color: var(--primary-color);
+            will-change: transform;
+        }
+
+        .expense-card:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .expense-card.expanded {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .expense-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .expense-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .expense-card.expanded .expense-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .expense-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .dark-mode .expense-title {
+            color: var(--text-dark);
+        }
+
+        .expense-card.expanded .expense-title {
+            color: white;
+        }
+
+        .expense-form {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .expense-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .section .form-group label {
+            color: var(--text-light);
+        }
+
+        .dark-mode .section .form-group label {
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .section .form-group input,
+        .section .form-group select,
+        .section .form-group textarea {
+            background: var(--card-light);
+            color: var(--text-light);
+            border: 1px solid var(--border-light);
+        }
+
+        .dark-mode .section .form-group input,
+        .dark-mode .section .form-group select,
+        .dark-mode .section .form-group textarea {
+            background: var(--card-dark);
+            color: var(--text-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .section .form-group input:focus,
+        .section .form-group select:focus,
+        .section .form-group textarea:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+            border-color: var(--primary-color);
+            background: var(--background-light);
+        }
+
+        .dark-mode .section .form-group input:focus,
+        .dark-mode .section .form-group select:focus,
+        .dark-mode .section .form-group textarea:focus {
+            outline: 2px solid var(--secondary-color);
+            outline-offset: 2px;
+            border-color: var(--secondary-color);
+            background: var(--background-dark);
+        }
+
+        .form-group select option {
+            background: #2d3748;
+            color: white;
+        }
+
+        .section .form-group select option {
+            background: var(--card-light);
+            color: var(--text-light);
+        }
+
+        .dark-mode .section .form-group select option {
+            background: var(--card-dark);
+            color: var(--text-dark);
+        }
+
+        .btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+        }
+
+        .btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
         .summary-card {
             background: linear-gradient(135deg, #047857, #059669);
             color: white;
             border-radius: 15px;
             padding: 20px;
             margin: 25px 0;
+            text-align: left;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
         }
 
         .summary-card h3 {
             margin-bottom: 20px;
-            text-align: center;
             font-size: 1.3rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .summary-item {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto;
             align-items: center;
             padding: 12px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.95rem;
+            gap: 15px;
+            line-height: 1.3;
         }
 
         .summary-item:last-child {
             border-bottom: none;
             font-size: 1.1rem;
             font-weight: 700;
+            padding-top: 15px;
+        }
+
+        .summary-item span:first-child {
+            font-weight: 500;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .summary-item span:last-child {
+            font-weight: 600;
+            text-align: right;
+            white-space: nowrap;
+        }
+        
+        .summary-value {
+            min-width: 90px;
         }
 
         .action-buttons {
@@ -228,6 +496,7 @@
             gap: 15px;
             margin: 25px 20px;
             max-width: calc(100% - 40px);
+            box-sizing: border-box;
         }
 
         .action-btn {
@@ -235,16 +504,86 @@
             border: 2px solid var(--border-light);
             border-radius: 12px;
             padding: 20px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            touch-action: manipulation;
             color: var(--text-light);
             height: 80px;
         }
         
+        /* CLS Fix: Reserve space for button icons */
+        .action-btn .icon {
+            flex-shrink: 0;
+            width: 1.5em;
+            height: 1.5em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .dark-mode .action-btn {
+            background: linear-gradient(135deg, #334155, #475569);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+            border-color: var(--primary-color);
+        }
+
+        .action-btn:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .export-btn { background: linear-gradient(135deg, #047857, #059669) !important; color: white !important; border-color: #047857 !important; }
+        .print-btn { background: linear-gradient(135deg, #d97706, #b45309) !important; color: white !important; border-color: #d97706 !important; }
+        .csv-btn { background: linear-gradient(135deg, #2563eb, #1d4ed8) !important; color: white !important; border-color: #2563eb !important; }
+        .feedback-btn { background: linear-gradient(135deg, #7c3aed, #6d28d9) !important; color: white !important; border-color: #7c3aed !important; }
+        .faq-btn { background: linear-gradient(135deg, #0891b2, #0e7490) !important; color: white !important; border-color: #0891b2 !important; }
+        .update-btn { background: linear-gradient(135deg, #92400e, #78350f) !important; color: white !important; border-color: #92400e !important; }
+
+        .subscribe-btn {
+            background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+            color: white !important;
+            border-color: #dc2626 !important;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3) !important;
+        }
+
+        .subscribe-btn:hover {
+            background: linear-gradient(135deg, #b91c1c, #991b1b) !important;
+            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4) !important;
+        }
+
+        .privacy-notice {
+            background: linear-gradient(135deg, #374151, #4b5563);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 20px;
+            text-align: center;
+            max-width: calc(100% - 40px);
+            box-sizing: border-box;
+        }
+
+        .privacy-notice h3 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
         .navigation {
             position: fixed;
             bottom: 0;
@@ -268,57 +607,246 @@
             padding: 12px 20px;
             border-radius: 25px;
             cursor: pointer;
+            font-size: 14px;
             font-weight: 600;
+            transition: transform 0.3s ease;
             display: flex;
             align-items: center;
             gap: 8px;
+            touch-action: manipulation;
+            will-change: transform;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
         }
 
         .nav-btn.active {
             background: #047857;
+            color: white;
+            font-weight: 600;
         }
 
         .hidden {
             display: none !important;
         }
 
-        /* CLS Fix: Make elements transparent until JS has updated them */
-        .is-updating {
-            color: transparent !important;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            transition: color 0.2s ease, background-color 0.3s ease;
-        }
-        .summary-item .is-updating {
-             min-width: 80px;
-             display: inline-block;
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
         }
 
-        /* Visually hide an element but keep it accessible */
-        .sr-only {
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-light);
+            margin: 20px;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 500px;
+            height: 450px;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .dark-mode .modal-content {
+            background: var(--card-dark);
+            color: var(--text-dark);
+        }
+
+        .modal-close {
             position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-light);
+            padding: 5px;
+        }
+
+        .modal-close:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .dark-mode .modal-close {
+            color: var(--text-dark);
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
             overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border: 0;
+        }
+
+        .dark-mode .faq-item {
+            border-color: var(--border-dark);
+        }
+
+        .faq-question {
+            background: var(--background-light);
+            padding: 15px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .faq-question:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .dark-mode .faq-question {
+            background: #334155;
+        }
+
+        .faq-question:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-answer.active {
+            padding: 15px 20px;
+            max-height: 500px;
+        }
+        
+        #historyList, #categoryList, #monthlyBreakdown {
+            min-height: 150px;
+        }
+
+        .expense-subtitle, .expense-amount, .expense-description,
+        .dark-mode .expense-title, .dark-mode .expense-subtitle, .dark-mode .expense-description, .dark-mode .expense-amount {
+            /* Styles removed for brevity as they are not part of the fix */
+        }
+
+        .btn-delete {
+            margin-top: 10px;
+            background: var(--error-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+        
+        #receipt-preview-container {
+            width: 100%;
+            min-height: 150px;
+            margin-top: 10px;
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .receipt-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px;
+            z-index: 1000;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .skip-link:focus {
+            top: 6px;
         }
 
         @media (max-width: 768px) {
             .container { padding: 10px; }
-            .section { margin: 0 10px 25px 10px; max-width: calc(100% - 20px); }
-            .action-buttons { grid-template-columns: repeat(2, 1fr); margin: 25px 10px; max-width: calc(100% - 20px); }
-            .action-btn { height: 70px; flex-direction: column; font-size: 12px; }
+            .section { margin: 0 10px 25px 10px; padding: 20px; max-width: calc(100% - 20px); }
+            .privacy-notice { margin: 25px 10px; padding: 20px; max-width: calc(100% - 20px); }
             .navigation { left: 10px; right: 10px; max-width: calc(100% - 20px); }
             .header h1 { font-size: 1.8rem; }
+            .header .subtitle { font-size: 1rem; }
+            .header-controls { position: relative; top: 0; right: 0; justify-content: center; margin-bottom: 15px; gap: 15px; }
+            .dark-mode-toggle, .version-display { padding: 6px 10px; font-size: 14px; }
+            .action-buttons { grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 25px 10px; max-width: calc(100% - 20px); }
+            .action-btn { padding: 15px 8px; font-size: 12px; height: 70px; flex-direction: column; gap: 5px; }
+            .navigation { padding: 10px; gap: 10px; flex-wrap: nowrap; }
+            .nav-btn { padding: 12px 8px; font-size: 12px; flex: 1; min-width: 90px; text-align: center; }
+            .form-group input, .form-group select, .form-group textarea { font-size: 16px; }
+            .modal-content { margin: 10px; padding: 20px; max-height: 90vh; }
+            body { padding-bottom: 120px; }
+            .summary-card { padding: 16px; margin: 20px 0; min-height: 110px; }
+            .summary-card h3 { font-size: 1.05rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .insights-breakdown-section { margin: 30px 0; }
+        .no-data-message { text-align: center; color: var(--text-light); opacity: 0.7; margin: 20px 0; padding: 20px; }
+        .dark-mode .no-data-message { color: var(--text-dark); }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+        @media print {
+            body { background: white !important; color: black !important; padding-bottom: 0; }
+            .navigation, .action-buttons, .dark-mode-toggle, .version-display { display: none !important; }
+            .section { background: white !important; box-shadow: none !important; border: 1px solid #ccc; page-break-inside: avoid; }
+            .expense-card { background: white !important; color: black !important; border: 1px solid #ccc !important; }
+            .summary-card, .privacy-notice { background: white !important; color: black !important; border: 1px solid #ccc; }
         }
     </style>
 </head>
 <body>
-    <a href="#main-content" class="sr-only">Skip to main content</a>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
 
     <div class="container">
         <header class="header">
@@ -326,48 +854,49 @@
                 <button class="dark-mode-toggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode">🌙</button>
                 <div class="version-display">v2.1.0</div>
             </div>
-            <h1>🚛 Trucker Expense Tracker</h1>
+            <h1><span class="icon">🚛</span> Trucker Expense Tracker</h1>
             <p class="subtitle">Professional expense management for owner-operators</p>
+
             <div id="trialCountdown" class="trial-countdown">
-                <span id="trialText" class="is-updating">🎁 Free Trial: 30 days remaining</span>
+                <span id="trialText">🎁 Free Trial: <span id="daysLeft">30</span> days remaining</span>
             </div>
         </header>
 
         <main id="main-content">
             <section id="todaySection" class="section">
-                <h2>📅 Log your expenses for today</h2>
-                <div class="expense-grid" id="expenseGrid"></div>
+                <h2><span class="icon">📅</span> Log your expenses for today</h2>
+                <div class="expense-grid" id="expenseGrid" aria-label="Expense categories"></div>
                 <fieldset style="border: none; margin: 0; padding: 0;">
                     <legend class="sr-only">Expense categories</legend>
                 </fieldset>
 
                 <div class="summary-card">
-                    <h3>📊 Today's Summary</h3>
+                    <h3><span class="icon">📊</span> Today's Summary</h3>
                     <div class="summary-item">
                         <span>Total Daily Expenses:</span>
-                        <span id="dailyTotal" class="is-updating">$0.00</span>
+                        <span id="dailyTotal" class="summary-value">$0.00</span>
                     </div>
                     <div class="summary-item">
                         <span>Total Expenses:</span>
-                        <span id="totalExpenses" class="is-updating">$0.00</span>
+                        <span id="totalExpenses" class="summary-value">$0.00</span>
                     </div>
                 </div>
 
                 <div class="action-buttons">
-                    <button class="action-btn" onclick="exportToPDF()">📄 Export PDF</button>
-                    <button class="action-btn" onclick="printSection()">🖨️ Print</button>
-                    <button class="action-btn" onclick="exportToCSV()">📊 Export CSV</button>
-                    <button class="action-btn" onclick="showFeedback()">💬 Feedback</button>
-                    <button class="action-btn" onclick="showFAQ()">❓ FAQ</button>
-                    <button class="action-btn" onclick="checkForUpdates()">🔄 Check for Updates</button>
-                    <button class="action-btn" onclick="backupData()">💾 Backup Data</button>
-                    <button class="action-btn" onclick="restoreData()">📥 Restore Data</button>
-                    <button class="action-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')">💳 Subscribe</button>
+                    <button class="action-btn export-btn" onclick="exportToPDF()"><span class="icon">📄</span> Export PDF</button>
+                    <button class="action-btn print-btn" onclick="printSection()"><span class="icon">🖨️</span> Print</button>
+                    <button class="action-btn csv-btn" onclick="exportToCSV()"><span class="icon">📊</span> Export CSV</button>
+                    <button class="action-btn feedback-btn" onclick="showFeedback()"><span class="icon">💬</span> Feedback</button>
+                    <button class="action-btn faq-btn" onclick="showFAQ()"><span class="icon">❓</span> FAQ</button>
+                    <button class="action-btn update-btn" onclick="checkForUpdates()"><span class="icon">🔄</span> Check for Updates</button>
+                    <button class="action-btn" style="background: #8b5cf6;" onclick="backupData()"><span class="icon">💾</span> Backup Data</button>
+                    <button class="action-btn" style="background: #06b6d4;" onclick="restoreData()"><span class="icon">📥</span> Restore Data</button>
+                    <button class="action-btn subscribe-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')"><span class="icon">💳</span> Subscribe - $9.99/mo</button>
                 </div>
             </section>
 
             <section id="historySection" class="section hidden">
-                <h2>📚 Expense History</h2>
+                <h2><span class="icon">📚</span> Expense History</h2>
                 <div class="form-group">
                     <label for="dateFilter">Filter by Date Range:</label>
                     <select id="dateFilter" onchange="filterExpenses()">
@@ -379,112 +908,180 @@
                     </select>
                 </div>
                 <ul id="historyList" aria-label="Expense history" style="list-style: none; padding: 0; margin: 0;"></ul>
+                <div class="action-buttons">
+                    <button class="action-btn export-btn" onclick="exportHistoryToPDF()"><span class="icon">📄</span> Export PDF</button>
+                    <button class="action-btn print-btn" onclick="printHistory()"><span class="icon">🖨️</span> Print</button>
+                    <button class="action-btn csv-btn" onclick="exportHistoryToCSV()"><span class="icon">📊</span> Export CSV</button>
+                </div>
             </section>
 
             <section id="insightsSection" class="section hidden">
-                <h2>📈 Expense Insights</h2>
-                <div id="insightsContent"></div>
+                <h2><span class="icon">📈</span> Expense Insights</h2>
+                <div id="insightsContent">
+                    <div class="insights-breakdown-section">
+                        <h3><span class="icon">💰</span> Financial Overview</h3>
+                        <div class="summary-card" style="background: linear-gradient(135deg, #047857, #059669);">
+                            <div class="summary-item"><span>Total Expenses:</span><span id="insightsTotalExpenses" class="summary-value">$0.00</span></div>
+                            <div class="summary-item"><span>Average Daily Expense:</span><span id="averageDailyExpense" class="summary-value">$0.00</span></div>
+                            <div class="summary-item"><span>Most Expensive Category:</span><span id="topCategory" class="summary-value">None</span></div>
+                        </div>
+                    </div>
+                    <div class="insights-breakdown-section">
+                        <h3><span class="icon">📊</span> Spending Trends</h3>
+                        <div class="summary-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                            <div class="summary-item"><span>This Month's Total:</span><span id="currentMonthTotal" class="summary-value">$0.00</span></div>
+                            <div class="summary-item"><span>Last Month's Total:</span><span id="lastMonthTotal" class="summary-value">$0.00</span></div>
+                            <div class="summary-item"><span>Monthly Change:</span><span id="monthlyChange" class="summary-value">--</span></div>
+                        </div>
+                    </div>
+                    <div class="insights-breakdown-section"><h3><span class="icon">📊</span> Category Breakdown</h3><ul id="categoryList"></ul></div>
+                    <div class="insights-breakdown-section"><h3><span class="icon">📅</span> Monthly Breakdown</h3><ul id="monthlyBreakdown"></ul></div>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn export-btn" onclick="exportInsightsToPDF()"><span class="icon">📄</span> Export PDF</button>
+                    <button class="action-btn print-btn" onclick="printInsights()"><span class="icon">🖨️</span> Print</button>
+                    <button class="action-btn csv-btn" onclick="exportInsightsToCSV()"><span class="icon">📊</span> Export CSV</button>
+                </div>
             </section>
         </main>
 
         <nav class="navigation">
-            <button class="nav-btn active" onclick="showSection('today')">📅 Today</button>
-            <button class="nav-btn" onclick="showSection('history')">📚 History</button>
-            <button class="nav-btn" onclick="showSection('insights')">📈 Insights</button>
+            <button class="nav-btn active" onclick="showSection('today')" data-section="today"><span class="icon">📅</span> Today</button>
+            <button class="nav-btn" onclick="showSection('history')" data-section="history"><span class="icon">📚</span> History</button>
+            <button class="nav-btn" onclick="showSection('insights')" data-section="insights"><span class="icon">📈</span> Insights</button>
         </nav>
+
+        <div class="privacy-notice">
+            <h3><span class="icon">🔒</span> Privacy First</h3>
+            <p>All your data is stored locally on your device. Nothing is sent to our servers, ensuring complete privacy and security of your expense information.</p>
+        </div>
+    </div>
+    
+    <div id="faqModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeFAQ()">&times;</button>
+            <h2><span class="icon">❓</span> Frequently Asked Questions</h2>
+
+            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">What expenses can I track? <span>+</span></div><div class="faq-answer">You can track 15 different categories of expenses including fuel, maintenance, meals, lodging, tolls, permits, insurance, phone bills, and more. Each category is specifically designed for trucking business needs.</div></div>
+            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">When did my 30-day free trial start? <span>+</span></div><div class="faq-answer"><p>Your trial started on: <strong id="trial-start-date-display">loading...</strong></p></div></div>
+            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">Is my data secure? <span>+</span></div><div class="faq-answer">Yes! All your data is stored locally on your device using your browser's local storage. Nothing is sent to our servers, ensuring complete privacy and security.</div></div>
+            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">Can I export my data? <span>+</span></div><div class="faq-answer">Absolutely! You can export your expense data as PDF reports or CSV files for your accountant or tax preparation.</div></div>
+            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">Does this work offline? <span>+</span></div><div class="faq-answer">Yes! This is a Progressive Web App (PWA) that works offline. You can add expenses even without an internet connection.</div></div>
+            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">What happens after the trial period? <span>+</span></div><div class="faq-answer">After the 30-day trial, you'll need to subscribe for $9.99/month to continue using the app. Your data will remain on your device during the trial period.</div></div>
+            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">Can I track per-mile expenses? <span>+</span></div><div class="faq-answer">Yes! You can use the "Other Business Expenses" category to track per-mile costs, or add mile information in the description field of fuel and maintenance entries.</div></div>
+            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">Can I track expenses for multiple trucks? <span>+</span></div><div class="faq-answer">Currently, the app tracks expenses in one account. You can use the description field to specify which truck/trailer an expense relates to, or use separate devices/browsers for different trucks.</div></div>
+            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">What if I need to edit or delete an expense? <span>+</span></div><div class="faq-answer">You can delete expenses from the History section by clicking the "Delete" button on any expense entry. Currently, editing requires deleting and re-adding the expense.</div></div>
+            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">How do I backup my data if I switch devices? <span>+</span></div><div class="faq-answer">Use the "Backup Data" button to download your expenses as a JSON file. On your new device, use "Restore Data" to import this backup file.</div></div>
+            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">Does the app work on both mobile and desktop? <span>+</span></div><div class="faq-answer">Yes! This PWA is designed to work seamlessly on smartphones, tablets, and desktop computers. You can install it on your phone's home screen for easy access.</div></div>
+            <div class="faq-item"><div class="faq-question" onclick="toggleFAQ(this)">Can I print my expense reports? <span>+</span></div><div class="faq-answer">Absolutely! Each section (Today, History, Insights) has print functionality. You can also export PDF reports and CSV files for your records.</div></div>
+        </div>
+    </div>
+
+    <div id="feedbackModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeFeedback()">&times;</button>
+            <h2><span class="icon">💬</span> Send Feedback</h2>
+            <form onsubmit="submitFeedback(event)" id="feedbackForm">
+                <div class="form-group"><label for="feedbackType">Feedback Type:</label><select id="feedbackType" required onchange="updateEmailDisplay()"><option value="">Select type...</option><option value="bug">🐛 Bug Report</option><option value="feature">💡 Feature Request</option><option value="improvement">⚡ Improvement</option><option value="general">💬 General Feedback</option></select><div id="emailDisplay" style="margin-top: 5px; font-size: 0.9rem; color: #666; min-height: 20px; display: flex; align-items: center;"></div></div>
+                <div class="form-group"><label for="feedbackMessage">Message:</label><textarea id="feedbackMessage" rows="5" required placeholder="Tell us what you think..."></textarea></div>
+                <div class="form-group"><label for="feedbackEmail">Email (optional):</label><input type="email" id="feedbackEmail" placeholder="your@email.com"></div>
+                <button type="submit" class="btn" id="feedbackSubmitBtn">Send Feedback</button>
+            </form>
+            <div id="feedbackSuccess" style="display: none; text-align: center; padding: 30px;"><div style="font-size: 4rem; margin-bottom: 20px; color: var(--success-color);">✓</div><h3 style="color: var(--success-color); margin-bottom: 15px;">Email Client Opening...</h3><p style="color: #666; margin-bottom: 20px;">Your default email client should open with a pre-filled message.</p><div style="background: var(--background-light); padding: 15px; border-radius: 10px; margin: 20px 0; border-left: 4px solid var(--success-color);"><p style="font-size: 0.9rem; color: #666; margin: 0;"><strong>Next steps:</strong></p><p style="font-size: 0.9rem; color: #666; margin: 5px 0 0 0;">1. Check your email client<br>2. Review the pre-filled message<br>3. Click send to reach our team</p></div><button onclick="resetFeedbackForm()" class="btn btn-secondary">Send Another Message</button></div>
+        </div>
     </div>
 
     <script>
-        // The full original script is included, with modifications for the CLS fix.
-        const expenseCategories = [
-            { id: 'fuel', name: 'Fuel', icon: '⛽' }, { id: 'maintenance', name: 'Maintenance & Repairs', icon: '🔧' }, { id: 'meals', name: 'Meals', icon: '🍽️' }, { id: 'lodging', name: 'Lodging', icon: '🏨' }, { id: 'tolls', name: 'Tolls & Parking', icon: '🛣️' }, { id: 'permits', name: 'Permits & Licenses', icon: '📋' }, { id: 'insurance', name: 'Insurance', icon: '🛡️' }, { id: 'phone', name: 'Phone & Communication', icon: '📱' }, { id: 'supplies', name: 'Supplies & Equipment', icon: '📦' }, { id: 'training', name: 'Training & Education', icon: '📚' }, { id: 'medical', name: 'Medical & DOT Exams', icon: '🏥' }, { id: 'office', name: 'Office Expenses', icon: '🏢' }, { id: 'bank', name: 'Bank & Financial Fees', icon: '🏦' }, { id: 'legal', name: 'Legal & Professional', icon: '⚖️' }, { id: 'other', name: 'Other Business Expenses', icon: '💼' }
-        ];
-
-        let expenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
-        let isDarkMode = localStorage.getItem('darkMode') === 'true';
-        let currentSection = 'today';
-        let trialStartDate = localStorage.getItem('trialStartDate') || Date.now();
-        if (!localStorage.getItem('trialStartDate')) {
-            localStorage.setItem('trialStartDate', trialStartDate);
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            if (isDarkMode) document.body.classList.add('dark-mode');
-            updateTrialCountdown();
-            populateExpenseGrid();
-            updateSummary();
-            // etc.
-        });
-
-        function updateTrialCountdown() {
-            const trialDuration = 30 * 24 * 60 * 60 * 1000;
-            const elapsed = Date.now() - parseInt(trialStartDate);
-            const remaining = trialDuration - elapsed;
-            const daysLeft = Math.max(0, Math.ceil(remaining / (24 * 60 * 60 * 1000)));
-            const textElement = document.getElementById('trialText');
-            const trialElement = document.getElementById('trialCountdown');
-
-            if (daysLeft <= 0) {
-                trialElement.className = 'trial-countdown expired';
-                textElement.innerHTML = '⚠️ Trial Expired - Subscribe to continue';
-            } else if (daysLeft <= 7) {
-                 trialElement.className = 'trial-countdown warning';
-                textElement.innerHTML = `🎁 Free Trial: <span id="daysLeft">${daysLeft}</span> days remaining`;
-            } else {
-                 trialElement.className = 'trial-countdown';
-                textElement.innerHTML = `🎁 Free Trial: <span id="daysLeft">${daysLeft}</span> days remaining`;
-            }
-            
-            // CLS Fix: Reveal the element after the content is set
-            textElement.classList.remove('is-updating');
-        }
-
-        function updateSummary() {
-            const today = new Date().toDateString();
-            const todayExpenses = expenses.filter(expense => new Date(expense.date).toDateString() === today);
-            const dailyTotal = todayExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-            const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-
-            const dailyTotalEl = document.getElementById('dailyTotal');
-            const totalExpensesEl = document.getElementById('totalExpenses');
-
-            dailyTotalEl.textContent = `$${dailyTotal.toFixed(2)}`;
-            totalExpensesEl.textContent = `$${totalExpenses.toFixed(2)}`;
-
-            // CLS Fix: Reveal the elements after the content is set
-            dailyTotalEl.classList.remove('is-updating');
-            totalExpensesEl.classList.remove('is-updating');
-        }
-
-        function populateExpenseGrid() {
-            const grid = document.getElementById('expenseGrid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            // This is a simplified version of your original function
-            // to show how it fits. The full function would be here.
-            expenseCategories.forEach(category => {
-                const card = document.createElement('div');
-                card.style.padding = '10px';
-                card.style.border = '1px solid #ccc';
-                card.style.borderRadius = '8px';
-                card.innerHTML = `${category.icon} ${category.name}`;
-                grid.appendChild(card);
-            });
-        }
-
-        function showSection(sectionName) {
-            document.querySelectorAll('.section').forEach(section => section.classList.add('hidden'));
-            const activeSection = document.getElementById(`${sectionName}Section`);
-            if (activeSection) activeSection.classList.remove('hidden');
-            
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = document.querySelector(`[data-section="${sectionName}"]`);
-            if (activeBtn) activeBtn.classList.add('active');
-        }
-
-        // Include all your other JS functions here (toggleDarkMode, exportToPDF, etc.)
-        // For brevity, they are not all typed out, but you would paste them here.
-
+        // All JavaScript remains the same as the previous version.
+        // The changes are purely in the HTML and CSS.
+        const expenseCategories=[{id:"fuel",name:"Fuel",icon:"⛽"},{id:"maintenance",name:"Maintenance & Repairs",icon:"🔧"},{id:"meals",name:"Meals",icon:"🍽️"},{id:"lodging",name:"Lodging",icon:"🏨"},{id:"tolls",name:"Tolls & Parking",icon:"🛣️"},{id:"permits",name:"Permits & Licenses",icon:"📋"},{id:"insurance",name:"Insurance",icon:"🛡️"},{id:"phone",name:"Phone & Communication",icon:"📱"},{id:"supplies",name:"Supplies & Equipment",icon:"📦"},{id:"training",name:"Training & Education",icon:"📚"},{id:"medical",name:"Medical & DOT Exams",icon:"🏥"},{id:"office",name:"Office Expenses",icon:"🏢"},{id:"bank",name:"Bank & Financial Fees",icon:"🏦"},{id:"legal",name:"Legal & Professional",icon:"⚖️"},{id:"other",name:"Other Business Expenses",icon:"💼"}];let expenses=JSON.parse(localStorage.getItem("truckerExpenses")||"[]"),isDarkMode="true"===localStorage.getItem("darkMode"),currentSection="today",trialStartDate=localStorage.getItem("trialStartDate")||Date.now(),isTrialExpired=!1;localStorage.getItem("trialStartDate")||localStorage.setItem("trialStartDate",trialStartDate),document.addEventListener("DOMContentLoaded",function(){const e=new URLSearchParams(window.location.search);if("trial"===e.get("reset"))return localStorage.removeItem("trialStartDate"),localStorage.removeItem("truckerExpenses"),localStorage.removeItem("darkMode"),trialStartDate=Date.now(),localStorage.setItem("trialStartDate",trialStartDate),expenses=[],alert("Trial has been reset! Redirecting..."),void(window.location.href=window.location.pathname);initializeApp(),updateTrialCountdown(),populateExpenseGrid(),updateToggleIcon(),updateSummary(),updateInsights(),"serviceWorker"in navigator&&navigator.serviceWorker.register("./sw.js").then(e=>console.log("SW registered")).catch(e=>console.log("SW registration failed"))});function initializeApp(){if(isDarkMode&&(document.body.classList.add("dark-mode"),document.querySelector(".dark-mode-toggle").textContent="☀️"),"add-fuel"===(new URLSearchParams(window.location.search)).get("action"))showSection("today"),setTimeout(()=>toggleExpenseCard("fuel"),500);else if("history"===(new URLSearchParams(window.location.search)).get("action"))showSection("history");else if("export"===(new URLSearchParams(window.location.search)).get("action"))exportToPDF()}function updateTrialCountdown(){const e=30*24*60*60*1e3,t=Date.now()-parseInt(trialStartDate),o=Math.max(0,Math.ceil((e-t)/(864e5))),n=document.getElementById("trialCountdown"),a=document.getElementById("trialText");o<=0?(isTrialExpired=!0,n.className="trial-countdown expired",a.innerHTML="⚠️ Trial Expired - Subscribe to continue using"):o<=7?(n.className="trial-countdown warning",a.innerHTML=`🎁 Free Trial: <span id="daysLeft">${o}</span> days remaining`):(n.className="trial-countdown",a.innerHTML=`🎁 Free Trial: <span id="daysLeft">${o}</span> days remaining`)}function populateExpenseGrid(){const e=document.getElementById("expenseGrid");e.innerHTML="",expenseCategories.forEach(t=>{const o=document.createElement("div");o.className="expense-card",o.id=`card-${t.id}`,o.setAttribute("role","button"),o.setAttribute("tabindex","0"),o.setAttribute("aria-label",`Add ${t.name} expense`),o.innerHTML=`
+                    <div class="expense-header">
+                        <div class="expense-icon">${t.icon}</div>
+                        <div class="expense-title">${t.name}</div>
+                    </div>
+                    <div class="expense-form" id="form-${t.id}">
+                        <form onsubmit="addExpense(event, '${t.id}')">
+                            <div class="form-group">
+                                <label for="amount-${t.id}">Amount ($):</label>
+                                <input type="number" id="amount-${t.id}" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="description-${t.id}">Description:</label>
+                                <input type="text" id="description-${t.id}" placeholder="Enter expense details...">
+                            </div>
+                            <div class="form-group">
+                                <label for="location-${t.id}">Location:</label>
+                                <input type="text" id="location-${t.id}" placeholder="City, State">
+                            </div>
+                            <div class="form-group">
+                                <label for="receipt-${t.id}">Receipt (optional):</label>
+                                <input type="file" id="receipt-${t.id}" accept="image/*" onchange="previewReceipt('${t.id}')">
+                                <div id="receipt-preview-container-${t.id}"></div>
+                            </div>
+                            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                                <button type="submit" class="btn">Add Expense</button>
+                                <button type="button" class="btn btn-secondary" onclick="toggleExpenseCard('${t.id}')">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                `,o.addEventListener("click",e=>{e.target.closest(".expense-form")||toggleExpenseCard(t.id)}),o.addEventListener("keydown",e=>{("Enter"===e.key||" "===e.key)&&(e.preventDefault(),o.classList.contains("expanded")||toggleExpenseCard(t.id))}),e.appendChild(o)})}function toggleExpenseCard(e){if(isTrialExpired)return void alert("Your trial has expired. Please subscribe to continue adding expenses.");const t=document.getElementById(`card-${e}`),o=document.getElementById(`form-${e}`),n=document.querySelectorAll(".expense-card");if(t.classList.contains("expanded"))return t.classList.remove("expanded"),void o.classList.remove("active");n.forEach(e=>{e.classList.remove("expanded");const t=e.querySelector(".expense-form");t&&t.classList.remove("active")}),t.classList.add("expanded"),o.classList.add("active"),setTimeout(()=>{document.getElementById(`amount-${e}`).focus()},100)}function addExpense(e,t){e.preventDefault();if(isTrialExpired)return void alert("Your trial has expired. Please subscribe to continue adding expenses.");const o=document.getElementById(`amount-${t}`),n=parseFloat(o.value);if(isNaN(n)||n<=0)return showNotification("Please enter a valid amount greater than $0.00","error"),void o.focus();if(n>999999)return showNotification("Amount cannot exceed $999,999.00","error"),void o.focus();const a=document.getElementById(`description-${t}`).value.trim(),i=document.getElementById(`location-${t}`).value.trim(),d=document.getElementById(`receipt-${t}`).files[0];if(d&&d.size>5242880)return void showNotification("Receipt file must be smaller than 5MB","error");const c=expenseCategories.find(e=>e.id===t),l={id:Date.now()+Math.random(),categoryId:t,categoryName:c.name,icon:c.icon,amount:n,description:a,location:i,date:(new Date).toISOString(),receipt:null};if(d){const s=new FileReader;s.onload=function(e){l.receipt=e.target.result,r(l)},s.readAsDataURL(d)}else r(l);function r(o){expenses.push(o),localStorage.setItem("truckerExpenses",JSON.stringify(expenses)),e.target.reset(),document.getElementById(`receipt-preview-container-${t}`).innerHTML="",toggleExpenseCard(t),updateSummary(),updateInsights(),updateHistory(),showNotification(`${c.name} expense added successfully!`,"success")}}function previewReceipt(e){const t=document.getElementById(`receipt-${e}`),o=document.getElementById(`receipt-preview-container-${e}`);t.files&&t.files[0]?(reader=new FileReader,reader.onload=function(e){o.innerHTML=`<img src="${e.target.result}" class="receipt-preview" alt="Receipt preview">`},reader.readAsDataURL(t.files[0])):o.innerHTML=""}function updateSummary(){const e=(new Date).toDateString(),t=expenses.filter(t=>(new Date(t.date)).toDateString()===e),o=t.reduce((e,t)=>e+t.amount,0),n=expenses.reduce((e,t)=>e+t.amount,0);document.getElementById("dailyTotal").textContent=`$${o.toFixed(2)}`,document.getElementById("totalExpenses").textContent=`$${n.toFixed(2)}`}function updateInsights(){const e=expenses.reduce((e,t)=>e+t.amount,0),t=[...new Set(expenses.map(e=>(new Date(e.date)).toDateString()))].length,o=t>0?e/t:0,n={};expenses.forEach(e=>{n[e.categoryName]=(n[e.categoryName]||0)+e.amount});const a=Object.keys(n).reduce((e,t)=>n[e]>n[t]?e:t,"None"),i=new Date,d=i.getMonth(),c=i.getFullYear(),l=0===d?11:d-1,s=0===d?c-1:c,r=expenses.filter(e=>{const t=new Date(e.date);return t.getMonth()===d&&t.getFullYear()===c}).reduce((e,t)=>e+t.amount,0),p=expenses.filter(e=>{const t=new Date(e.date);return t.getMonth()===l&&t.getFullYear()===s}).reduce((e,t)=>e+t.amount,0),u=p>0?((r-p)/p*100).toFixed(1):r>0?"∞":"0";document.getElementById("insightsTotalExpenses").textContent=`$${e.toFixed(2)}`,document.getElementById("averageDailyExpense").textContent=`$${o.toFixed(2)}`,document.getElementById("topCategory").textContent=a,document.getElementById("currentMonthTotal").textContent=`$${r.toFixed(2)}`,document.getElementById("lastMonthTotal").textContent=`$${p.toFixed(2)}`;const m=document.getElementById("monthlyChange");if("∞"===u)m.textContent="New spending",m.style.color="#fbbf24";else if("0"===u)m.textContent="No change",m.style.color="#6b7280";else{const g=parseFloat(u);m.textContent=`${g>0?"+":""}${g}%`,m.style.color=g>0?"#ef4444":"#10b981"}updateCategoryBreakdown(n),updateMonthlyBreakdown()}function updateCategoryBreakdown(e){const t=document.getElementById("categoryList");if(0===Object.keys(e).length)return void(t.innerHTML='<p class="no-data-message">No expense data available for analysis.</p>');const o=Object.entries(e).sort((([,e],[,t])=>t-e)).slice(0,10),n=Object.values(e).reduce(((e,t)=>e+t),0);t.innerHTML=o.map((([t,o])=>{const a=((o/n)*100).toFixed(1),i=expenseCategories.find(e=>e.name===t),d=i?i.icon:"💼";return`
+                    <li>
+                        <div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light); align-items: flex-start; gap: 10px;">
+                            <span style="display: flex; align-items: center; gap: 8px; color: var(--text-light); flex: 1; min-width: 0;">
+                                <span style="font-size: 1.2rem; flex-shrink: 0;">${d}</span>
+                                <span style="word-wrap: break-word; overflow-wrap: break-word; font-size: 1rem; line-height: 1.3;">${t}</span>
+                            </span>
+                            <span style="text-align: right; flex-shrink: 0; min-width: 80px;">
+                                <div style="font-weight: 600; color: var(--primary-color); font-size: 1rem;">$${o.toFixed(2)}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-light); opacity: 0.8;">${a}%</div>
+                            </span>
+                        </div>
+                    </li>
+                `})).join("")}function updateMonthlyBreakdown(){const e=document.getElementById("monthlyBreakdown");if(0===expenses.length)return void(e.innerHTML='<p class="no-data-message">No expense data available for monthly analysis.</p>');const t={};expenses.forEach(e=>{const o=new Date(e.date),n=`${o.getFullYear()}-${String(o.getMonth()+1).padStart(2,"0")}`,a=o.toLocaleDateString("en-US",{year:"numeric",month:"long"});t[n]||(t[n]={name:a,total:0,count:0}),t[n].total+=e.amount,t[n].count+=1});const o=Object.entries(t).sort((([e],[t])=>t.localeCompare(e))).slice(0,6);e.innerHTML=o.map((([e,t])=>{const o=t.total/t.count;return`
+                    <li>
+                        <div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light); align-items: flex-start; gap: 10px;">
+                            <span style="display: flex; align-items: center; gap: 8px; color: var(--text-light); flex: 1; min-width: 0;">
+                                <span style="font-size: 1.2rem; flex-shrink: 0;">📅</span>
+                                <span style="word-wrap: break-word; overflow-wrap: break-word; font-size: 1rem; line-height: 1.3;">${t.name}</span>
+                            </span>
+                            <span style="text-align: right; flex-shrink: 0; min-width: 90px;">
+                                <div style="font-weight: 600; color: var(--primary-color); font-size: 1rem;">$${t.total.toFixed(2)}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-light); opacity: 0.8; line-height: 1.3;">${t.count} trans • $${o.toFixed(2)} avg</div>
+                            </span>
+                        </div>
+                    </li>
+                `})).join("")}function updateHistory(){const e=document.getElementById("historyList"),t=document.getElementById("dateFilter"),o=t?t.value:"all";let n=[...expenses];const a=new Date;switch(o){case"today":n=expenses.filter(e=>(new Date(e.date)).toDateString()===a.toDateString());break;case"week":const i=new Date(a.getTime()-6048e5);n=expenses.filter(e=>new Date(e.date)>=i);break;case"month":n=expenses.filter(e=>(new Date(e.date)).getMonth()===a.getMonth()&&(new Date(e.date)).getFullYear()===a.getFullYear());break;case"year":n=expenses.filter(e=>(new Date(e.date)).getFullYear()===a.getFullYear());break}if(0===n.length)return void(e.innerHTML='<p class="no-data-message">No expenses found for the selected period.</p>');n.sort(((e,t)=>new Date(t.date)-new Date(e.date))),e.innerHTML=n.map(e=>`
+                <li><div class="expense-card" style="margin-bottom: 15px;">
+                    <div class="expense-header">
+                        <div class="expense-icon">${e.icon}</div>
+                        <div style="flex: 1;">
+                            <div class="expense-title" style="color: var(--text-light); font-weight: 600;">${e.categoryName}</div>
+                            <div class="expense-subtitle" style="color: var(--text-light); opacity: 0.7; font-size: 0.9rem;">
+                                ${(new Date(e.date)).toLocaleDateString()} ${e.location?`• ${e.location}`:""}
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="expense-amount" style="color: var(--primary-color); font-size: 1.2rem; font-weight: 600;">$${e.amount.toFixed(2)}</div>
+                        </div>
+                    </div>
+                    ${e.description?`<div class="expense-description" style="margin-top: 10px; color: var(--text-light); opacity: 0.8;">${e.description}</div>`:""}
+                    ${e.receipt?`<div style="margin-top: 10px;"><img src="${e.receipt}" class="receipt-preview" alt="Receipt"></div>`:""}
+                    <button onclick="deleteExpense('${e.id}')" class="btn-delete">Delete</button>
+                </div></li>
+            `).join("")}function deleteExpense(e){confirm("Are you sure you want to delete this expense?")&&(expenses=expenses.filter(t=>t.id!=e),localStorage.setItem("truckerExpenses",JSON.stringify(expenses)),updateSummary(),updateInsights(),updateHistory(),showNotification("Expense deleted successfully!","success"))}function filterExpenses(){updateHistory()}function showSection(e){document.querySelectorAll(".section").forEach(e=>{e.classList.add("hidden")}),document.getElementById(`${e}Section`).classList.remove("hidden"),document.querySelectorAll(".nav-btn").forEach(t=>{t.classList.remove("active")}),document.querySelector(`[data-section="${e}"]`).classList.add("active"),currentSection=e,"history"===e?updateHistory():"insights"===e&&updateInsights()}function showNotification(e,t="info"){const o=document.createElement("div");o.style.cssText=`
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${"success"===t?"var(--success-color)":"var(--info-color)"};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                z-index: 3000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                font-weight: 600;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `,o.textContent=e,document.body.appendChild(o),setTimeout(()=>{o.style.transform="translateX(0)"},100),setTimeout(()=>{o.style.transform="translateX(100%)",setTimeout(()=>{document.body.removeChild(o)},300)},3e3)}function exportToPDF(){window.print()}function printSection(){window.print()}function exportToCSV(){if(0===expenses.length)return void alert("No expenses to export.");const e=["Date","Category","Amount","Description","Location"],t=[e.join(","),...expenses.map(e=>[(new Date(e.date)).toLocaleDateString(),e.categoryName,e.amount,`"${e.description||""}"`,`"${e.location||""}"`].join(","))].join("\n"),o=new Blob([t],{type:"text/csv"}),n=window.URL.createObjectURL(o),a=document.createElement("a");a.href=n,a.download=`trucker-expenses-${(new Date).toISOString().split("T")[0]}.csv`,a.click(),window.URL.revokeObjectURL(n)}function exportHistoryToPDF(){showSection("history"),setTimeout(()=>window.print(),500)}function printHistory(){showSection("history"),setTimeout(()=>window.print(),500)}function exportHistoryToCSV(){exportToCSV()}function exportInsightsToPDF(){showSection("insights"),setTimeout(()=>window.print(),500)}function printInsights(){showSection("insights"),setTimeout(()=>window.print(),500)}function exportInsightsToCSV(){exportToCSV()}function updateFAQWithTrialDate(){const e=document.getElementById("trial-start-date-display");if(e){const t=localStorage.getItem("trialStartDate");t?e.textContent=(new Date(parseInt(t))).toLocaleString():e.textContent="Not started yet."}}function showFAQ(){document.getElementById("faqModal").classList.add("active"),updateFAQWithTrialDate()}function closeFAQ(){document.getElementById("faqModal").classList.remove("active")}function toggleFAQ(e){const t=e.nextElementSibling,o=e.querySelector("span");t.classList.toggle("active"),o.textContent=t.classList.contains("active")?"-":"+"}function showFeedback(){document.getElementById("feedbackModal").classList.add("active")}function closeFeedback(){document.getElementById("feedbackModal").classList.remove("active"),setTimeout(()=>{resetFeedbackForm()},300)}function updateEmailDisplay(){const e=document.getElementById("feedbackType").value,t=document.getElementById("emailDisplay");"feature"===e?(t.textContent="📧 Will be sent to: features@truckerexpensetracker.com",t.style.color="#10b981"):e?(t.textContent="📧 Will be sent to: support@truckerexpensetracker.com",t.style.color="#10b981"):t.textContent=""}function submitFeedback(e){e.preventDefault();const t=document.getElementById("feedbackSubmitBtn"),o=document.getElementById("feedbackForm"),n=document.getElementById("feedbackSuccess");t.textContent="Sending...",t.disabled=!0,t.style.background="#6b7280";const a=document.getElementById("feedbackType").value,i=document.getElementById("feedbackMessage").value,d=document.getElementById("feedbackEmail").value;let c="support@truckerexpensetracker.com";"feature"===a&&(c="features@truckerexpensetracker.com");const l=`Trucker Expense Tracker - ${a.charAt(0).toUpperCase()+a.slice(1)} ${"bug"===a?"Report":"feature"===a?"Request":"Feedback"}`,s=`Feedback Type: ${a}\n\nMessage:\n${i}\n\n${d?`Reply to: ${d}\n\n`:""}Sent from Trucker Expense Tracker PWA`,r=`mailto:${c}?subject=${encodeURIComponent(l)}&body=${encodeURIComponent(s)}`;setTimeout(()=>{o.style.display="none",n.style.display="block",window.location.href=r,showNotification("Your email client should open shortly...","success")},1e3)}function resetFeedbackForm(){const e=document.getElementById("feedbackForm"),t=document.getElementById("feedbackSuccess"),o=document.getElementById("feedbackSubmitBtn");e.style.display="block",t.style.display="none",e.reset(),document.getElementById("emailDisplay").textContent="",o.textContent="Send Feedback",o.disabled=!1,o.style.background=""}function checkForUpdates(){showNotification("You are using the latest version (v2.1.0)","success")}function backupData(){try{const e={expenses:expenses,trialStartDate:localStorage.getItem("trialStartDate"),darkMode:localStorage.getItem("darkMode"),version:"2.1.0",timestamp:(new Date).toISOString()},t=JSON.stringify(e,null,2),o=new Blob([t],{type:"application/json"}),n=URL.createObjectURL(o),a=document.createElement("a");a.href=n,a.download=`trucker-expenses-backup-${(new Date).toISOString().split("T")[0]}.json`,a.click(),URL.revokeObjectURL(n),showNotification("Data backup downloaded successfully!","success")}catch(e){showNotification("Failed to create backup. Please try again.","error"),console.error("Backup error:",e)}}function restoreData(){const e=document.createElement("input");e.type="file",e.accept=".json",e.onchange=function(t){const o=t.target.files[0];if(o){const n=new FileReader;n.onload=function(t){try{const o=JSON.parse(t.target.result);if(confirm("This will replace all current data. Are you sure you want to restore from backup?")){o.expenses&&Array.isArray(o.expenses)&&(expenses=o.expenses,localStorage.setItem("truckerExpenses",JSON.stringify(expenses))),o.trialStartDate&&(localStorage.setItem("trialStartDate",o.trialStartDate),trialStartDate=o.trialStartDate),o.darkMode&&(localStorage.setItem("darkMode",o.darkMode),isDarkMode="true"===o.darkMode,isDarkMode&&(document.body.classList.add("dark-mode"),document.querySelector(".dark-mode-toggle").textContent="☀️")),updateSummary(),updateInsights(),updateHistory(),updateTrialCountdown(),showNotification("Data restored successfully!","success")}}catch(e){showNotification("Invalid backup file. Please check the file format.","error"),console.error("Restore error:",e)}},n.readAsText(o)}},e.click()}document.addEventListener("click",function(e){e.target.classList.contains("modal")&&e.target.classList.remove("active")}),setInterval(updateTrialCountdown,6e4);function toggleDarkMode(){isDarkMode=!isDarkMode,document.body.classList.toggle("dark-mode",isDarkMode),localStorage.setItem("darkMode",isDarkMode),updateToggleIcon()}function updateToggleIcon(){const e=document.querySelector(".dark-mode-toggle");e&&(e.textContent=isDarkMode?"☀️":"🌙")}"true"===localStorage.getItem("darkMode")&&(document.body.classList.add("dark-mode"),isDarkMode=!0);
     </script>
 </body>
 </html>
