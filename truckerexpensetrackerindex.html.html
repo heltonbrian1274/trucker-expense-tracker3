@@ -1,0 +1,2413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional expense tracking PWA for owner-operator truck drivers. Track fuel, maintenance, meals, and all business expenses with receipt management and tax insights.">
+    <meta name="keywords" content="trucker expenses, owner operator, truck driver, expense tracker, tax deductions, fuel tracking, maintenance records">
+    <meta name="author" content="Trucker Expense Tracker">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://trucker-expense-tracker.vercel.app/">
+    <meta property="og:title" content="Trucker Expense Tracker - Professional Expense Management">
+    <meta property="og:description" content="Track your trucking expenses professionally with our PWA designed for owner-operators.">
+    <meta property="og:image" content="https://trucker-expense-tracker.vercel.app/icon-512x512.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://trucker-expense-tracker.vercel.app/">
+    <meta property="twitter:title" content="Trucker Expense Tracker - Professional Expense Management">
+    <meta property="twitter:description" content="Track your trucking expenses professionally with our PWA designed for owner-operators.">
+    <meta property="twitter:image" content="https://trucker-expense-tracker.vercel.app/icon-512x512.png">
+
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self';">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+
+    <title>Trucker Expense Tracker - Professional Expense Management for Owner-Operators</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="32x32" href="icon-72x72.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="icon-96x96.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512x512.png">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Trucker Expense Tracker">
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary-color: #10b981;
+            --background-light: #f8fafc;
+            --background-dark: #0f172a;
+            --text-light: #1e293b;
+            --text-dark: #f1f5f9;
+            --card-light: #ffffff;
+            --card-dark: #1e293b;
+            --border-light: #e2e8f0;
+            --border-dark: #334155;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --info-color: #3b82f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--text-light);
+            min-height: 100vh;
+            padding-bottom: 120px;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, var(--background-dark), #0c1426);
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: calc(100vh - 120px);
+            box-sizing: border-box;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding-top: 50px;
+        }
+
+        .header-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .version-display {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .dark-mode-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .trial-countdown {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .trial-countdown.warning {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            animation: pulse 2s infinite;
+        }
+
+        .trial-countdown.expired {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .section {
+            background: var(--card-light);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 0 20px 25px 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            max-width: calc(100% - 40px);
+            box-sizing: border-box;
+        }
+
+        .dark-mode .section {
+            background: var(--card-dark);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+
+
+        .section h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dark-mode .section h2 {
+            color: var(--secondary-color);
+        }
+
+        .expense-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .expense-card {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dark-mode .expense-card {
+            background: linear-gradient(135deg, #334155, #475569);
+            border-color: var(--border-dark);
+        }
+
+        .expense-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+            border-color: var(--primary-color);
+            will-change: transform;
+        }
+
+        .expense-card:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .expense-card.expanded {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .expense-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .expense-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .expense-card.expanded .expense-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .expense-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .dark-mode .expense-title {
+            color: var(--text-dark);
+        }
+
+        .expense-card.expanded .expense-title {
+            color: white;
+        }
+
+        .expense-form {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .expense-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: white;
+        }
+
+        /* Special styling for labels in regular sections (not expense forms) */
+        .section .form-group label {
+            color: var(--text-light);
+        }
+
+        .dark-mode .section .form-group label {
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        /* Special styling for inputs in regular sections (not expense forms) */
+        .section .form-group input,
+        .section .form-group select,
+        .section .form-group textarea {
+            background: var(--card-light);
+            color: var(--text-light);
+            border: 1px solid var(--border-light);
+        }
+
+        .dark-mode .section .form-group input,
+        .dark-mode .section .form-group select,
+        .dark-mode .section .form-group textarea {
+            background: var(--card-dark);
+            color: var(--text-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Special focus states for inputs in regular sections */
+        .section .form-group input:focus,
+        .section .form-group select:focus,
+        .section .form-group textarea:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+            border-color: var(--primary-color);
+            background: var(--background-light);
+        }
+
+        .dark-mode .section .form-group input:focus,
+        .dark-mode .section .form-group select:focus,
+        .dark-mode .section .form-group textarea:focus {
+            outline: 2px solid var(--secondary-color);
+            outline-offset: 2px;
+            border-color: var(--secondary-color);
+            background: var(--background-dark);
+        }
+
+        .form-group select option {
+            background: #2d3748;
+            color: white;
+            padding: 8px;
+        }
+
+        .form-group select option:hover,
+        .form-group select option:focus {
+            background: #4a5568;
+            color: white;
+        }
+
+        /* Better select option colors for regular sections */
+        .section .form-group select option {
+            background: var(--card-light);
+            color: var(--text-light);
+        }
+
+        .dark-mode .section .form-group select option {
+            background: var(--card-dark);
+            color: var(--text-dark);
+        }
+
+        .btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+        }
+
+        .btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #047857, #059669);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: left;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            contain: layout style;
+            will-change: auto;
+            box-sizing: border-box;
+        }
+
+        .summary-card h3 {
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.95rem;
+            gap: 15px;
+            line-height: 1.3;
+            contain: layout style;
+            min-height: 40px;
+            box-sizing: border-box;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding-top: 15px;
+        }
+
+        .summary-item span:first-child {
+            font-weight: 500;
+            flex: 1;
+            min-width: 0;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .summary-item span:last-child {
+            font-weight: 600;
+            text-align: right;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 25px 20px;
+            max-width: calc(100% - 40px);
+            box-sizing: border-box;
+            contain: layout style;
+            will-change: auto;
+            transition: gap 0.3s ease, margin 0.3s ease;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            border: 2px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            touch-action: manipulation;
+            color: var(--text-light);
+            height: 80px;
+            min-height: 80px;
+            min-width: 0;
+            contain: layout style;
+            will-change: transform;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .dark-mode .action-btn {
+            background: linear-gradient(135deg, #334155, #475569);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.15);
+            border-color: var(--primary-color);
+        }
+
+        .action-btn:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .action-btn:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #047857, #059669) !important;
+            color: white !important;
+            border-color: #047857 !important;
+        }
+
+        .print-btn {
+            background: linear-gradient(135deg, #d97706, #b45309) !important;
+            color: white !important;
+            border-color: #d97706 !important;
+        }
+
+        .csv-btn {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+            color: white !important;
+            border-color: #2563eb !important;
+        }
+
+        .feedback-btn {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+            color: white !important;
+            border-color: #7c3aed !important;
+        }
+
+        .faq-btn {
+            background: linear-gradient(135deg, #0891b2, #0e7490) !important;
+            color: white !important;
+            border-color: #0891b2 !important;
+        }
+
+        .update-btn {
+            background: linear-gradient(135deg, #92400e, #78350f) !important;
+            color: white !important;
+            border-color: #92400e !important;
+        }
+
+        .subscribe-btn {
+            background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+            color: white !important;
+            border-color: #dc2626 !important;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3) !important;
+        }
+
+        .subscribe-btn:hover {
+            background: linear-gradient(135deg, #b91c1c, #991b1b) !important;
+            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4) !important;
+        }
+
+        .privacy-notice {
+            background: linear-gradient(135deg, #374151, #4b5563);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 20px;
+            text-align: center;
+            max-width: calc(100% - 40px);
+            box-sizing: border-box;
+        }
+
+        .privacy-notice h3 {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 0;
+            left: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            border-radius: 15px 15px 0 0;
+            max-width: calc(100% - 40px);
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            touch-action: manipulation;
+            will-change: transform;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
+        }
+
+        .nav-btn.active {
+            background: #047857;
+            color: white;
+            font-weight: 600;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-light);
+            margin: 20px;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 500px;
+            height: 450px;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .dark-mode .modal-content {
+            background: var(--card-dark);
+            color: var(--text-dark);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-light);
+            padding: 5px;
+        }
+
+        .modal-close:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .dark-mode .modal-close {
+            color: var(--text-dark);
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .dark-mode .faq-item {
+            border-color: var(--border-dark);
+        }
+
+        .faq-question {
+            background: var(--background-light);
+            padding: 15px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .faq-question:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .dark-mode .faq-question {
+            background: #334155;
+        }
+
+        .faq-question:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-answer.active {
+            padding: 15px 20px;
+            max-height: 500px;
+        }
+
+        .expense-subtitle {
+            color: var(--text-light);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        .dark-mode .expense-subtitle {
+            color: var(--text-dark);
+            opacity: 0.9;
+        }
+
+        .expense-amount {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .dark-mode .expense-amount {
+            color: var(--secondary-color);
+        }
+
+        .expense-description {
+            margin-top: 10px;
+            color: var(--text-light);
+            opacity: 0.8;
+        }
+
+        .dark-mode .expense-description {
+            color: var(--text-dark);
+            opacity: 1;
+            font-weight: 500;
+        }
+
+        .dark-mode .expense-title {
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .dark-mode .expense-subtitle {
+            color: rgba(241, 245, 249, 0.8);
+            font-weight: 500;
+        }
+
+        .dark-mode .expense-title {
+            color: var(--text-dark) !important;
+            font-weight: 600 !important;
+        }
+
+        .dark-mode .expense-subtitle {
+            color: rgba(241, 245, 249, 0.8) !important;
+            font-weight: 500 !important;
+        }
+
+        .dark-mode .expense-description {
+            color: var(--text-dark) !important;
+            opacity: 1 !important;
+            font-weight: 500 !important;
+        }
+
+        .dark-mode .expense-amount {
+            color: var(--secondary-color) !important;
+        }
+
+        /* Fix insights section cards in dark mode */
+        .dark-mode .insights-breakdown-section .summary-item span:first-child {
+            color: white !important;
+        }
+
+        .dark-mode .insights-breakdown-section .summary-item span:last-child {
+            color: white !important;
+        }
+
+        .dark-mode .insights-breakdown-section .summary-item span:last-child div {
+            color: white !important;
+        }
+
+        .dark-mode #categoryList .summary-item span {
+            color: var(--text-dark) !important;
+        }
+
+        .dark-mode #categoryList .summary-item span:last-child div:first-child {
+            color: var(--secondary-color) !important;
+        }
+
+        .dark-mode #monthlyBreakdown .summary-item span {
+            color: var(--text-dark) !important;
+        }
+
+        .dark-mode #monthlyBreakdown .summary-item span:last-child div:first-child {
+            color: var(--secondary-color) !important;
+        }
+
+        .btn-delete {
+            margin-top: 10px;
+            background: var(--error-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .receipt-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .skip-link {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            z-index: 1000;
+        }
+
+        .skip-link:focus {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .section {
+                margin: 0 10px 25px 10px;
+                padding: 20px;
+                max-width: calc(100% - 20px);
+            }
+
+            .privacy-notice {
+                margin: 25px 10px;
+                padding: 20px;
+                max-width: calc(100% - 20px);
+            }
+
+            .navigation {
+                left: 10px;
+                right: 10px;
+                max-width: calc(100% - 20px);
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+                margin-bottom: 8px;
+            }
+
+            .header .subtitle {
+                font-size: 1rem;
+            }
+
+            .header-controls {
+                position: relative;
+                top: 0;
+                right: 0;
+                justify-content: center;
+                margin-bottom: 15px;
+                gap: 15px;
+            }
+
+            .dark-mode-toggle,
+            .version-display {
+                padding: 6px 10px;
+                font-size: 14px;
+            }
+
+            .expense-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .expense-card {
+                padding: 18px;
+            }
+
+            .expense-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 20px;
+            }
+
+            .expense-title {
+                font-size: 1.1rem;
+            }
+
+            .action-buttons {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                margin: 25px 10px;
+                max-width: calc(100% - 20px);
+                contain: layout style;
+            }
+
+            .action-btn {
+                padding: 15px 8px;
+                font-size: 12px;
+                height: 70px;
+                min-height: 70px;
+                flex-direction: column;
+                gap: 5px;
+                contain: layout style;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                text-align: center;
+                line-height: 1.1;
+            }
+
+            .insights-breakdown-section {
+                padding: 20px;
+                margin: 20px 0;
+            }
+
+            .navigation {
+                padding: 10px;
+                gap: 10px;
+                flex-wrap: nowrap;
+            }
+
+            .nav-btn {
+                padding: 12px 8px;
+                font-size: 12px;
+                flex: 1;
+                min-width: 90px;
+                text-align: center;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+
+            .modal-content {
+                margin: 10px;
+                padding: 20px;
+                max-height: 90vh;
+            }
+
+            body {
+                padding-bottom: 120px;
+            }
+
+            .summary-card {
+                padding: 16px;
+                margin: 20px 0;
+                min-height: 140px;
+                contain: layout style;
+                box-sizing: border-box;
+            }
+
+            .summary-card h3 {
+                font-size: 1.05rem;
+                margin-bottom: 12px;
+            }
+
+            .summary-item {
+                font-size: 0.85rem;
+                gap: 8px;
+                padding: 8px 0;
+                line-height: 1.3;
+            }
+
+            .summary-item:last-child {
+                font-size: 0.95rem;
+                padding-top: 12px;
+            }
+
+            .summary-item span:first-child {
+                font-size: 0.85rem;
+                line-height: 1.3;
+            }
+
+            .summary-item span:last-child {
+                font-size: 0.85rem;
+                line-height: 1.3;
+            }
+
+            .insights-breakdown-section {
+                padding: 18px;
+                margin: 20px 0;
+            }
+
+            .insights-breakdown-section h3 {
+                font-size: 1.1rem;
+                margin-bottom: 15px;
+            }
+
+            .insights-breakdown-section .summary-card {
+                padding: 18px;
+                min-height: 140px;
+                contain: layout style;
+                box-sizing: border-box;
+            }
+
+            .insights-breakdown-section .summary-item {
+                padding: 8px 0;
+                font-size: 0.9rem;
+                line-height: 1.4;
+            }
+
+            .insights-breakdown-section .summary-item:last-child {
+                font-size: 0.95rem;
+                padding-top: 10px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .insights-breakdown-section {
+            background: var(--card-light);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            overflow: hidden;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        .dark-mode .insights-breakdown-section {
+            background: var(--card-dark);
+            border-color: var(--border-dark);
+        }
+
+        .insights-breakdown-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+        }
+
+        .dark-mode .insights-breakdown-section h3 {
+            color: var(--secondary-color);
+        }
+
+        .insights-breakdown-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .no-data-message {
+            text-align: center;
+            color: var(--text-light);
+            opacity: 0.7;
+            margin: 20px 0;
+        }
+
+        .dark-mode .no-data-message {
+            color: var(--text-dark);
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                padding-bottom: 0;
+            }
+
+            .navigation,
+            .action-buttons,
+            .dark-mode-toggle,
+            .version-display {
+                display: none !important;
+            }
+
+            .section {
+                background: white !important;
+                box-shadow: none !important;
+                border: 1px solid #ccc;
+                page-break-inside: avoid;
+            }
+
+            .expense-card {
+                background: white !important;
+                color: black !important;
+                border: 1px solid #ccc !important;
+            }
+
+            .summary-card,
+            .privacy-notice {
+                background: white !important;
+                color: black !important;
+                border: 1px solid #ccc;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <div class="container">
+        <header class="header">
+            <div class="header-controls">
+                <button class="dark-mode-toggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode">🌙</button>
+                <div class="version-display">v2.1.0</div>
+            </div>
+            <h1>🚛 Trucker Expense Tracker</h1>
+            <p class="subtitle">Professional expense management for owner-operators</p>
+
+            <div id="trialCountdown" class="trial-countdown">
+                <span id="trialText">🎁 Free Trial: <span id="daysLeft">30</span> days remaining</span>
+            </div>
+        </header>
+
+        <main id="main-content">
+            <section id="todaySection" class="section">
+                <h2>📅 Log your expenses for today</h2>
+                <div class="expense-grid" id="expenseGrid" aria-label="Expense categories"></div>
+                <fieldset style="border: none; margin: 0; padding: 0;">
+                    <legend class="sr-only">Expense categories</legend>
+                    <!-- Expense categories will be populated by JavaScript -->
+                </fieldset>
+
+                <div class="summary-card">
+                    <h3>📊 Today's Summary</h3>
+                    <div class="summary-item">
+                        <span>Total Daily Expenses:</span>
+                        <span id="dailyTotal">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Total Expenses:</span>
+                        <span id="totalExpenses">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-btn export-btn" onclick="exportToPDF()">📄 Export PDF</button>
+                    <button class="action-btn print-btn" onclick="printSection()">🖨️ Print</button>
+                    <button class="action-btn csv-btn" onclick="exportToCSV()">📊 Export CSV</button>
+                    <button class="action-btn feedback-btn" onclick="showFeedback()">💬 Feedback</button>
+                    <button class="action-btn faq-btn" onclick="showFAQ()">❓ FAQ</button>
+                    <button class="action-btn update-btn" onclick="checkForUpdates()">🔄 Check for Updates</button>
+                    <button class="action-btn" style="background: #8b5cf6;" onclick="backupData()">💾 Backup Data</button>
+                    <button class="action-btn" style="background: #06b6d4;" onclick="restoreData()">📥 Restore Data</button>
+                    <button class="action-btn subscribe-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')">💳 Subscribe - $9.99/mo</button>
+                </div>
+            </section>
+
+            <section id="historySection" class="section hidden">
+                <h2>📚 Expense History</h2>
+                <div class="form-group">
+                    <label for="dateFilter">Filter by Date Range:</label>
+                    <select id="dateFilter" onchange="filterExpenses()">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="year">This Year</option>
+                    </select>
+                </div>
+                <ul id="historyList" aria-label="Expense history" style="list-style: none; padding: 0; margin: 0;">
+                    <p style="text-align: center; color: var(--text-light); opacity: 0.7; margin: 40px 0;">No expenses recorded yet. Start by adding some expenses in the Today section!</p>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-btn export-btn" onclick="exportHistoryToPDF()">📄 Export PDF</button>
+                    <button class="action-btn print-btn" onclick="printHistory()">🖨️ Print</button>
+                    <button class="action-btn csv-btn" onclick="exportHistoryToCSV()">📊 Export CSV</button>
+                </div>
+            </section>
+
+            <section id="insightsSection" class="section hidden">
+                <h2>📈 Expense Insights</h2>
+                <div id="insightsContent">
+                    <div class="insights-breakdown-section">
+                        <h3>💰 Financial Overview</h3>
+                        <div class="summary-card" style="background: linear-gradient(135deg, #047857, #059669); margin: 0;">
+                            <div class="summary-item">
+                                <span>Total Expenses:</span>
+                                <span id="insightsTotalExpenses">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Average Daily Expense:</span>
+                                <span id="averageDailyExpense">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Most Expensive Category:</span>
+                                <span id="topCategory">None</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="insights-breakdown-section">
+                        <h3>📊 Spending Trends</h3>
+                        <div class="summary-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); margin: 0;">
+                            <div class="summary-item">
+                                <span>This Month's Total:</span>
+                                <span id="currentMonthTotal">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Last Month's Total:</span>
+                                <span id="lastMonthTotal">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Monthly Change:</span>
+                                <span id="monthlyChange">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="insights-breakdown-section">
+                        <h3>📊 Category Breakdown</h3>
+                        <ul id="categoryList" aria-label="Category breakdown">
+                            <p class="no-data-message">No expense data available for analysis.</p>
+                        </ul>
+                    </div>
+
+                    <div class="insights-breakdown-section">
+                        <h3>📅 Monthly Breakdown</h3>
+                        <ul id="monthlyBreakdown" aria-label="Monthly expense breakdown">
+                            <p class="no-data-message">No expense data available for monthly analysis.</p>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-btn export-btn" onclick="exportInsightsToPDF()">📄 Export PDF</button>
+                    <button class="action-btn print-btn" onclick="printInsights()">🖨️ Print</button>
+                    <button class="action-btn csv-btn" onclick="exportInsightsToCSV()">📊 Export CSV</button>
+                </div>
+            </section>
+        </main>
+
+        <nav class="navigation">
+            <button class="nav-btn active" onclick="showSection('today')" data-section="today">📅 Today</button>
+            <button class="nav-btn" onclick="showSection('history')" data-section="history">📚 History</button>
+            <button class="nav-btn" onclick="showSection('insights')" data-section="insights">📈 Insights</button>
+        </nav>
+
+        <div class="privacy-notice">
+            <h3>🔒 Privacy First</h3>
+            <p>All your data is stored locally on your device. Nothing is sent to our servers, ensuring complete privacy and security of your expense information.</p>
+        </div>
+    </div>
+
+    <!-- FAQ Modal -->
+    <div id="faqModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeFAQ()">&times;</button>
+            <h2>❓ Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What expenses can I track? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    You can track 15 different categories of expenses including fuel, maintenance, meals, lodging, tolls, permits, insurance, phone bills, and more. Each category is specifically designed for trucking business needs.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Is my data secure? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! All your data is stored locally on your device using your browser's local storage. Nothing is sent to our servers, ensuring complete privacy and security.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I export my data? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! You can export your expense data as PDF reports or CSV files for your accountant or tax preparation.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Does this work offline? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! This is a Progressive Web App (PWA) that works offline. You can add expenses even without an internet connection.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What happens after the trial period? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    After the 30-day trial, you'll need to subscribe for $9.99/month to continue using the app. Your data will remain on your device during the trial period.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I track per-mile expenses? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! You can use the "Other Business Expenses" category to track per-mile costs, or add mile information in the description field of fuel and maintenance entries.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I track expenses for multiple trucks? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Currently, the app tracks expenses in one account. You can use the description field to specify which truck/trailer an expense relates to, or use separate devices/browsers for different trucks.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What if I need to edit or delete an expense? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    You can delete expenses from the History section by clicking the "Delete" button on any expense entry. Currently, editing requires deleting and re-adding the expense.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    How do I backup my data if I switch devices? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Use the "Backup Data" button to download your expenses as a JSON file. On your new device, use "Restore Data" to import this backup file.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Does the app work on both mobile and desktop? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! This PWA is designed to work seamlessly on smartphones, tablets, and desktop computers. You can install it on your phone's home screen for easy access.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I print my expense reports? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! Each section (Today, History, Insights) has print functionality. You can also export PDF reports and CSV files for your records.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedbackModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeFeedback()">&times;</button>
+            <h2>💬 Send Feedback</h2>
+            <form onsubmit="submitFeedback(event)" id="feedbackForm">
+                <div class="form-group">
+                    <label for="feedbackType">Feedback Type:</label>
+                    <select id="feedbackType" required onchange="updateEmailDisplay()">
+                        <option value="">Select type...</option>
+                        <option value="bug">🐛 Bug Report</option>
+                        <option value="feature">💡 Feature Request</option>
+                        <option value="improvement">⚡ Improvement</option>
+                        <option value="general">💬 General Feedback</option>
+                    </select>
+                    <div id="emailDisplay" style="margin-top: 5px; font-size: 0.9rem; color: #666; min-height: 20px; display: flex; align-items: center;"></div>
+                </div>
+                <div class="form-group">
+                    <label for="feedbackMessage">Message:</label>
+                    <textarea id="feedbackMessage" rows="5" required placeholder="Tell us what you think..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="feedbackEmail">Email (optional):</label>
+                    <input type="email" id="feedbackEmail" placeholder="your@email.com">
+                </div>
+                <button type="submit" class="btn" id="feedbackSubmitBtn">Send Feedback</button>
+            </form>
+
+            <div id="feedbackSuccess" style="display: none; text-align: center; padding: 30px;">
+                <div style="font-size: 4rem; margin-bottom: 20px; color: var(--success-color);">✓</div>
+                <h3 style="color: var(--success-color); margin-bottom: 15px;">Email Client Opening...</h3>
+                <p style="color: #666; margin-bottom: 20px;">Your default email client should open with a pre-filled message.</p>
+                <div style="background: var(--background-light); padding: 15px; border-radius: 10px; margin: 20px 0; border-left: 4px solid var(--success-color);">
+                    <p style="font-size: 0.9rem; color: #666; margin: 0;"><strong>Next steps:</strong></p>
+                    <p style="font-size: 0.9rem; color: #666; margin: 5px 0 0 0;">1. Check your email client<br>2. Review the pre-filled message<br>3. Click send to reach our team</p>
+                </div>
+                <button onclick="resetFeedbackForm()" class="btn btn-secondary">Send Another Message</button>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        // Expense categories with 15 different types
+        const expenseCategories = [
+            { id: 'fuel', name: 'Fuel', icon: '⛽' },
+            { id: 'maintenance', name: 'Maintenance & Repairs', icon: '🔧' },
+            { id: 'meals', name: 'Meals', icon: '🍽️' },
+            { id: 'lodging', name: 'Lodging', icon: '🏨' },
+            { id: 'tolls', name: 'Tolls & Parking', icon: '🛣️' },
+            { id: 'permits', name: 'Permits & Licenses', icon: '📋' },
+            { id: 'insurance', name: 'Insurance', icon: '🛡️' },
+            { id: 'phone', name: 'Phone & Communication', icon: '📱' },
+            { id: 'supplies', name: 'Supplies & Equipment', icon: '📦' },
+            { id: 'training', name: 'Training & Education', icon: '📚' },
+            { id: 'medical', name: 'Medical & DOT Exams', icon: '🏥' },
+            { id: 'office', name: 'Office Expenses', icon: '🏢' },
+            { id: 'bank', name: 'Bank & Financial Fees', icon: '🏦' },
+            { id: 'legal', name: 'Legal & Professional', icon: '⚖️' },
+            { id: 'other', name: 'Other Business Expenses', icon: '💼' }
+        ];
+
+        // Application state
+        let expenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
+        let isDarkMode = localStorage.getItem('darkMode') === 'true';
+        let currentSection = 'today';
+        let trialStartDate = localStorage.getItem('trialStartDate') || Date.now();
+        let isTrialExpired = false;
+
+        // Initialize trial start date if not set
+        if (!localStorage.getItem('trialStartDate')) {
+            localStorage.setItem('trialStartDate', trialStartDate);
+        }
+
+
+
+        // Initialize the app
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for trial reset parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('reset') === 'trial') {
+                localStorage.removeItem('trialStartDate');
+                localStorage.removeItem('truckerExpenses');
+                localStorage.removeItem('darkMode');
+                trialStartDate = Date.now();
+                localStorage.setItem('trialStartDate', trialStartDate);
+                expenses = [];
+                alert('Trial has been reset! Redirecting...');
+                window.location.href = window.location.pathname;
+                return;
+            }
+
+            initializeApp();
+            updateTrialCountdown();
+            populateExpenseGrid();
+            updateToggleIcon(); // Update icon after DOM is loaded
+
+            // Sample data initialization removed
+
+            updateSummary();
+            updateInsights();
+
+            // Check for service worker support
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(error => console.log('SW registration failed'));
+            }
+        });
+
+        function addSampleData() {
+            // Sample data function removed - no longer adding test data
+        }
+
+        function initializeApp() {
+            // Apply dark mode if enabled
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                document.querySelector('.dark-mode-toggle').textContent = '☀️';
+            }
+
+            // Handle URL parameters for shortcuts
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action');
+
+            if (action === 'add-fuel') {
+                showSection('today');
+                setTimeout(() => toggleExpenseCard('fuel'), 500);
+            } else if (action === 'history') {
+                showSection('history');
+            } else if (action === 'export') {
+                exportToPDF();
+            }
+        }
+
+        function updateTrialCountdown() {
+            const trialDuration = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+            const elapsed = Date.now() - parseInt(trialStartDate);
+            const remaining = trialDuration - elapsed;
+            const daysLeft = Math.max(0, Math.ceil(remaining / (24 * 60 * 60 * 1000)));
+
+            const trialElement = document.getElementById('trialCountdown');
+            const daysElement = document.getElementById('daysLeft');
+            const textElement = document.getElementById('trialText');
+
+            if (daysLeft <= 0) {
+                isTrialExpired = true;
+                trialElement.className = 'trial-countdown expired';
+                textElement.innerHTML = '⚠️ Trial Expired - Subscribe to continue using';
+            } else if (daysLeft <= 7) {
+                trialElement.className = 'trial-countdown warning';
+                daysElement.textContent = daysLeft;
+            } else {
+                daysElement.textContent = daysLeft;
+            }
+        }
+
+        function populateExpenseGrid() {
+            const grid = document.getElementById('expenseGrid');
+            grid.innerHTML = '';
+
+            expenseCategories.forEach(category => {
+                const card = document.createElement('div');
+                card.className = 'expense-card';
+                card.id = `card-${category.id}`;
+                card.setAttribute('role', 'button');
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('aria-label', `Add ${category.name} expense`);
+
+                card.innerHTML = `
+                    <div class="expense-header">
+                        <div class="expense-icon">${category.icon}</div>
+                        <div class="expense-title">${category.name}</div>
+                    </div>
+                    <div class="expense-form" id="form-${category.id}">
+                        <form onsubmit="addExpense(event, '${category.id}')">
+                            <div class="form-group">
+                                <label for="amount-${category.id}">Amount ($):</label>
+                                <input type="number" id="amount-${category.id}" step="0.01" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="description-${category.id}">Description:</label>
+                                <input type="text" id="description-${category.id}" placeholder="Enter expense details...">
+                            </div>
+                            <div class="form-group">
+                                <label for="location-${category.id}">Location:</label>
+                                <input type="text" id="location-${category.id}" placeholder="City, State">
+                            </div>
+                            <div class="form-group">
+                                <label for="receipt-${category.id}">Receipt (optional):</label>
+                                <input type="file" id="receipt-${category.id}" accept="image/*" onchange="previewReceipt('${category.id}')">
+                                <div id="receipt-preview-${category.id}"></div>
+                            </div>
+                            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                                <button type="submit" class="btn">Add Expense</button>
+                                <button type="button" class="btn btn-secondary" onclick="toggleExpenseCard('${category.id}')">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+
+                card.addEventListener('click', (e) => {
+                    // Don't toggle if clicking inside the form
+                    if (e.target.closest('.expense-form')) {
+                        return;
+                    }
+                    toggleExpenseCard(category.id);
+                });
+
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (!card.classList.contains('expanded')) {
+                            toggleExpenseCard(category.id);
+                        }
+                    }
+                });
+
+                grid.appendChild(card);
+            });
+        }
+
+        function toggleExpenseCard(categoryId) {
+            if (isTrialExpired) {
+                alert('Your trial has expired. Please subscribe to continue adding expenses.');
+                return;
+            }
+
+            const card = document.getElementById(`card-${categoryId}`);
+            const form = document.getElementById(`form-${categoryId}`);
+            const allCards = document.querySelectorAll('.expense-card');
+
+            // If this card is already expanded, just close it
+            if (card.classList.contains('expanded')) {
+                card.classList.remove('expanded');
+                form.classList.remove('active');
+                return;
+            }
+
+            // Close all other cards
+            allCards.forEach(c => {
+                c.classList.remove('expanded');
+                const otherForm = c.querySelector('.expense-form');
+                if (otherForm) otherForm.classList.remove('active');
+            });
+
+            // Open current card
+            card.classList.add('expanded');
+            form.classList.add('active');
+
+            // Focus on amount input
+            setTimeout(() => {
+                document.getElementById(`amount-${categoryId}`).focus();
+            }, 100);
+        }
+
+        function addExpense(event, categoryId) {
+            event.preventDefault();
+
+            if (isTrialExpired) {
+                alert('Your trial has expired. Please subscribe to continue adding expenses.');
+                return;
+            }
+
+            const amountInput = document.getElementById(`amount-${categoryId}`);
+            const amount = parseFloat(amountInput.value);
+
+            // Validate amount
+            if (isNaN(amount) || amount <= 0) {
+                showNotification('Please enter a valid amount greater than $0.00', 'error');
+                amountInput.focus();
+                return;
+            }
+
+            if (amount > 999999) {
+                showNotification('Amount cannot exceed $999,999.00', 'error');
+                amountInput.focus();
+                return;
+            }
+
+            const description = document.getElementById(`description-${categoryId}`).value.trim();
+            const location = document.getElementById(`location-${categoryId}`).value.trim();
+            const receiptFile = document.getElementById(`receipt-${categoryId}`).files[0];
+
+            // Validate file size (max 5MB)
+            if (receiptFile && receiptFile.size > 5 * 1024 * 1024) {
+                showNotification('Receipt file must be smaller than 5MB', 'error');
+                return;
+            }
+
+            const category = expenseCategories.find(cat => cat.id === categoryId);
+
+            const expense = {
+                id: Date.now() + Math.random(),
+                categoryId: categoryId,
+                categoryName: category.name,
+                icon: category.icon,
+                amount: amount,
+                description: description,
+                location: location,
+                date: new Date().toISOString(),
+                receipt: null
+            };
+
+            // Handle receipt file
+            if (receiptFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    expense.receipt = e.target.result;
+                    saveExpense(expense);
+                };
+                reader.readAsDataURL(receiptFile);
+            } else {
+                saveExpense(expense);
+            }
+
+            function saveExpense(expense) {
+                expenses.push(expense);
+                localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
+
+                // Reset form
+                event.target.reset();
+                document.getElementById(`receipt-preview-${categoryId}`).innerHTML = '';
+                toggleExpenseCard(categoryId);
+
+                // Update displays
+                updateSummary();
+                updateInsights();
+                updateHistory();
+
+                // Show success message
+                showNotification(`${category.name} expense added successfully!`, 'success');
+            }
+        }
+
+        function previewReceipt(categoryId) {
+            const fileInput = document.getElementById(`receipt-${categoryId}`);
+            const preview = document.getElementById(`receipt-preview-${categoryId}`);
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" class="receipt-preview" alt="Receipt preview">`;
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                preview.innerHTML = '';
+            }
+        }
+
+        function updateSummary() {
+            const today = new Date().toDateString();
+            const todayExpenses = expenses.filter(expense => 
+                new Date(expense.date).toDateString() === today
+            );
+
+            const dailyTotal = todayExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+
+            document.getElementById('dailyTotal').textContent = `$${dailyTotal.toFixed(2)}`;
+            document.getElementById('totalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
+        }
+
+        function updateInsights() {
+            const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const uniqueDays = [...new Set(expenses.map(expense => new Date(expense.date).toDateString()))].length;
+            const averageDaily = uniqueDays > 0 ? totalExpenses / uniqueDays : 0;
+
+            // Find top category
+            const categoryTotals = {};
+            expenses.forEach(expense => {
+                categoryTotals[expense.categoryName] = (categoryTotals[expense.categoryName] || 0) + expense.amount;
+            });
+
+            const topCategory = Object.keys(categoryTotals).reduce((a, b) => 
+                categoryTotals[a] > categoryTotals[b] ? a : b, 'None'
+            );
+
+            // Calculate monthly comparisons
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+            const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+            const currentMonthExpenses = expenses.filter(expense => {
+                const expenseDate = new Date(expense.date);
+                return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
+            }).reduce((sum, expense) => sum + expense.amount, 0);
+
+            const lastMonthExpenses = expenses.filter(expense => {
+                const expenseDate = new Date(expense.date);
+                return expenseDate.getMonth() === lastMonth && expenseDate.getFullYear() === lastMonthYear;
+            }).reduce((sum, expense) => sum + expense.amount, 0);
+
+            const monthlyChange = lastMonthExpenses > 0 ? 
+                ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses * 100).toFixed(1) : 
+                (currentMonthExpenses > 0 ? '∞' : '0');
+
+            // Update financial overview
+            document.getElementById('insightsTotalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
+            document.getElementById('averageDailyExpense').textContent = `$${averageDaily.toFixed(2)}`;
+            document.getElementById('topCategory').textContent = topCategory;
+
+            // Update spending trends
+            document.getElementById('currentMonthTotal').textContent = `$${currentMonthExpenses.toFixed(2)}`;
+            document.getElementById('lastMonthTotal').textContent = `$${lastMonthExpenses.toFixed(2)}`;
+
+            const changeElement = document.getElementById('monthlyChange');
+            if (monthlyChange === '∞') {
+                changeElement.textContent = 'New spending';
+                changeElement.style.color = '#fbbf24';
+            } else if (monthlyChange === '0') {
+                changeElement.textContent = 'No change';
+                changeElement.style.color = '#6b7280';
+            } else {
+                const changeValue = parseFloat(monthlyChange);
+                changeElement.textContent = `${changeValue > 0 ? '+' : ''}${changeValue}%`;
+                changeElement.style.color = changeValue > 0 ? '#ef4444' : '#10b981';
+            }
+
+            // Update category breakdown
+            updateCategoryBreakdown(categoryTotals);
+
+            // Update monthly breakdown
+            updateMonthlyBreakdown();
+        }
+
+        function updateCategoryBreakdown(categoryTotals) {
+            const categoryList = document.getElementById('categoryList');
+
+            if (Object.keys(categoryTotals).length === 0) {
+                categoryList.innerHTML = '<li><p class="no-data-message">No expense data available for analysis.</p></li>';
+                return;
+            }
+
+            const sortedCategories = Object.entries(categoryTotals)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 10);
+
+            const totalAmount = Object.values(categoryTotals).reduce((a, b) => a + b, 0);
+
+            categoryList.innerHTML = sortedCategories.map(([category, amount]) => {
+                const percentage = ((amount / totalAmount) * 100).toFixed(1);
+                const categoryData = expenseCategories.find(cat => cat.name === category);
+                const icon = categoryData ? categoryData.icon : '💼';
+
+                return `
+                    <li>
+                        <div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light); align-items: flex-start; gap: 10px;">
+                            <span style="display: flex; align-items: center; gap: 8px; color: var(--text-light); flex: 1; min-width: 0;">
+                                <span style="font-size: 1.2rem; flex-shrink: 0;">${icon}</span>
+                                <span style="word-wrap: break-word; overflow-wrap: break-word; font-size: 1rem; line-height: 1.3;">${category}</span>
+                            </span>
+                            <span style="text-align: right; flex-shrink: 0; min-width: 80px;">
+                                <div style="font-weight: 600; color: var(--primary-color); font-size: 1rem;">$${amount.toFixed(2)}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-light); opacity: 0.8;">${percentage}%</div>
+                            </span>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        function updateMonthlyBreakdown() {
+            const monthlyBreakdown = document.getElementById('monthlyBreakdown');
+
+            if (expenses.length === 0) {
+                monthlyBreakdown.innerHTML = '<li><p class="no-data-message">No expense data available for monthly analysis.</p></li>';
+                return;
+            }
+
+            // Group expenses by month
+            const monthlyTotals = {};
+            expenses.forEach(expense => {
+                const date = new Date(expense.date);
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                const monthName = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+
+                if (!monthlyTotals[monthKey]) {
+                    monthlyTotals[monthKey] = { name: monthName, total: 0, count: 0 };
+                }
+                monthlyTotals[monthKey].total += expense.amount;
+                monthlyTotals[monthKey].count += 1;
+            });
+
+            const sortedMonths = Object.entries(monthlyTotals)
+                .sort(([a], [b]) => b.localeCompare(a))
+                .slice(0, 6);
+
+            monthlyBreakdown.innerHTML = sortedMonths.map(([monthKey, data]) => {
+                const average = data.total / data.count;
+
+                return `
+                    <li>
+                        <div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light); align-items: flex-start; gap: 10px;">
+                            <span style="display: flex; align-items: center; gap: 8px; color: var(--text-light); flex: 1; min-width: 0;">
+                                <span style="font-size: 1.2rem; flex-shrink: 0;">📅</span>
+                                <span style="word-wrap: break-word; overflow-wrap: break-word; font-size: 1rem; line-height: 1.3;">${data.name}</span>
+                            </span>
+                            <span style="text-align: right; flex-shrink: 0; min-width: 90px;">
+                                <div style="font-weight: 600; color: var(--primary-color); font-size: 1rem;">$${data.total.toFixed(2)}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-light); opacity: 0.8; line-height: 1.3;">${data.count} trans • $${average.toFixed(2)} avg</div>
+                            </span>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        function updateHistory() {
+            const historyList = document.getElementById('historyList');
+            const filterElement = document.getElementById('dateFilter');
+            const filter = filterElement ? filterElement.value : 'all';
+
+            let filteredExpenses = [...expenses];
+            const now = new Date();
+
+            switch (filter) {
+                case 'today':
+                    filteredExpenses = expenses.filter(expense => 
+                        new Date(expense.date).toDateString() === now.toDateString()
+                    );
+                    break;
+                case 'week':
+                    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    filteredExpenses = expenses.filter(expense => 
+                        new Date(expense.date) >= weekAgo
+                    );
+                    break;
+                case 'month':
+                    filteredExpenses = expenses.filter(expense => 
+                        new Date(expense.date).getMonth() === now.getMonth() &&
+                        new Date(expense.date).getFullYear() === now.getFullYear()
+                    );
+                    break;
+                case 'year':
+                    filteredExpenses = expenses.filter(expense => 
+                        new Date(expense.date).getFullYear() === now.getFullYear()
+                    );
+                    break;
+                default:
+                    // 'all' - no filtering needed
+                    break;
+            }
+
+            if (filteredExpenses.length === 0) {
+                historyList.innerHTML = '<li><p style="text-align: center; color: var(--text-light); opacity: 0.7; margin: 40px 0;">No expenses found for the selected period.</p></li>';
+                return;
+            }
+
+            // Sort by date (newest first)
+            filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            historyList.innerHTML = filteredExpenses.map(expense => `
+                <li><div class="expense-card" style="margin-bottom: 15px;">
+                    <div class="expense-header">
+                        <div class="expense-icon">${expense.icon}</div>
+                        <div style="flex: 1;">
+                            <div class="expense-title" style="color: var(--text-light); font-weight: 600;">${expense.categoryName}</div>
+                            <div class="expense-subtitle" style="color: var(--text-light); opacity: 0.7; font-size: 0.9rem;">
+                                ${new Date(expense.date).toLocaleDateString()} ${expense.location ? `• ${expense.location}` : ''}
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="expense-amount" style="color: var(--primary-color); font-size: 1.2rem; font-weight: 600;">$${expense.amount.toFixed(2)}</div>
+                        </div>
+                    </div>
+                    ${expense.description ? `<div class="expense-description" style="margin-top: 10px; color: var(--text-light); opacity: 0.8;">${expense.description}</div>` : ''}
+                    ${expense.receipt ? `<div style="margin-top: 10px;"><img src="${expense.receipt}" class="receipt-preview" alt="Receipt"></div>` : ''}
+                    <button onclick="deleteExpense('${expense.id}')" class="btn-delete">Delete</button>
+                </div></li>
+            `).join('');
+        }
+
+        function deleteExpense(expenseId) {
+            if (confirm('Are you sure you want to delete this expense?')) {
+                expenses = expenses.filter(expense => expense.id != expenseId);
+                localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
+                updateSummary();
+                updateInsights();
+                updateHistory();
+                showNotification('Expense deleted successfully!', 'success');
+            }
+        }
+
+        function filterExpenses() {
+            updateHistory();
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show selected section
+            document.getElementById(`${sectionName}Section`).classList.remove('hidden');
+
+            // Update navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
+
+            currentSection = sectionName;
+
+            // Update content based on section
+            if (sectionName === 'history') {
+                updateHistory();
+            } else if (sectionName === 'insights') {
+                updateInsights();
+            }
+        }
+
+
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? 'var(--success-color)' : 'var(--info-color)'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                z-index: 3000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                font-weight: 600;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Export functions
+        function exportToPDF() {
+            window.print();
+        }
+
+        function printSection() {
+            window.print();
+        }
+
+        function exportToCSV() {
+            if (expenses.length === 0) {
+                alert('No expenses to export.');
+                return;
+            }
+
+            const headers = ['Date', 'Category', 'Amount', 'Description', 'Location'];
+            const csvContent = [
+                headers.join(','),
+                ...expenses.map(expense => [
+                    new Date(expense.date).toLocaleDateString(),
+                    expense.categoryName,
+                    expense.amount,
+                    `"${expense.description || ''}"`,
+                    `"${expense.location || ''}"`,
+                ].join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `trucker-expenses-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function exportHistoryToPDF() {
+            showSection('history');
+            setTimeout(() => window.print(), 500);
+        }
+
+        function printHistory() {
+            showSection('history');
+            setTimeout(() => window.print(), 500);
+        }
+
+        function exportHistoryToCSV() {
+            exportToCSV();
+        }
+
+        function exportInsightsToPDF() {
+            showSection('insights');
+            setTimeout(() => window.print(), 500);
+        }
+
+        function printInsights() {
+            showSection('insights');
+            setTimeout(() => window.print(), 500);
+        }
+
+        function exportInsightsToCSV() {
+            exportToCSV();
+        }
+
+        function showFAQ() {
+            document.getElementById('faqModal').classList.add('active');
+        }
+
+        function closeFAQ() {
+            document.getElementById('faqModal').classList.remove('active');
+        }
+
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('span');
+
+            answer.classList.toggle('active');
+            icon.textContent = answer.classList.contains('active') ? '-' : '+';
+        }
+
+        function showFeedback() {
+            document.getElementById('feedbackModal').classList.add('active');
+        }
+
+        function closeFeedback() {
+            document.getElementById('feedbackModal').classList.remove('active');
+            // Reset form state when closing
+            setTimeout(() => {
+                resetFeedbackForm();
+            }, 300);
+        }
+
+        function updateEmailDisplay() {
+            const type = document.getElementById('feedbackType').value;
+            const emailDisplay = document.getElementById('emailDisplay');
+
+            if (type === 'feature') {
+                emailDisplay.textContent = '📧 Will be sent to: features@truckerexpensetracker.com';
+                emailDisplay.style.color = '#10b981';
+            } else if (type) {
+                emailDisplay.textContent = '📧 Will be sent to: support@truckerexpensetracker.com';
+                emailDisplay.style.color = '#10b981';
+            } else {
+                emailDisplay.textContent = '';
+            }
+        }
+
+        function submitFeedback(event) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById('feedbackSubmitBtn');
+            const form = document.getElementById('feedbackForm');
+            const successDiv = document.getElementById('feedbackSuccess');
+
+            // Show loading state
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            submitBtn.style.background = '#6b7280';
+
+            const type = document.getElementById('feedbackType').value;
+            const message = document.getElementById('feedbackMessage').value;
+            const email = document.getElementById('feedbackEmail').value;
+
+            // Determine which email to use based on feedback type
+            let recipientEmail = 'support@truckerexpensetracker.com';
+            if (type === 'feature') {
+                recipientEmail = 'features@truckerexpensetracker.com';
+            }
+
+            // Create subject line
+            const subject = `Trucker Expense Tracker - ${type.charAt(0).toUpperCase() + type.slice(1)} ${type === 'bug' ? 'Report' : type === 'feature' ? 'Request' : 'Feedback'}`;
+
+            // Create email body
+            const body = `Feedback Type: ${type}\n\nMessage:\n${message}\n\n${email ? `Reply to: ${email}\n\n` : ''}Sent from Trucker Expense Tracker PWA`;
+
+            // Create mailto link
+            const mailtoLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+            // Simulate processing time for better UX
+            setTimeout(() => {
+                // Hide form and show success message
+                form.style.display = 'none';
+                successDiv.style.display = 'block';
+
+                // Open email client
+                window.location.href = mailtoLink;
+
+                showNotification('Your email client should open shortly...', 'success');
+            }, 1000);
+        }
+
+        function resetFeedbackForm() {
+            const form = document.getElementById('feedbackForm');
+            const successDiv = document.getElementById('feedbackSuccess');
+            const submitBtn = document.getElementById('feedbackSubmitBtn');
+
+            // Reset form display
+            form.style.display = 'block';
+            successDiv.style.display = 'none';
+
+            // Reset form fields
+            form.reset();
+            document.getElementById('emailDisplay').textContent = '';
+
+            // Reset button state
+            submitBtn.textContent = 'Send Feedback';
+            submitBtn.disabled = false;
+            submitBtn.style.background = '';
+        }
+
+        function checkForUpdates() {
+            showNotification('You are using the latest version (v2.1.0)', 'success');
+        }
+
+        function backupData() {
+            try {
+                const backupData = {
+                    expenses: expenses,
+                    trialStartDate: localStorage.getItem('trialStartDate'),
+                    darkMode: localStorage.getItem('darkMode'),
+                    version: '2.1.0',
+                    timestamp: new Date().toISOString()
+                };
+
+                const dataStr = JSON.stringify(backupData, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `trucker-expenses-backup-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+
+                URL.revokeObjectURL(url);
+                showNotification('Data backup downloaded successfully!', 'success');
+            } catch (error) {
+                showNotification('Failed to create backup. Please try again.', 'error');
+                console.error('Backup error:', error);
+            }
+        }
+
+        function restoreData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const backupData = JSON.parse(e.target.result);
+
+                        if (confirm('This will replace all current data. Are you sure you want to restore from backup?')) {
+                            if (backupData.expenses && Array.isArray(backupData.expenses)) {
+                                expenses = backupData.expenses;
+                                localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
+                            }
+
+                            if (backupData.trialStartDate) {
+                                localStorage.setItem('trialStartDate', backupData.trialStartDate);
+                                trialStartDate = backupData.trialStartDate;
+                            }
+
+                            if (backupData.darkMode) {
+                                localStorage.setItem('darkMode', backupData.darkMode);
+                                isDarkMode = backupData.darkMode === 'true';
+                                if (isDarkMode) {
+                                    document.body.classList.add('dark-mode');
+                                    document.querySelector('.dark-mode-toggle').textContent = '☀️';
+                                }
+                            }
+
+                            // Refresh displays
+                            updateSummary();
+                            updateInsights();
+                            updateHistory();
+                            updateTrialCountdown();
+
+                            showNotification('Data restored successfully!', 'success');
+                        }
+                    } catch (error) {
+                        showNotification('Invalid backup file. Please check the file format.', 'error');
+                        console.error('Restore error:', error);
+                    }
+                };
+                reader.readAsText(file);
+            };
+
+            input.click();
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        });
+
+        // Update trial countdown every minute
+        setInterval(updateTrialCountdown, 60000);
+
+        // Dark mode functions - defined globally and accessible immediately
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            localStorage.setItem('darkMode', isDarkMode);
+            updateToggleIcon();
+        }
+
+        function updateToggleIcon() {
+            const toggle = document.querySelector('.dark-mode-toggle');
+            if (toggle) {
+                toggle.textContent = isDarkMode ? '☀️' : '🌙';
+            }
+        }
+
+        // Initialize dark mode immediately
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            isDarkMode = true;
+        }
+
+    </script>
+</body>
+</html>
