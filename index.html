@@ -7,9 +7,9 @@
     <meta name="keywords" content="trucker expenses, owner operator, truck driver, expense tracker, tax deductions, fuel tracking, maintenance records">
     <meta name="author" content="Trucker Expense Tracker">
     <meta name="robots" content="index, follow">
-    
+
     <link rel="canonical" href="https://www.truckerexpensetracker.com/" />
-    
+
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://trucker-expense-tracker.vercel.app/">
     <meta property="og:title" content="Trucker Expense Tracker - Professional Expense Management">
@@ -26,7 +26,7 @@
     <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
 
-    <title>Trucker Expense Tracker - Professional Expense Management for Owner-Operators</title>
+    <title>Trucker Expense Tracker - Simple, Private Expense Management for Owner-Operators</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="32x32" href="icon-72x72.png">
     <link rel="icon" type="image/png" sizes="96x96" href="icon-96x96.png">
@@ -674,7 +674,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(5px);
         }
 
@@ -1170,6 +1170,32 @@
             white-space: nowrap;
             border: 0;
         }
+        
+        /* --- NEW WELCOME MODAL CSS --- */
+        #welcome-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+        }
+
+        #welcome-features li {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        .welcome-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .dark-mode #welcomeModal p {
+            color: #9ca3af;
+        }
+        /* --- END OF NEW CSS --- */
 
         @media print {
             body {
@@ -1217,7 +1243,7 @@
                 <div class="version-display">v2.1.0</div>
             </div>
             <h1>🚛 Trucker Expense Tracker</h1>
-            <p class="subtitle">Professional expense management for owner-operators</p>
+            <p class="subtitle">Simple, Private Expense Management for Owner-Operators</p>
 
             <div id="trialCountdown" class="trial-countdown">
                 <span id="trialText">🎁 Free Trial: <span id="daysLeft">30</span> days remaining</span>
@@ -1509,8 +1535,38 @@
         </div>
     </div>
 
-
-
+    <div id="welcomeModal" class="modal">
+        <div class="modal-content" style="max-width: 500px; height: auto; text-align: center;">
+            <h2 style="font-size: 1.8rem; margin-bottom: 20px;">Welcome to the Privacy-First Expense Tracker!</h2>
+            <p style="margin-bottom: 30px; font-size: 1.1rem; color: #4b5563;">Your Business Stays Your Business.</p>
+            
+            <ul id="welcome-features">
+                <li>
+                    <span class="welcome-icon">🔒</span>
+                    <div>
+                        <strong>Total Privacy</strong><br>
+                        All your data is saved only on this device. We can never see it.
+                    </div>
+                </li>
+                <li>
+                    <span class="welcome-icon">👍</span>
+                    <div>
+                        <strong>Simple & Focused</strong><br>
+                        No complicated features. Just easy expense tracking for owner-operators.
+                    </div>
+                </li>
+                <li>
+                    <span class="welcome-icon">🚀</span>
+                    <div>
+                        <strong>No Account Needed</strong><br>
+                        Get started right now without signing up.
+                    </div>
+                </li>
+            </ul>
+            
+            <button id="closeWelcomeBtn" class="btn" style="margin-top: 30px; padding: 15px 30px; font-size: 1.1rem;">Start Tracking Expenses</button>
+        </div>
+    </div>
     <script>
         // Expense categories with 15 different types
         const expenseCategories = [
@@ -1543,10 +1599,7 @@
             localStorage.setItem('trialStartDate', trialStartDate);
         }
 
-
-
         // Initialize the app
-
         document.addEventListener('DOMContentLoaded', function() {
             // Check for trial reset parameter
             const urlParams = new URLSearchParams(window.location.search);
@@ -1554,6 +1607,7 @@
                 localStorage.removeItem('trialStartDate');
                 localStorage.removeItem('truckerExpenses');
                 localStorage.removeItem('darkMode');
+                localStorage.removeItem('hasSeenWelcome'); // Also reset the welcome message flag
                 trialStartDate = Date.now();
                 localStorage.setItem('trialStartDate', trialStartDate);
                 expenses = [];
@@ -1562,23 +1616,29 @@
                 return;
             }
 
+            // --- START OF NEW WELCOME MODAL LOGIC ---
+            const currentExpenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
+            if (currentExpenses.length === 0 && !localStorage.getItem('hasSeenWelcome')) {
+                showWelcomeModal();
+            }
+            document.getElementById('closeWelcomeBtn').addEventListener('click', closeWelcomeModal);
+            // --- END OF NEW WELCOME MODAL LOGIC ---
+
             initializeApp();
             updateTrialCountdown();
             populateExpenseGrid();
-            updateToggleIcon(); // Update icon after DOM is loaded
-
-            // Sample data initialization removed
+            updateToggleIcon();
 
             updateSummary();
             updateInsights();
-
-            // Check for service worker support
+            
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('./sw.js')
                     .then(registration => console.log('SW registered'))
                     .catch(error => console.log('SW registration failed'));
             }
         });
+
 
         function addSampleData() {
             // Sample data function removed - no longer adding test data
@@ -2424,6 +2484,17 @@
                 toggle.textContent = isDarkMode ? '☀️' : '🌙';
             }
         }
+
+        // --- NEW WELCOME MODAL FUNCTIONS ---
+        function showWelcomeModal() {
+            document.getElementById('welcomeModal').classList.add('active');
+        }
+
+        function closeWelcomeModal() {
+            document.getElementById('welcomeModal').classList.remove('active');
+            localStorage.setItem('hasSeenWelcome', 'true'); // This is crucial!
+        }
+        // --- END OF NEW FUNCTIONS ---
 
         // Initialize dark mode immediately
         if (localStorage.getItem('darkMode') === 'true') {
