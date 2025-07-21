@@ -155,7 +155,6 @@
             font-size: 0.9rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            /* CLS Fix: Reserve vertical space */
             min-height: 42px;
             display: flex;
             align-items: center;
@@ -192,8 +191,6 @@
             background: var(--card-dark);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
-
-
 
         .section h2 {
             color: var(--primary-color);
@@ -309,7 +306,6 @@
             color: white;
         }
 
-        /* Special styling for labels in regular sections (not expense forms) */
         .section .form-group label {
             color: var(--text-light);
         }
@@ -331,7 +327,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Special styling for inputs in regular sections (not expense forms) */
         .section .form-group input,
         .section .form-group select,
         .section .form-group textarea {
@@ -362,7 +357,6 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        /* Special focus states for inputs in regular sections */
         .section .form-group input:focus,
         .section .form-group select:focus,
         .section .form-group textarea:focus {
@@ -387,13 +381,6 @@
             padding: 8px;
         }
 
-        .form-group select option:hover,
-        .form-group select option:focus {
-            background: #4a5568;
-            color: white;
-        }
-
-        /* Better select option colors for regular sections */
         .section .form-group select option {
             background: var(--card-light);
             color: var(--text-light);
@@ -460,7 +447,6 @@
             text-align: center;
         }
 
-        /* CLS FIX: Use CSS Grid for a stable two-column layout */
         .summary-item {
             display: grid;
             grid-template-columns: 1fr auto;
@@ -491,7 +477,6 @@
             white-space: nowrap;
         }
         
-        /* CLS FIX: Reserve horizontal space for values, especially on desktop */
         .summary-value {
             min-width: 120px;
         }
@@ -537,11 +522,6 @@
 
         .action-btn:focus {
             outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
-        }
-
-        .action-btn:focus {
-            outline: 2px solid rgba(255, 255, 255, 0.6);
             outline-offset: 2px;
         }
 
@@ -714,11 +694,6 @@
             padding: 5px;
         }
 
-        .modal-close:focus {
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
-        }
-
         .dark-mode .modal-close {
             color: var(--text-dark);
         }
@@ -745,11 +720,6 @@
             transition: background-color 0.3s ease;
         }
 
-        .faq-question:focus {
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
-        }
-
         .dark-mode .faq-question {
             background: #334155;
         }
@@ -771,7 +741,6 @@
             max-height: 500px;
         }
         
-        /* CLS Fix: Reserve space for dynamically loaded lists */
         #historyList, #categoryList, #monthlyBreakdown {
             min-height: 150px;
         }
@@ -805,18 +774,11 @@
 
         .dark-mode .expense-description {
             color: var(--text-dark);
-            opacity: 1;
-            font-weight: 500;
         }
 
         .dark-mode .expense-title {
             color: var(--text-dark);
             font-weight: 600;
-        }
-
-        .dark-mode .expense-subtitle {
-            color: rgba(241, 245, 249, 0.8);
-            font-weight: 500;
         }
 
         .dark-mode .expense-title {
@@ -826,20 +788,17 @@
 
         .dark-mode .expense-subtitle {
             color: rgba(241, 245, 249, 0.8) !important;
-            font-weight: 500 !important;
         }
 
         .dark-mode .expense-description {
             color: var(--text-dark) !important;
             opacity: 1 !important;
-            font-weight: 500 !important;
         }
 
         .dark-mode .expense-amount {
             color: var(--secondary-color) !important;
         }
 
-        /* Fix insights section cards in dark mode */
         .dark-mode .insights-breakdown-section .summary-item span:first-child {
             color: white !important;
         }
@@ -886,7 +845,6 @@
             transform: translateY(-1px);
         }
 
-        /* CLS Fix: Style the container for receipt previews */
         #receipt-preview-container {
             width: 100%;
             min-height: 150px;
@@ -920,181 +878,63 @@
         .skip-link:focus {
             top: 6px;
         }
+        
+        #welcome-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+        }
+
+        #welcome-features li {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        .welcome-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+
+        .dark-mode #welcomeModal p {
+            color: #9ca3af;
+        }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
-            .section {
-                margin: 0 10px 25px 10px;
-                padding: 20px;
-                max-width: calc(100% - 20px);
-            }
-
-            .privacy-notice {
-                margin: 25px 10px;
-                padding: 20px;
-                max-width: calc(100% - 20px);
-            }
-
-            .navigation {
-                left: 10px;
-                right: 10px;
-                max-width: calc(100% - 20px);
-            }
-
-            .header h1 {
-                font-size: 1.8rem;
-                margin-bottom: 8px;
-            }
-
-            .header .subtitle {
-                font-size: 1rem;
-            }
-
-            .header-controls {
-                position: relative;
-                top: 0;
-                right: 0;
-                justify-content: center;
-                margin-bottom: 15px;
-                gap: 15px;
-            }
-
-            .dark-mode-toggle,
-            .version-display {
-                padding: 6px 10px;
-                font-size: 14px;
-            }
-
-            .expense-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-
-            .expense-card {
-                padding: 18px;
-            }
-
-            .expense-icon {
-                width: 45px;
-                height: 45px;
-                font-size: 20px;
-            }
-
-            .expense-title {
-                font-size: 1.1rem;
-            }
-
-            .action-buttons {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 8px;
-                margin: 25px 10px;
-                max-width: calc(100% - 20px);
-            }
-
-            .action-btn {
-                padding: 15px 8px;
-                font-size: 12px;
-                height: 70px;
-                flex-direction: column;
-                gap: 5px;
-            }
-
-            .insights-breakdown-section {
-                padding: 20px;
-                margin: 20px 0;
-            }
-
-            .navigation {
-                padding: 10px;
-                gap: 10px;
-                flex-wrap: nowrap;
-            }
-
-            .nav-btn {
-                padding: 12px 8px;
-                font-size: 12px;
-                flex: 1;
-                min-width: 90px;
-                text-align: center;
-            }
-
-            .form-group input,
-            .form-group select,
-            .form-group textarea {
-                font-size: 16px; /* Prevents zoom on iOS */
-            }
-
-            .modal-content {
-                margin: 10px;
-                padding: 20px;
-                max-height: 90vh;
-            }
-
-            body {
-                padding-bottom: 120px;
-            }
-
-            .summary-card {
-                padding: 16px;
-                margin: 20px 0;
-                min-height: 110px;
-            }
-
-            .summary-card h3 {
-                font-size: 1.05rem;
-                margin-bottom: 12px;
-            }
-
-            .summary-item {
-                font-size: 0.85rem;
-                gap: 8px;
-                padding: 8px 0;
-                line-height: 1.3;
-            }
-
-            .summary-item:last-child {
-                font-size: 0.95rem;
-                padding-top: 12px;
-            }
-
-            .summary-item span:first-child {
-                font-size: 0.85rem;
-                line-height: 1.3;
-            }
-
-            .summary-item span:last-child {
-                font-size: 0.85rem;
-                line-height: 1.3;
-            }
-
-            .insights-breakdown-section {
-                padding: 18px;
-                margin: 20px 0;
-            }
-
-            .insights-breakdown-section h3 {
-                font-size: 1.1rem;
-                margin-bottom: 15px;
-            }
-
-            .insights-breakdown-section .summary-card {
-                padding: 18px;
-                min-height: 120px;
-            }
-
-            .insights-breakdown-section .summary-item {
-                padding: 8px 0;
-                font-size: 0.9rem;
-                line-height: 1.4;
-            }
-
-            .insights-breakdown-section .summary-item:last-child {
-                font-size: 0.95rem;
-                padding-top: 10px;
-            }
+            .container { padding: 10px; }
+            .section { margin: 0 10px 25px 10px; padding: 20px; max-width: calc(100% - 20px); }
+            .privacy-notice { margin: 25px 10px; padding: 20px; max-width: calc(100% - 20px); }
+            .navigation { left: 10px; right: 10px; max-width: calc(100% - 20px); }
+            .header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+            .header .subtitle { font-size: 1rem; }
+            .header-controls { position: relative; top: 0; right: 0; justify-content: center; margin-bottom: 15px; gap: 15px; }
+            .dark-mode-toggle, .version-display { padding: 6px 10px; font-size: 14px; }
+            .expense-grid { grid-template-columns: 1fr; gap: 12px; }
+            .expense-card { padding: 18px; }
+            .expense-icon { width: 45px; height: 45px; font-size: 20px; }
+            .expense-title { font-size: 1.1rem; }
+            .action-buttons { grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 25px 10px; max-width: calc(100% - 20px); }
+            .action-btn { padding: 15px 8px; font-size: 12px; height: 70px; flex-direction: column; gap: 5px; }
+            .insights-breakdown-section { padding: 20px; margin: 20px 0; }
+            .navigation { padding: 10px; gap: 10px; flex-wrap: nowrap; }
+            .nav-btn { padding: 12px 8px; font-size: 12px; flex: 1; min-width: 90px; text-align: center; }
+            .form-group input, .form-group select, .form-group textarea { font-size: 16px; }
+            .modal-content { margin: 10px; padding: 20px; max-height: 90vh; }
+            body { padding-bottom: 120px; }
+            .summary-card { padding: 16px; margin: 20px 0; min-height: 110px; }
+            .summary-card h3 { font-size: 1.05rem; margin-bottom: 12px; }
+            .summary-item { font-size: 0.85rem; gap: 8px; padding: 8px 0; line-height: 1.3; }
+            .summary-item:last-child { font-size: 0.95rem; padding-top: 12px; }
+            .summary-item span:first-child { font-size: 0.85rem; line-height: 1.3; }
+            .summary-item span:last-child { font-size: 0.85rem; line-height: 1.3; }
+            .insights-breakdown-section { padding: 18px; margin: 20px 0; }
+            .insights-breakdown-section h3 { font-size: 1.1rem; margin-bottom: 15px; }
+            .insights-breakdown-section .summary-card { padding: 18px; min-height: 120px; }
+            .insights-breakdown-section .summary-item { padding: 8px 0; font-size: 0.9rem; line-height: 1.4; }
+            .insights-breakdown-section .summary-item:last-child { font-size: 0.95rem; padding-top: 10px; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -1141,7 +981,6 @@
             margin: 0;
         }
         
-        /* CLS Fix: Style the summary cards inside the insights section */
         .insights-breakdown-section .summary-card {
             min-height: 150px;
             margin: 0;
@@ -1152,7 +991,7 @@
             color: var(--text-light);
             opacity: 0.7;
             margin: 20px 0;
-            padding: 20px; /* Add padding to better fill the min-height */
+            padding: 20px;
         }
 
         .dark-mode .no-data-message {
@@ -1170,72 +1009,18 @@
             white-space: nowrap;
             border: 0;
         }
-        
-        /* --- NEW WELCOME MODAL CSS --- */
-        #welcome-features {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            text-align: left;
-        }
-
-        #welcome-features li {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            font-size: 1rem;
-        }
-
-        .welcome-icon {
-            font-size: 2rem;
-            flex-shrink: 0;
-        }
-
-        .dark-mode #welcomeModal p {
-            color: #9ca3af;
-        }
-        /* --- END OF NEW CSS --- */
 
         @media print {
-            body {
-                background: white !important;
-                color: black !important;
-                padding-bottom: 0;
-            }
-
-            .navigation,
-            .action-buttons,
-            .dark-mode-toggle,
-            .version-display {
-                display: none !important;
-            }
-
-            .section {
-                background: white !important;
-                box-shadow: none !important;
-                border: 1px solid #ccc;
-                page-break-inside: avoid;
-            }
-
-            .expense-card {
-                background: white !important;
-                color: black !important;
-                border: 1px solid #ccc !important;
-            }
-
-            .summary-card,
-            .privacy-notice {
-                background: white !important;
-                color: black !important;
-                border: 1px solid #ccc;
-            }
+            body { background: white !important; color: black !important; padding-bottom: 0; }
+            .navigation, .action-buttons, .dark-mode-toggle, .version-display { display: none !important; }
+            .section { background: white !important; box-shadow: none !important; border: 1px solid #ccc; page-break-inside: avoid; }
+            .expense-card { background: white !important; color: black !important; border: 1px solid #ccc !important; }
+            .summary-card, .privacy-notice { background: white !important; color: black !important; border: 1px solid #ccc; }
         }
     </style>
 </head>
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
-
     <div class="container">
         <header class="header">
             <div class="header-controls">
@@ -1244,7 +1029,6 @@
             </div>
             <h1>🚛 Trucker Expense Tracker</h1>
             <p class="subtitle">Simple, Private Expense Management for Owner-Operators</p>
-
             <div id="trialCountdown" class="trial-countdown">
                 <span id="trialText">🎁 Free Trial: <span id="daysLeft">30</span> days remaining</span>
             </div>
@@ -1256,8 +1040,7 @@
                 <div class="expense-grid" id="expenseGrid" aria-label="Expense categories"></div>
                 <fieldset style="border: none; margin: 0; padding: 0;">
                     <legend class="sr-only">Expense categories</legend>
-                    </fieldset>
-
+                </fieldset>
                 <div class="summary-card">
                     <h3>📊 Today's Summary</h3>
                     <div class="summary-item">
@@ -1296,9 +1079,8 @@
                     </select>
                 </div>
                 <ul id="historyList" aria-label="Expense history" style="list-style: none; padding: 0; margin: 0;">
-                    <p style="text-align: center; color: var(--text-light); opacity: 0.7; margin: 40px 0;">No expenses recorded yet. Start by adding some expenses in the Today section!</p>
+                    <p style="text-align: center; color: var(--text-light); opacity: 0.7; margin: 40px 0;">No expenses recorded yet. Your expense history will appear here. Remember, everything you add is stored securely and privately on your device.</p>
                 </ul>
-
                 <div class="action-buttons">
                     <button class="action-btn export-btn" onclick="exportHistoryToPDF()">📄 Export PDF</button>
                     <button class="action-btn print-btn" onclick="printHistory()">🖨️ Print</button>
@@ -1326,7 +1108,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="insights-breakdown-section">
                         <h3>📊 Spending Trends</h3>
                         <div class="summary-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
@@ -1344,14 +1125,12 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="insights-breakdown-section">
                         <h3>📊 Category Breakdown</h3>
                         <ul id="categoryList" aria-label="Category breakdown">
                             <p class="no-data-message">No expense data available for analysis.</p>
                         </ul>
                     </div>
-
                     <div class="insights-breakdown-section">
                         <h3>📅 Monthly Breakdown</h3>
                         <ul id="monthlyBreakdown" aria-label="Monthly expense breakdown">
@@ -1359,7 +1138,6 @@
                         </ul>
                     </div>
                 </div>
-
                 <div class="action-buttons">
                     <button class="action-btn export-btn" onclick="exportInsightsToPDF()">📄 Export PDF</button>
                     <button class="action-btn print-btn" onclick="printInsights()">🖨️ Print</button>
@@ -1367,24 +1145,20 @@
                 </div>
             </section>
         </main>
-
         <nav class="navigation">
             <button class="nav-btn active" onclick="showSection('today')" data-section="today">📅 Today</button>
             <button class="nav-btn" onclick="showSection('history')" data-section="history">📚 History</button>
             <button class="nav-btn" onclick="showSection('insights')" data-section="insights">📈 Insights</button>
         </nav>
-
         <div class="privacy-notice">
-            <h3>🔒 Privacy First</h3>
-            <p>All your data is stored locally on your device. Nothing is sent to our servers, ensuring complete privacy and security of your expense information.</p>
+            <h3>🔒 Our Privacy Promise</h3>
+            <p>You pay a small fee for this software so that we don't have to make money from your data. Everything you enter is stored locally and securely on your device. We have no access to it.</p>
         </div>
     </div>
-
     <div id="faqModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeFAQ()">&times;</button>
             <h2>❓ Frequently Asked Questions</h2>
-
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                     What expenses can I track? <span>+</span>
@@ -1393,7 +1167,6 @@
                     You can track 15 different categories of expenses including fuel, maintenance, meals, lodging, tolls, permits, insurance, phone bills, and more. Each category is specifically designed for trucking business needs.
                 </div>
             </div>
-            
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                     When did my 30-day free trial start? <span>+</span>
@@ -1402,7 +1175,6 @@
                     <p>Your trial started on: <strong id="trial-start-date-display">loading...</strong></p>
                 </div>
             </div>
-
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                     Is my data secure? <span>+</span>
@@ -1411,7 +1183,6 @@
                     Yes! All your data is stored locally on your device using your browser's local storage. Nothing is sent to our servers, ensuring complete privacy and security.
                 </div>
             </div>
-
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                     Can I export my data? <span>+</span>
@@ -1420,7 +1191,6 @@
                     Absolutely! You can export your expense data as PDF reports or CSV files for your accountant or tax preparation.
                 </div>
             </div>
-
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                     Does this work offline? <span>+</span>
@@ -1429,7 +1199,6 @@
                     Yes! This is a Progressive Web App (PWA) that works offline. You can add expenses even without an internet connection.
                 </div>
             </div>
-
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                     What happens after the trial period? <span>+</span>
@@ -1438,7 +1207,6 @@
                     After the 30-day trial, you'll need to subscribe for $9.99/month to continue using the app. Your data will remain on your device during the trial period.
                 </div>
             </div>
-
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                     Can I track per-mile expenses? <span>+</span>
@@ -1447,7 +1215,6 @@
                     Yes! You can use the "Other Business Expenses" category to track per-mile costs, or add mile information in the description field of fuel and maintenance entries.
                 </div>
             </div>
-
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                     Can I track expenses for multiple trucks? <span>+</span>
@@ -1456,7 +1223,6 @@
                     Currently, the app tracks expenses in one account. You can use the description field to specify which truck/trailer an expense relates to, or use separate devices/browsers for different trucks.
                 </div>
             </div>
-
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                     What if I need to edit or delete an expense? <span>+</span>
@@ -1465,7 +1231,6 @@
                     You can delete expenses from the History section by clicking the "Delete" button on any expense entry. Currently, editing requires deleting and re-adding the expense.
                 </div>
             </div>
-
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                     How do I backup my data if I switch devices? <span>+</span>
@@ -1474,7 +1239,6 @@
                     Use the "Backup Data" button to download your expenses as a JSON file. On your new device, use "Restore Data" to import this backup file.
                 </div>
             </div>
-
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                     Does the app work on both mobile and desktop? <span>+</span>
@@ -1483,7 +1247,6 @@
                     Yes! This PWA is designed to work seamlessly on smartphones, tablets, and desktop computers. You can install it on your phone's home screen for easy access.
                 </div>
             </div>
-
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                     Can I print my expense reports? <span>+</span>
@@ -1494,7 +1257,6 @@
             </div>
         </div>
     </div>
-
     <div id="feedbackModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeFeedback()">&times;</button>
@@ -1521,7 +1283,6 @@
                 </div>
                 <button type="submit" class="btn" id="feedbackSubmitBtn">Send Feedback</button>
             </form>
-
             <div id="feedbackSuccess" style="display: none; text-align: center; padding: 30px;">
                 <div style="font-size: 4rem; margin-bottom: 20px; color: var(--success-color);">✓</div>
                 <h3 style="color: var(--success-color); margin-bottom: 15px;">Email Client Opening...</h3>
@@ -1534,12 +1295,10 @@
             </div>
         </div>
     </div>
-
     <div id="welcomeModal" class="modal">
         <div class="modal-content" style="max-width: 500px; height: auto; text-align: center;">
             <h2 style="font-size: 1.8rem; margin-bottom: 20px;">Welcome to the Privacy-First Expense Tracker!</h2>
             <p style="margin-bottom: 30px; font-size: 1.1rem; color: #4b5563;">Your Business Stays Your Business.</p>
-            
             <ul id="welcome-features">
                 <li>
                     <span class="welcome-icon">🔒</span>
@@ -1563,7 +1322,6 @@
                     </div>
                 </li>
             </ul>
-            
             <button id="closeWelcomeBtn" class="btn" style="margin-top: 30px; padding: 15px 30px; font-size: 1.1rem;">Start Tracking Expenses</button>
         </div>
     </div>
@@ -1607,7 +1365,8 @@
                 localStorage.removeItem('trialStartDate');
                 localStorage.removeItem('truckerExpenses');
                 localStorage.removeItem('darkMode');
-                localStorage.removeItem('hasSeenWelcome'); // Also reset the welcome message flag
+                localStorage.removeItem('hasSeenWelcome'); 
+                localStorage.removeItem('isSubscribed'); // Also clear subscription status on full reset
                 trialStartDate = Date.now();
                 localStorage.setItem('trialStartDate', trialStartDate);
                 expenses = [];
@@ -1616,19 +1375,24 @@
                 return;
             }
 
-            // --- START OF NEW WELCOME MODAL LOGIC ---
+            // Check for the subscription unlock parameter in the URL
+            if (urlParams.get('unlock') === 'true') {
+                localStorage.setItem('isSubscribed', 'true');
+                showNotification('Subscription activated! Thank you for your support.', 'success');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            // Check for new user welcome modal
             const currentExpenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
             if (currentExpenses.length === 0 && !localStorage.getItem('hasSeenWelcome')) {
                 showWelcomeModal();
             }
             document.getElementById('closeWelcomeBtn').addEventListener('click', closeWelcomeModal);
-            // --- END OF NEW WELCOME MODAL LOGIC ---
 
             initializeApp();
             updateTrialCountdown();
             populateExpenseGrid();
             updateToggleIcon();
-
             updateSummary();
             updateInsights();
             
@@ -1639,22 +1403,14 @@
             }
         });
 
-
-        function addSampleData() {
-            // Sample data function removed - no longer adding test data
-        }
-
         function initializeApp() {
-            // Apply dark mode if enabled
             if (isDarkMode) {
                 document.body.classList.add('dark-mode');
                 document.querySelector('.dark-mode-toggle').textContent = '☀️';
             }
 
-            // Handle URL parameters for shortcuts
             const urlParams = new URLSearchParams(window.location.search);
             const action = urlParams.get('action');
-
             if (action === 'add-fuel') {
                 showSection('today');
                 setTimeout(() => toggleExpenseCard('fuel'), 500);
@@ -1666,14 +1422,20 @@
         }
 
         function updateTrialCountdown() {
-            const trialDuration = 30 * 24 * 60 * 60 * 1000; // 30 days in milliseconds
+            const trialDuration = 30 * 24 * 60 * 60 * 1000;
             const elapsed = Date.now() - parseInt(trialStartDate);
             const remaining = trialDuration - elapsed;
-            const daysLeft = Math.max(0, Math.ceil(remaining / (24 * 60 * 60 * 1000)));
+            const daysLeft = Math.max(0, Math.ceil(remaining / (1000 * 60 * 60 * 24)));
 
             const trialElement = document.getElementById('trialCountdown');
-            const daysElement = document.getElementById('daysLeft');
             const textElement = document.getElementById('trialText');
+
+            if (localStorage.getItem('isSubscribed')) {
+                 trialElement.style.background = 'linear-gradient(135deg, #047857, #059669)';
+                 textElement.innerHTML = '✅ Pro Subscription Active';
+                 isTrialExpired = false;
+                 return;
+            }
 
             if (daysLeft <= 0) {
                 isTrialExpired = true;
@@ -1733,23 +1495,12 @@
                 `;
 
                 card.addEventListener('click', (e) => {
-                    // Don't toggle if clicking inside the form
-                    if (e.target.closest('.expense-form')) {
-                        return;
-                    }
+                    if (e.target.closest('.expense-form')) return;
                     toggleExpenseCard(category.id);
                 });
 
-                // CORRECTED KEYDOWN LISTENER
                 card.addEventListener('keydown', (e) => {
-                    // If the keydown event originates from within the form,
-                    // let it proceed normally (e.g., typing spaces in an input).
-                    if (e.target.closest('.expense-form')) {
-                        return;
-                    }
-
-                    // If the key is Enter or Space, and the event is on the card itself,
-                    // prevent default browser action and toggle the card open.
+                    if (e.target.closest('.expense-form')) return;
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
                         if (!card.classList.contains('expanded')) {
@@ -1757,13 +1508,12 @@
                         }
                     }
                 });
-
                 grid.appendChild(card);
             });
         }
 
         function toggleExpenseCard(categoryId) {
-            if (isTrialExpired) {
+            if (isTrialExpired && !localStorage.getItem('isSubscribed')) {
                 alert('Your trial has expired. Please subscribe to continue adding expenses.');
                 return;
             }
@@ -1772,34 +1522,23 @@
             const form = document.getElementById(`form-${categoryId}`);
             const allCards = document.querySelectorAll('.expense-card');
 
-            // If this card is already expanded, just close it
-            if (card.classList.contains('expanded')) {
-                card.classList.remove('expanded');
-                form.classList.remove('active');
-                return;
-            }
-
-            // Close all other cards
+            const isExpanded = card.classList.contains('expanded');
+            
             allCards.forEach(c => {
                 c.classList.remove('expanded');
-                const otherForm = c.querySelector('.expense-form');
-                if (otherForm) otherForm.classList.remove('active');
+                c.querySelector('.expense-form').classList.remove('active');
             });
 
-            // Open current card
-            card.classList.add('expanded');
-            form.classList.add('active');
-
-            // Focus on amount input
-            setTimeout(() => {
-                document.getElementById(`amount-${categoryId}`).focus();
-            }, 100);
+            if (!isExpanded) {
+                card.classList.add('expanded');
+                form.classList.add('active');
+                setTimeout(() => document.getElementById(`amount-${categoryId}`).focus(), 100);
+            }
         }
 
         function addExpense(event, categoryId) {
             event.preventDefault();
-
-            if (isTrialExpired) {
+            if (isTrialExpired && !localStorage.getItem('isSubscribed')) {
                 alert('Your trial has expired. Please subscribe to continue adding expenses.');
                 return;
             }
@@ -1807,13 +1546,11 @@
             const amountInput = document.getElementById(`amount-${categoryId}`);
             const amount = parseFloat(amountInput.value);
 
-            // Validate amount
             if (isNaN(amount) || amount <= 0) {
                 showNotification('Please enter a valid amount greater than $0.00', 'error');
                 amountInput.focus();
                 return;
             }
-
             if (amount > 999999) {
                 showNotification('Amount cannot exceed $999,999.00', 'error');
                 amountInput.focus();
@@ -1824,14 +1561,12 @@
             const location = document.getElementById(`location-${categoryId}`).value.trim();
             const receiptFile = document.getElementById(`receipt-${categoryId}`).files[0];
 
-            // Validate file size (max 5MB)
             if (receiptFile && receiptFile.size > 5 * 1024 * 1024) {
                 showNotification('Receipt file must be smaller than 5MB', 'error');
                 return;
             }
 
             const category = expenseCategories.find(cat => cat.id === categoryId);
-
             const expense = {
                 id: Date.now() + Math.random(),
                 categoryId: categoryId,
@@ -1844,7 +1579,6 @@
                 receipt: null
             };
 
-            // Handle receipt file
             if (receiptFile) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -1859,18 +1593,12 @@
             function saveExpense(expense) {
                 expenses.push(expense);
                 localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
-
-                // Reset form
                 event.target.reset();
                 document.getElementById(`receipt-preview-container-${categoryId}`).innerHTML = '';
                 toggleExpenseCard(categoryId);
-
-                // Update displays
                 updateSummary();
                 updateInsights();
                 updateHistory();
-
-                // Show success message
                 showNotification(`${category.name} expense added successfully!`, 'success');
             }
         }
@@ -1878,7 +1606,6 @@
         function previewReceipt(categoryId) {
             const fileInput = document.getElementById(`receipt-${categoryId}`);
             const previewContainer = document.getElementById(`receipt-preview-container-${categoryId}`);
-
             if (fileInput.files && fileInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -1892,62 +1619,49 @@
 
         function updateSummary() {
             const today = new Date().toDateString();
-            const todayExpenses = expenses.filter(expense => 
-                new Date(expense.date).toDateString() === today
-            );
-
-            const dailyTotal = todayExpenses.reduce((sum, expense) => sum + expense.amount, 0);
-            const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-
+            const todayExpenses = expenses.filter(ex => new Date(ex.date).toDateString() === today);
+            const dailyTotal = todayExpenses.reduce((sum, ex) => sum + ex.amount, 0);
+            const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
             document.getElementById('dailyTotal').textContent = `$${dailyTotal.toFixed(2)}`;
             document.getElementById('totalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
         }
 
         function updateInsights() {
-            const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-            const uniqueDays = [...new Set(expenses.map(expense => new Date(expense.date).toDateString()))].length;
+            const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
+            const uniqueDays = [...new Set(expenses.map(ex => new Date(ex.date).toDateString()))].length;
             const averageDaily = uniqueDays > 0 ? totalExpenses / uniqueDays : 0;
 
-            // Find top category
             const categoryTotals = {};
-            expenses.forEach(expense => {
-                categoryTotals[expense.categoryName] = (categoryTotals[expense.categoryName] || 0) + expense.amount;
+            expenses.forEach(ex => {
+                categoryTotals[ex.categoryName] = (categoryTotals[ex.categoryName] || 0) + ex.amount;
             });
+            const topCategory = Object.keys(categoryTotals).reduce((a, b) => categoryTotals[a] > categoryTotals[b] ? a : b, 'None');
 
-            const topCategory = Object.keys(categoryTotals).reduce((a, b) => 
-                categoryTotals[a] > categoryTotals[b] ? a : b, 'None'
-            );
-
-            // Calculate monthly comparisons
             const now = new Date();
             const currentMonth = now.getMonth();
             const currentYear = now.getFullYear();
-            const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-            const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+            const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            const lastMonth = lastMonthDate.getMonth();
+            const lastMonthYear = lastMonthDate.getFullYear();
 
-            const currentMonthExpenses = expenses.filter(expense => {
-                const expenseDate = new Date(expense.date);
-                return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
-            }).reduce((sum, expense) => sum + expense.amount, 0);
+            const currentMonthExpenses = expenses.filter(ex => {
+                const d = new Date(ex.date);
+                return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+            }).reduce((sum, ex) => sum + ex.amount, 0);
 
-            const lastMonthExpenses = expenses.filter(expense => {
-                const expenseDate = new Date(expense.date);
-                return expenseDate.getMonth() === lastMonth && expenseDate.getFullYear() === lastMonthYear;
-            }).reduce((sum, expense) => sum + expense.amount, 0);
+            const lastMonthExpenses = expenses.filter(ex => {
+                const d = new Date(ex.date);
+                return d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear;
+            }).reduce((sum, ex) => sum + ex.amount, 0);
 
-            const monthlyChange = lastMonthExpenses > 0 ? 
-                ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses * 100).toFixed(1) : 
-                (currentMonthExpenses > 0 ? '∞' : '0');
+            const monthlyChange = lastMonthExpenses > 0 ? ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses * 100).toFixed(1) : (currentMonthExpenses > 0 ? '∞' : '0');
 
-            // Update financial overview
             document.getElementById('insightsTotalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
             document.getElementById('averageDailyExpense').textContent = `$${averageDaily.toFixed(2)}`;
             document.getElementById('topCategory').textContent = topCategory;
-
-            // Update spending trends
             document.getElementById('currentMonthTotal').textContent = `$${currentMonthExpenses.toFixed(2)}`;
             document.getElementById('lastMonthTotal').textContent = `$${lastMonthExpenses.toFixed(2)}`;
-
+            
             const changeElement = document.getElementById('monthlyChange');
             if (monthlyChange === '∞') {
                 changeElement.textContent = 'New spending';
@@ -1961,32 +1675,23 @@
                 changeElement.style.color = changeValue > 0 ? '#ef4444' : '#10b981';
             }
 
-            // Update category breakdown
             updateCategoryBreakdown(categoryTotals);
-
-            // Update monthly breakdown
             updateMonthlyBreakdown();
         }
 
         function updateCategoryBreakdown(categoryTotals) {
             const categoryList = document.getElementById('categoryList');
-
             if (Object.keys(categoryTotals).length === 0) {
                 categoryList.innerHTML = '<p class="no-data-message">No expense data available for analysis.</p>';
                 return;
             }
 
-            const sortedCategories = Object.entries(categoryTotals)
-                .sort(([,a], [,b]) => b - a)
-                .slice(0, 10);
-
+            const sortedCategories = Object.entries(categoryTotals).sort(([,a], [,b]) => b - a).slice(0, 10);
             const totalAmount = Object.values(categoryTotals).reduce((a, b) => a + b, 0);
 
             categoryList.innerHTML = sortedCategories.map(([category, amount]) => {
-                const percentage = ((amount / totalAmount) * 100).toFixed(1);
-                const categoryData = expenseCategories.find(cat => cat.name === category);
-                const icon = categoryData ? categoryData.icon : '💼';
-
+                const percentage = totalAmount > 0 ? ((amount / totalAmount) * 100).toFixed(1) : 0;
+                const icon = expenseCategories.find(cat => cat.name === category)?.icon || '💼';
                 return `
                     <li>
                         <div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light); align-items: flex-start; gap: 10px;">
@@ -1999,40 +1704,33 @@
                                 <div style="font-size: 0.85rem; color: var(--text-light); opacity: 0.8;">${percentage}%</div>
                             </span>
                         </div>
-                    </li>
-                `;
+                    </li>`;
             }).join('');
         }
 
         function updateMonthlyBreakdown() {
             const monthlyBreakdown = document.getElementById('monthlyBreakdown');
-
             if (expenses.length === 0) {
                 monthlyBreakdown.innerHTML = '<p class="no-data-message">No expense data available for monthly analysis.</p>';
                 return;
             }
 
-            // Group expenses by month
             const monthlyTotals = {};
-            expenses.forEach(expense => {
-                const date = new Date(expense.date);
+            expenses.forEach(ex => {
+                const date = new Date(ex.date);
                 const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
                 const monthName = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
 
                 if (!monthlyTotals[monthKey]) {
                     monthlyTotals[monthKey] = { name: monthName, total: 0, count: 0 };
                 }
-                monthlyTotals[monthKey].total += expense.amount;
+                monthlyTotals[monthKey].total += ex.amount;
                 monthlyTotals[monthKey].count += 1;
             });
 
-            const sortedMonths = Object.entries(monthlyTotals)
-                .sort(([a], [b]) => b.localeCompare(a))
-                .slice(0, 6);
-
+            const sortedMonths = Object.entries(monthlyTotals).sort(([a], [b]) => b.localeCompare(a)).slice(0, 6);
             monthlyBreakdown.innerHTML = sortedMonths.map(([monthKey, data]) => {
-                const average = data.total / data.count;
-
+                const average = data.count > 0 ? data.total / data.count : 0;
                 return `
                     <li>
                         <div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light); align-items: flex-start; gap: 10px;">
@@ -2045,44 +1743,29 @@
                                 <div style="font-size: 0.85rem; color: var(--text-light); opacity: 0.8; line-height: 1.3;">${data.count} trans • $${average.toFixed(2)} avg</div>
                             </span>
                         </div>
-                    </li>
-                `;
+                    </li>`;
             }).join('');
         }
 
         function updateHistory() {
             const historyList = document.getElementById('historyList');
-            const filterElement = document.getElementById('dateFilter');
-            const filter = filterElement ? filterElement.value : 'all';
-
+            const filter = document.getElementById('dateFilter').value;
             let filteredExpenses = [...expenses];
             const now = new Date();
 
             switch (filter) {
                 case 'today':
-                    filteredExpenses = expenses.filter(expense => 
-                        new Date(expense.date).toDateString() === now.toDateString()
-                    );
+                    filteredExpenses = expenses.filter(ex => new Date(ex.date).toDateString() === now.toDateString());
                     break;
                 case 'week':
                     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                    filteredExpenses = expenses.filter(expense => 
-                        new Date(expense.date) >= weekAgo
-                    );
+                    filteredExpenses = expenses.filter(ex => new Date(ex.date) >= weekAgo);
                     break;
                 case 'month':
-                    filteredExpenses = expenses.filter(expense => 
-                        new Date(expense.date).getMonth() === now.getMonth() &&
-                        new Date(expense.date).getFullYear() === now.getFullYear()
-                    );
+                    filteredExpenses = expenses.filter(ex => new Date(ex.date).getMonth() === now.getMonth() && new Date(ex.date).getFullYear() === now.getFullYear());
                     break;
                 case 'year':
-                    filteredExpenses = expenses.filter(expense => 
-                        new Date(expense.date).getFullYear() === now.getFullYear()
-                    );
-                    break;
-                default:
-                    // 'all' - no filtering needed
+                    filteredExpenses = expenses.filter(ex => new Date(ex.date).getFullYear() === now.getFullYear());
                     break;
             }
 
@@ -2091,33 +1774,31 @@
                 return;
             }
 
-            // Sort by date (newest first)
             filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            historyList.innerHTML = filteredExpenses.map(expense => `
+            historyList.innerHTML = filteredExpenses.map(ex => `
                 <li><div class="expense-card" style="margin-bottom: 15px;">
                     <div class="expense-header">
-                        <div class="expense-icon">${expense.icon}</div>
+                        <div class="expense-icon">${ex.icon}</div>
                         <div style="flex: 1;">
-                            <div class="expense-title" style="color: var(--text-light); font-weight: 600;">${expense.categoryName}</div>
-                            <div class="expense-subtitle" style="color: var(--text-light); opacity: 0.7; font-size: 0.9rem;">
-                                ${new Date(expense.date).toLocaleDateString()} ${expense.location ? `• ${expense.location}` : ''}
+                            <div class="expense-title">${ex.categoryName}</div>
+                            <div class="expense-subtitle">
+                                ${new Date(ex.date).toLocaleDateString()} ${ex.location ? `• ${ex.location}` : ''}
                             </div>
                         </div>
                         <div style="text-align: right;">
-                            <div class="expense-amount" style="color: var(--primary-color); font-size: 1.2rem; font-weight: 600;">$${expense.amount.toFixed(2)}</div>
+                            <div class="expense-amount">$${ex.amount.toFixed(2)}</div>
                         </div>
                     </div>
-                    ${expense.description ? `<div class="expense-description" style="margin-top: 10px; color: var(--text-light); opacity: 0.8;">${expense.description}</div>` : ''}
-                    ${expense.receipt ? `<div style="margin-top: 10px;"><img src="${expense.receipt}" class="receipt-preview" alt="Receipt"></div>` : ''}
-                    <button onclick="deleteExpense('${expense.id}')" class="btn-delete">Delete</button>
+                    ${ex.description ? `<div class="expense-description">${ex.description}</div>` : ''}
+                    ${ex.receipt ? `<div style="margin-top: 10px;"><img src="${ex.receipt}" class="receipt-preview" alt="Receipt"></div>` : ''}
+                    <button onclick="deleteExpense('${ex.id}')" class="btn-delete">Delete</button>
                 </div></li>
             `).join('');
         }
 
         function deleteExpense(expenseId) {
             if (confirm('Are you sure you want to delete this expense?')) {
-                expenses = expenses.filter(expense => expense.id != expenseId);
+                expenses = expenses.filter(ex => ex.id != expenseId);
                 localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
                 updateSummary();
                 updateInsights();
@@ -2131,177 +1812,98 @@
         }
 
         function showSection(sectionName) {
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.add('hidden');
-            });
-
-            // Show selected section
+            document.querySelectorAll('.section').forEach(section => section.classList.add('hidden'));
             document.getElementById(`${sectionName}Section`).classList.remove('hidden');
-
-            // Update navigation
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
-
             currentSection = sectionName;
 
-            // Update content based on section
-            if (sectionName === 'history') {
-                updateHistory();
-            } else if (sectionName === 'insights') {
-                updateInsights();
-            }
+            if (sectionName === 'history') updateHistory();
+            else if (sectionName === 'insights') updateInsights();
         }
-
-
 
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${type === 'success' ? 'var(--success-color)' : 'var(--info-color)'};
-                color: white;
-                padding: 15px 20px;
-                border-radius: 8px;
-                z-index: 3000;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                font-weight: 600;
-                transform: translateX(100%);
-                transition: transform 0.3s ease;
+                position: fixed; top: 20px; right: 20px;
+                background: ${type === 'success' ? 'var(--success-color)' : type === 'error' ? 'var(--error-color)' : 'var(--info-color)'};
+                color: white; padding: 15px 20px; border-radius: 8px; z-index: 3000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-weight: 600;
+                transform: translateX(120%); transition: transform 0.3s ease;
             `;
             notification.textContent = message;
-
             document.body.appendChild(notification);
-
+            setTimeout(() => notification.style.transform = 'translateX(0)', 100);
             setTimeout(() => {
-                notification.style.transform = 'translateX(0)';
-            }, 100);
-
-            setTimeout(() => {
-                notification.style.transform = 'translateX(100%)';
-                setTimeout(() => {
-                    document.body.removeChild(notification);
-                }, 300);
+                notification.style.transform = 'translateX(120%)';
+                setTimeout(() => document.body.removeChild(notification), 300);
             }, 3000);
         }
 
-        // Export functions
-        function exportToPDF() {
-            window.print();
-        }
-
-        function printSection() {
-            window.print();
-        }
-
+        function exportToPDF() { window.print(); }
+        function printSection() { window.print(); }
         function exportToCSV() {
             if (expenses.length === 0) {
                 alert('No expenses to export.');
                 return;
             }
-
             const headers = ['Date', 'Category', 'Amount', 'Description', 'Location'];
             const csvContent = [
                 headers.join(','),
-                ...expenses.map(expense => [
-                    new Date(expense.date).toLocaleDateString(),
-                    expense.categoryName,
-                    expense.amount,
-                    `"${expense.description || ''}"`,
-                    `"${expense.location || ''}"`,
+                ...expenses.map(ex => [
+                    new Date(ex.date).toLocaleDateString(),
+                    ex.categoryName,
+                    ex.amount,
+                    `"${ex.description || ''}"`,
+                    `"${ex.location || ''}"`,
                 ].join(','))
             ].join('\n');
-
             const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
             a.download = `trucker-expenses-${new Date().toISOString().split('T')[0]}.csv`;
             a.click();
-            window.URL.revokeObjectURL(url);
+            URL.revokeObjectURL(url);
         }
+        function exportHistoryToPDF() { showSection('history'); setTimeout(window.print, 500); }
+        function printHistory() { showSection('history'); setTimeout(window.print, 500); }
+        function exportHistoryToCSV() { exportToCSV(); }
+        function exportInsightsToPDF() { showSection('insights'); setTimeout(window.print, 500); }
+        function printInsights() { showSection('insights'); setTimeout(window.print, 500); }
+        function exportInsightsToCSV() { exportToCSV(); }
 
-        function exportHistoryToPDF() {
-            showSection('history');
-            setTimeout(() => window.print(), 500);
-        }
-
-        function printHistory() {
-            showSection('history');
-            setTimeout(() => window.print(), 500);
-        }
-
-        function exportHistoryToCSV() {
-            exportToCSV();
-        }
-
-        function exportInsightsToPDF() {
-            showSection('insights');
-            setTimeout(() => window.print(), 500);
-        }
-
-        function printInsights() {
-            showSection('insights');
-            setTimeout(() => window.print(), 500);
-        }
-
-        function exportInsightsToCSV() {
-            exportToCSV();
-        }
-        
-        // --- FAQ LOGIC ---
         function updateFAQWithTrialDate() {
             const displayElement = document.getElementById('trial-start-date-display');
             if (displayElement) {
                 const storedDate = localStorage.getItem('trialStartDate');
                 if (storedDate) {
-                    // Format the date and time to be readable
-                    const date = new Date(parseInt(storedDate));
-                    displayElement.textContent = date.toLocaleString();
+                    displayElement.textContent = new Date(parseInt(storedDate)).toLocaleString();
                 } else {
                     displayElement.textContent = "Not started yet.";
                 }
             }
         }
-
         function showFAQ() {
             document.getElementById('faqModal').classList.add('active');
-            // Update the trial start date every time the FAQ is opened
             updateFAQWithTrialDate();
         }
-
-        function closeFAQ() {
-            document.getElementById('faqModal').classList.remove('active');
-        }
-
+        function closeFAQ() { document.getElementById('faqModal').classList.remove('active'); }
         function toggleFAQ(element) {
             const answer = element.nextElementSibling;
             const icon = element.querySelector('span');
-
             answer.classList.toggle('active');
             icon.textContent = answer.classList.contains('active') ? '-' : '+';
         }
 
-        function showFeedback() {
-            document.getElementById('feedbackModal').classList.add('active');
-        }
-
+        function showFeedback() { document.getElementById('feedbackModal').classList.add('active'); }
         function closeFeedback() {
             document.getElementById('feedbackModal').classList.remove('active');
-            // Reset form state when closing
-            setTimeout(() => {
-                resetFeedbackForm();
-            }, 300);
+            setTimeout(() => resetFeedbackForm(), 300);
         }
-
         function updateEmailDisplay() {
             const type = document.getElementById('feedbackType').value;
             const emailDisplay = document.getElementById('emailDisplay');
-
             if (type === 'feature') {
                 emailDisplay.textContent = '📧 Will be sent to: features@truckerexpensetracker.com';
                 emailDisplay.style.color = '#10b981';
@@ -2312,74 +1914,42 @@
                 emailDisplay.textContent = '';
             }
         }
-
         function submitFeedback(event) {
             event.preventDefault();
-
             const submitBtn = document.getElementById('feedbackSubmitBtn');
             const form = document.getElementById('feedbackForm');
             const successDiv = document.getElementById('feedbackSuccess');
-
-            // Show loading state
             submitBtn.textContent = 'Sending...';
             submitBtn.disabled = true;
             submitBtn.style.background = '#6b7280';
-
             const type = document.getElementById('feedbackType').value;
             const message = document.getElementById('feedbackMessage').value;
             const email = document.getElementById('feedbackEmail').value;
-
-            // Determine which email to use based on feedback type
-            let recipientEmail = 'support@truckerexpensetracker.com';
-            if (type === 'feature') {
-                recipientEmail = 'features@truckerexpensetracker.com';
-            }
-
-            // Create subject line
-            const subject = `Trucker Expense Tracker - ${type.charAt(0).toUpperCase() + type.slice(1)} ${type === 'bug' ? 'Report' : type === 'feature' ? 'Request' : 'Feedback'}`;
-
-            // Create email body
+            let recipientEmail = type === 'feature' ? 'features@truckerexpensetracker.com' : 'support@truckerexpensetracker.com';
+            const subject = `Trucker Expense Tracker - ${type.charAt(0).toUpperCase() + type.slice(1)} Feedback`;
             const body = `Feedback Type: ${type}\n\nMessage:\n${message}\n\n${email ? `Reply to: ${email}\n\n` : ''}Sent from Trucker Expense Tracker PWA`;
-
-            // Create mailto link
             const mailtoLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-            // Simulate processing time for better UX
             setTimeout(() => {
-                // Hide form and show success message
                 form.style.display = 'none';
                 successDiv.style.display = 'block';
-
-                // Open email client
                 window.location.href = mailtoLink;
-
                 showNotification('Your email client should open shortly...', 'success');
             }, 1000);
         }
-
         function resetFeedbackForm() {
             const form = document.getElementById('feedbackForm');
             const successDiv = document.getElementById('feedbackSuccess');
             const submitBtn = document.getElementById('feedbackSubmitBtn');
-
-            // Reset form display
             form.style.display = 'block';
             successDiv.style.display = 'none';
-
-            // Reset form fields
             form.reset();
             document.getElementById('emailDisplay').textContent = '';
-
-            // Reset button state
             submitBtn.textContent = 'Send Feedback';
             submitBtn.disabled = false;
             submitBtn.style.background = '';
         }
 
-        function checkForUpdates() {
-            showNotification('You are using the latest version (v2.1.0)', 'success');
-        }
-
+        function checkForUpdates() { showNotification('You are using the latest version (v2.1.0)', 'success'); }
         function backupData() {
             try {
                 const backupData = {
@@ -2389,16 +1959,13 @@
                     version: '2.1.0',
                     timestamp: new Date().toISOString()
                 };
-
                 const dataStr = JSON.stringify(backupData, null, 2);
                 const blob = new Blob([dataStr], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
-
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = `trucker-expenses-backup-${new Date().toISOString().split('T')[0]}.json`;
                 a.click();
-
                 URL.revokeObjectURL(url);
                 showNotification('Data backup downloaded successfully!', 'success');
             } catch (error) {
@@ -2406,47 +1973,36 @@
                 console.error('Backup error:', error);
             }
         }
-
         function restoreData() {
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.json';
-
             input.onchange = function(event) {
                 const file = event.target.files[0];
                 if (!file) return;
-
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     try {
                         const backupData = JSON.parse(e.target.result);
-
                         if (confirm('This will replace all current data. Are you sure you want to restore from backup?')) {
                             if (backupData.expenses && Array.isArray(backupData.expenses)) {
                                 expenses = backupData.expenses;
                                 localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
                             }
-
                             if (backupData.trialStartDate) {
                                 localStorage.setItem('trialStartDate', backupData.trialStartDate);
                                 trialStartDate = backupData.trialStartDate;
                             }
-
                             if (backupData.darkMode) {
                                 localStorage.setItem('darkMode', backupData.darkMode);
                                 isDarkMode = backupData.darkMode === 'true';
-                                if (isDarkMode) {
-                                    document.body.classList.add('dark-mode');
-                                    document.querySelector('.dark-mode-toggle').textContent = '☀️';
-                                }
+                                document.body.classList.toggle('dark-mode', isDarkMode);
+                                updateToggleIcon();
                             }
-
-                            // Refresh displays
                             updateSummary();
                             updateInsights();
                             updateHistory();
                             updateTrialCountdown();
-
                             showNotification('Data restored successfully!', 'success');
                         }
                     } catch (error) {
@@ -2456,28 +2012,23 @@
                 };
                 reader.readAsText(file);
             };
-
             input.click();
         }
 
-        // Close modals when clicking outside
         document.addEventListener('click', function(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.classList.remove('active');
             }
         });
 
-        // Update trial countdown every minute
         setInterval(updateTrialCountdown, 60000);
 
-        // Dark mode functions - defined globally and accessible immediately
         function toggleDarkMode() {
             isDarkMode = !isDarkMode;
             document.body.classList.toggle('dark-mode', isDarkMode);
             localStorage.setItem('darkMode', isDarkMode);
             updateToggleIcon();
         }
-
         function updateToggleIcon() {
             const toggle = document.querySelector('.dark-mode-toggle');
             if (toggle) {
@@ -2485,23 +2036,18 @@
             }
         }
 
-        // --- NEW WELCOME MODAL FUNCTIONS ---
         function showWelcomeModal() {
             document.getElementById('welcomeModal').classList.add('active');
         }
-
         function closeWelcomeModal() {
             document.getElementById('welcomeModal').classList.remove('active');
-            localStorage.setItem('hasSeenWelcome', 'true'); // This is crucial!
+            localStorage.setItem('hasSeenWelcome', 'true');
         }
-        // --- END OF NEW FUNCTIONS ---
 
-        // Initialize dark mode immediately
         if (localStorage.getItem('darkMode') === 'true') {
             document.body.classList.add('dark-mode');
             isDarkMode = true;
         }
-
     </script>
 </body>
 </html>
