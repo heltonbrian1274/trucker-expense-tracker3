@@ -1,14 +1,15 @@
 import { Redis } from '@upstash/redis';
 
-// Initialize Upstash Redis client from Vercel environment variables
+// Initialize Upstash Redis client using the Vercel KV environment variables
 const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  url: process.env.KV_REST_API_URL,      // FIXED
+  token: process.env.KV_REST_API_TOKEN,  // FIXED
 });
 
 export default async function handler(req, res) {
   // Only allow POST requests for security
   if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST');
     return res.status(405).end('Method Not Allowed');
   }
 
@@ -36,12 +37,13 @@ export default async function handler(req, res) {
     }
 
     // SUCCESS! Mark the token as used so it cannot be used again
+    // keepttl: true ensures the token still expires automatically after its original 7 days
     await redis.set(key, JSON.stringify({ ...tokenData, used: true }), { keepttl: true });
     
     // Respond with success to the app
     return res.status(200).json({ success: true, message: 'Subscription activated!' });
 
-  } catch (error)
+  } catch (error) { // FIXED: Added the missing curly brace
     console.error('Token verification error:', error);
     return res.status(500).json({ success: false, message: 'An internal server error occurred.' });
   }
