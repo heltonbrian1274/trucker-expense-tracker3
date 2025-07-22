@@ -2,10 +2,10 @@ import { Redis } from '@upstash/redis';
 import Stripe from 'stripe';
 import { randomBytes } from 'crypto';
 
-// Initialize Upstash Redis client from Vercel environment variables
+// Initialize Upstash Redis client using the Vercel KV environment variables
 const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  url: process.env.KV_REST_API_URL,      // CHANGED
+  token: process.env.KV_REST_API_TOKEN,  // CHANGED
 });
 
 // Initialize Stripe with your secret key (must be an environment variable)
@@ -65,7 +65,7 @@ export default async function handler(req, res) {
     // This is where you would trigger an email to the customer
     // with their unique unlock link.
     console.log(`✅ Token generated for ${customerEmail}: ${unlockToken}`);
-    console.log(`📧 Unlock link to send: https://www.truckerexpensetracker.com/?token=${unlockToken}`);
+    console.log(`📧 Unlock link to send: https://www.truckerexpensetracker.com/?token=${unlockToken}` );
   }
 
   res.status(200).json({ received: true });
