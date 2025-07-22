@@ -1063,6 +1063,7 @@
                     <button class="action-btn" style="background: #8b5cf6;" onclick="backupData()">💾 Backup Data</button>
                     <button class="action-btn" style="background: #06b6d4;" onclick="restoreData()">📥 Restore Data</button>
                     <button class="action-btn subscribe-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')">💳 Subscribe - $9.99/mo</button>
+                    <button class="action-btn" onclick="restorePurchase()">🔄 Restore Subscription</button>
                 </div>
             </section>
 
@@ -1375,12 +1376,21 @@
                 return;
             }
 
-            // Check for the subscription unlock parameter in the URL
+            // *** FIX STARTS HERE ***
+            // Check for notification after unlock redirect
+            if (sessionStorage.getItem('justUnlocked')) {
+                showNotification('Subscription activated! Thank you for your support.', 'success');
+                sessionStorage.removeItem('justUnlocked');
+            }
+            
+            // Check for the subscription unlock parameter in the URL and force reload
             if (urlParams.get('unlock') === 'true') {
                 localStorage.setItem('isSubscribed', 'true');
-                showNotification('Subscription activated! Thank you for your support.', 'success');
-                window.history.replaceState({}, document.title, window.location.pathname);
+                sessionStorage.setItem('justUnlocked', 'true'); // Set a temporary flag for after the reload
+                window.location.href = window.location.pathname; // Force a reload to the clean URL
+                return; // Stop execution to allow for redirect
             }
+            // *** FIX ENDS HERE ***
 
             // Check for new user welcome modal
             const currentExpenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
