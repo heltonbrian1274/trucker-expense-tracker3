@@ -23,6 +23,7 @@
     <meta property="twitter:image" content="https://trucker-expense-tracker.vercel.app/icon-512x512.png">
 
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self';">
+    <meta http-equiv="X-Frame-Options" content="DENY">
     <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
 
     <title>Trucker Expense Tracker - Simple, Private Expense Management for Owner-Operators</title>
@@ -36,7 +37,7 @@
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192x192.png">
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512x512.png">
     <meta name="theme-color" content="#2563eb">
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Trucker Expense Tracker">
 
@@ -1061,7 +1062,7 @@
                     <button class="action-btn update-btn" onclick="checkForUpdates()">🔄 Check for Updates</button>
                     <button class="action-btn" style="background: #8b5cf6;" onclick="backupData()">💾 Backup Data</button>
                     <button class="action-btn" style="background: #06b6d4;" onclick="restoreData()">📥 Restore Data</button>
-                    <button class="action-btn subscribe-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')">💳 Subscribe - $9.99/mo</button>
+                    <button class="action-btn subscribe-btn" onclick="window.open('YOUR_STRIPE_CHECKOUT_LINK', '_blank')">💳 Subscribe - $9.99/mo</button>
                     <button class="action-btn" onclick="restorePurchase()">🔄 Restore Subscription</button>
                 </div>
             </section>
@@ -1155,116 +1156,118 @@
             <p>You pay a small fee for this software so that we don't have to make money from your data. Everything you enter is stored locally and securely on your device. We have no access to it.</p>
         </div>
     </div>
-   <div id="faqModal" class="modal">
-    <div class="modal-content">
-        <button class="modal-close" onclick="closeFAQ()">&times;</button>
-        <h2>❓ Frequently Asked Questions</h2>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                What expenses can I track? <span>+</span>
+    
+    <div id="faqModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeFAQ()">&times;</button>
+            <h2>❓ Frequently Asked Questions</h2>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What expenses can I track? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    You can track 15 different categories of expenses including fuel, maintenance, meals, lodging, tolls, permits, insurance, phone bills, and more. Each category is specifically designed for trucking business needs.
+                </div>
             </div>
-            <div class="faq-answer">
-                You can track 15 different categories of expenses including fuel, maintenance, meals, lodging, tolls, permits, insurance, phone bills, and more. Each category is specifically designed for trucking business needs.
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    When did my 30-day free trial start? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Your trial started on: <strong id="trial-start-date-display">loading...</strong></p>
+                </div>
             </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                When did my 30-day free trial start? <span>+</span>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Is my data secure? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! All your data is stored locally on your device using your browser's local storage. Nothing is sent to our servers, ensuring complete privacy and security.
+                </div>
             </div>
-            <div class="faq-answer">
-                <p>Your trial started on: <strong id="trial-start-date-display">loading...</strong></p>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I export my data? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! You can export your expense data as PDF reports or CSV files for your accountant or tax preparation.
+                </div>
             </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                Is my data secure? <span>+</span>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Does this work offline? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! This is a Progressive Web App (PWA) that works offline. You can add expenses even without an internet connection.
+                </div>
             </div>
-            <div class="faq-answer">
-                Yes! All your data is stored locally on your device using your browser's local storage. Nothing is sent to our servers, ensuring complete privacy and security.
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What happens after the trial period? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    After the 30-day trial, you'll need to subscribe for $9.99/month to continue using the app. Your data will remain on your device during the trial period.
+                </div>
             </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                Can I export my data? <span>+</span>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    How do I restore my subscription on a new device? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    If you have subscribed and need to activate the app on a new device or after clearing your browser data, simply use the "Restore Subscription" button on the main screen. This will guide you to check your email for your unique activation link.
+                </div>
             </div>
-            <div class="faq-answer">
-                Absolutely! You can export your expense data as PDF reports or CSV files for your accountant or tax preparation.
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    How do I backup my expense data? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Use the "Backup Data" button to download your expenses as a JSON file. On your new device, use "Restore Data" to import this backup file. Note that this only backs up your expense entries, not your subscription status.
+                </div>
             </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                Does this work offline? <span>+</span>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I track per-mile expenses? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! You can use the "Other Business Expenses" category to track per-mile costs, or add mile information in the description field of fuel and maintenance entries.
+                </div>
             </div>
-            <div class="faq-answer">
-                Yes! This is a Progressive Web App (PWA) that works offline. You can add expenses even without an internet connection.
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I track expenses for multiple trucks? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Currently, the app tracks expenses in one account. You can use the description field to specify which truck/trailer an expense relates to, or use separate devices/browsers for different trucks.
+                </div>
             </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                What happens after the trial period? <span>+</span>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What if I need to edit or delete an expense? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    You can delete expenses from the History section by clicking the "Delete" button on any expense entry. Currently, editing requires deleting and re-adding the expense.
+                </div>
             </div>
-            <div class="faq-answer">
-                After the 30-day trial, you'll need to subscribe for $9.99/month to continue using the app. Your data will remain on your device during the trial period.
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Does the app work on both mobile and desktop? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! This PWA is designed to work seamlessly on smartphones, tablets, and desktop computers. You can install it on your phone's home screen for easy access.
+                </div>
             </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                How do I restore my subscription on a new device? <span>+</span>
-            </div>
-            <div class="faq-answer">
-                If you have subscribed and need to activate the app on a new device or after clearing your browser data, simply use the "Restore Subscription" button on the main screen. This will re-validate your purchase.
-            </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                How do I backup my expense data? <span>+</span>
-            </div>
-            <div class="faq-answer">
-                Use the "Backup Data" button to download your expenses as a JSON file. On your new device, use "Restore Data" to import this backup file. Note that this only backs up your expense entries, not your subscription status, which can be reactivated with the "Restore Subscription" button.
-            </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                Can I track per-mile expenses? <span>+</span>
-            </div>
-            <div class="faq-answer">
-                Yes! You can use the "Other Business Expenses" category to track per-mile costs, or add mile information in the description field of fuel and maintenance entries.
-            </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                Can I track expenses for multiple trucks? <span>+</span>
-            </div>
-            <div class="faq-answer">
-                Currently, the app tracks expenses in one account. You can use the description field to specify which truck/trailer an expense relates to, or use separate devices/browsers for different trucks.
-            </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                What if I need to edit or delete an expense? <span>+</span>
-            </div>
-            <div class="faq-answer">
-                You can delete expenses from the History section by clicking the "Delete" button on any expense entry. Currently, editing requires deleting and re-adding the expense.
-            </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                Does the app work on both mobile and desktop? <span>+</span>
-            </div>
-            <div class="faq-answer">
-                Yes! This PWA is designed to work seamlessly on smartphones, tablets, and desktop computers. You can install it on your phone's home screen for easy access.
-            </div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question" onclick="toggleFAQ(this)">
-                Can I print my expense reports? <span>+</span>
-            </div>
-            <div class="faq-answer">
-                Absolutely! Each section (Today, History, Insights) has print functionality. You can also export PDF reports and CSV files for your records.
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I print my expense reports? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! Each section (Today, History, Insights) has print functionality. You can also export PDF reports and CSV files for your records.
+                </div>
             </div>
         </div>
     </div>
-</div>
+
     <div id="feedbackModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeFeedback()">&times;</button>
@@ -1333,8 +1336,10 @@
             <button id="closeWelcomeBtn" class="btn" style="margin-top: 30px; padding: 15px 30px; font-size: 1.1rem;">Start Tracking Expenses</button>
         </div>
     </div>
+    
     <script>
-        // Expense categories with 15 different types
+        // *** UPDATED SCRIPT STARTS HERE ***
+
         const expenseCategories = [
             { id: 'fuel', name: 'Fuel', icon: '⛽' },
             { id: 'maintenance', name: 'Maintenance & Repairs', icon: '🔧' },
@@ -1353,65 +1358,33 @@
             { id: 'other', name: 'Other Business Expenses', icon: '💼' }
         ];
 
-        // Application state
         let expenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
         let isDarkMode = localStorage.getItem('darkMode') === 'true';
         let currentSection = 'today';
         let trialStartDate = localStorage.getItem('trialStartDate') || Date.now();
         let isTrialExpired = false;
 
-        // Initialize trial start date if not set
         if (!localStorage.getItem('trialStartDate')) {
             localStorage.setItem('trialStartDate', trialStartDate);
         }
 
-        // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
-            // Check for trial reset parameter
             const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+
+            if (token) {
+                verifySubscriptionToken(token);
+            } else {
+                initializeApp();
+            }
+
             if (urlParams.get('reset') === 'trial') {
-                localStorage.removeItem('trialStartDate');
-                localStorage.removeItem('truckerExpenses');
-                localStorage.removeItem('darkMode');
-                localStorage.removeItem('hasSeenWelcome'); 
-                localStorage.removeItem('isSubscribed'); // Also clear subscription status on full reset
-                trialStartDate = Date.now();
-                localStorage.setItem('trialStartDate', trialStartDate);
-                expenses = [];
+                localStorage.clear();
+                sessionStorage.clear();
                 alert('Trial has been reset! Redirecting...');
                 window.location.href = window.location.pathname;
                 return;
             }
-
-            // *** FIX STARTS HERE ***
-            // Check for notification after unlock redirect
-            if (sessionStorage.getItem('justUnlocked')) {
-                showNotification('Subscription activated! Thank you for your support.', 'success');
-                sessionStorage.removeItem('justUnlocked');
-            }
-            
-            // Check for the subscription unlock parameter in the URL and force reload
-            if (urlParams.get('unlock') === 'true') {
-                localStorage.setItem('isSubscribed', 'true');
-                sessionStorage.setItem('justUnlocked', 'true'); // Set a temporary flag for after the reload
-                window.location.href = window.location.pathname; // Force a reload to the clean URL
-                return; // Stop execution to allow for redirect
-            }
-            // *** FIX ENDS HERE ***
-
-            // Check for new user welcome modal
-            const currentExpenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
-            if (currentExpenses.length === 0 && !localStorage.getItem('hasSeenWelcome')) {
-                showWelcomeModal();
-            }
-            document.getElementById('closeWelcomeBtn').addEventListener('click', closeWelcomeModal);
-
-            initializeApp();
-            updateTrialCountdown();
-            populateExpenseGrid();
-            updateToggleIcon();
-            updateSummary();
-            updateInsights();
             
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('./sw.js')
@@ -1420,11 +1393,48 @@
             }
         });
 
+        async function verifySubscriptionToken(token) {
+            try {
+                const response = await fetch('/api/verify-token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: token })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    localStorage.setItem('isSubscribed', 'true');
+                    showNotification('Subscription activated! Thank you for your support.', 'success');
+                } else {
+                    showNotification(result.message || 'Failed to activate subscription.', 'error');
+                }
+            } catch (error) {
+                console.error('Verification request failed:', error);
+                showNotification('Could not connect to activation server.', 'error');
+            } finally {
+                window.history.replaceState({}, document.title, window.location.pathname);
+                initializeApp();
+            }
+        }
+
         function initializeApp() {
             if (isDarkMode) {
                 document.body.classList.add('dark-mode');
                 document.querySelector('.dark-mode-toggle').textContent = '☀️';
             }
+
+            const currentExpenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
+            if (currentExpenses.length === 0 && !localStorage.getItem('hasSeenWelcome')) {
+                showWelcomeModal();
+            }
+            document.getElementById('closeWelcomeBtn').addEventListener('click', closeWelcomeModal);
+
+            updateTrialCountdown();
+            populateExpenseGrid();
+            updateToggleIcon();
+            updateSummary();
+            updateInsights();
 
             const urlParams = new URLSearchParams(window.location.search);
             const action = urlParams.get('action');
@@ -1433,8 +1443,6 @@
                 setTimeout(() => toggleExpenseCard('fuel'), 500);
             } else if (action === 'history') {
                 showSection('history');
-            } else if (action === 'export') {
-                exportToPDF();
             }
         }
 
@@ -2033,8 +2041,7 @@
         }
 
         function restorePurchase() {
-            alert("This will reload the app to re-apply your subscription status. Please make sure you are connected to the internet.");
-            window.location.href = 'https://www.truckerexpensetracker.com/?unlock=true';
+            alert("Please check your email for your unique subscription activation link. If you can't find it, please contact support.");
         }
 
         document.addEventListener('click', function(event) {
@@ -2065,11 +2072,7 @@
             document.getElementById('welcomeModal').classList.remove('active');
             localStorage.setItem('hasSeenWelcome', 'true');
         }
-
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.body.classList.add('dark-mode');
-            isDarkMode = true;
-        }
+        
     </script>
 </body>
 </html>
