@@ -2,19 +2,70 @@ import { Redis } from '@upstash/redis';
 import Stripe from 'stripe';
 import { randomBytes } from 'crypto';
 
-// Initialize Upstash Redis client using the Vercel KV environment variables
+// Initialize Redis and Stripe
 const redis = new Redis({
-  url: process.env.KV_REST_API_URL,      // CHANGED
-  token: process.env.KV_REST_API_TOKEN,  // CHANGED
+  url: process.env.KV_REST_API_URL,
+  token: process.env.KV_REST_API_TOKEN,
 });
-
-// Initialize Stripe with your secret key (must be an environment variable)
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-// Your Stripe webhook secret for verifying the request (must be an environment variable)
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-// Helper function to buffer the request body for signature verification
+// --- ZOHO EMAIL SENDING FUNCTION ---
+// A helper function to send the email using the ZeptoMail API
+async function sendActivationEmail(recipientEmail, token) {
+  const zeptoMailToken = process.env.ZEPTOMAIL_TOKEN;
+  // IMPORTANT: This "from" address must be an address from your verified domain in ZeptoMail
+  const fromAddress = "activate@truckerexpensetracker.com"; 
+
+  const emailBody = {
+    from: {
+      address: fromAddress,
+      name: "Trucker Expense Tracker",
+    },
+    to: [
+      {
+        email_address: {
+          address: recipientEmail,
+          name: recipientEmail,
+        },
+      },
+    ],
+    subject: "Activate Your Pro Subscription",
+    htmlbody: `
+      <div style="font-family: sans-serif; padding: 20px; line-height: 1.6;">
+        <h2>Thank You for Subscribing!</h2>
+        <p>Your payment was successful. Please click the button below to activate your Pro account and unlock all features.</p>
+        <a href="https://www.truckerexpensetracker.com/?token=${token}" style="background-color: #2563eb; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Activate My Account</a>
+        <p>If you have any trouble, you can copy and paste this link into your browser:</p>
+        <p>https://www.truckerexpensetracker.com/?token=${token}</p>
+        <p>If you have any questions, please contact support.</p>
+      </div>
+    `,
+  };
+
+  try {
+    const response = await fetch("https://api.zeptomail.com/v1.1/email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Zoho-enczapikey ${zeptoMailToken}`,
+      },
+      body: JSON.stringify(emailBody ),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to send email via Zoho:", errorData);
+    } else {
+      console.log(`✅ Activation email successfully sent to ${recipientEmail} via Zoho.`);
+    }
+  } catch (error) {
+    console.error("Error calling Zoho API:", error);
+  }
+}
+// --- END OF ZOHO FUNCTION ---
+
+// Helper function to buffer the request
 async function buffer(readable) {
   const chunks = [];
   for await (const chunk of readable) {
@@ -25,7 +76,7 @@ async function buffer(readable) {
 
 export const config = {
   api: {
-    bodyParser: false, // We need the raw body for Stripe signature verification
+    bodyParser: false,
   },
 };
 
@@ -46,7 +97,6 @@ export default async function handler(req, res) {
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 
-  // Handle the 'checkout.session.completed' event
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     const customerEmail = session.customer_details.email;
@@ -57,15 +107,10 @@ export default async function handler(req, res) {
     }
 
     const unlockToken = randomBytes(24).toString('hex');
-
-    // Store the token in your Upstash Redis database, expiring in 7 days
     await redis.set(`token:${unlockToken}`, JSON.stringify({ email: customerEmail, used: false }), { ex: 604800 });
-
-    // --- Placeholder for Sending an Email ---
-    // This is where you would trigger an email to the customer
-    // with their unique unlock link.
-    console.log(`✅ Token generated for ${customerEmail}: ${unlockToken}`);
-    console.log(`📧 Unlock link to send: https://www.truckerexpensetracker.com/?token=${unlockToken}` );
+    
+    // Call our Zoho function to send the email
+    await sendActivationEmail(customerEmail, unlockToken);
   }
 
   res.status(200).json({ received: true });
