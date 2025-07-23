@@ -2,8 +2,8 @@ import { Redis } from '@upstash/redis';
 
 // Initialize Upstash Redis client using the Vercel KV environment variables
 const redis = new Redis({
-  url: process.env.KV_REST_API_URL,      // FIXED
-  token: process.env.KV_REST_API_TOKEN,  // FIXED
+  url: process.env.KV_REST_API_URL,
+  token: process.env.KV_REST_API_TOKEN,
 });
 
 export default async function handler(req, res) {
@@ -31,19 +31,14 @@ export default async function handler(req, res) {
 
     const tokenData = JSON.parse(tokenDataString);
 
-    // Check if the token has already been used
-    if (tokenData.used) {
-      return res.status(400).json({ success: false, message: 'This activation link has already been used.' });
-    }
+    // This is the improved logic we discussed. We are NOT checking if the token has been used.
+    // This allows the user to use the same link to activate on multiple devices.
+    // A successful response is all that's needed.
 
-    // SUCCESS! Mark the token as used so it cannot be used again
-    // keepttl: true ensures the token still expires automatically after its original 7 days
-    await redis.set(key, JSON.stringify({ ...tokenData, used: true }), { keepttl: true });
-    
-    // Respond with success to the app
+    // SUCCESS! The token is valid.
     return res.status(200).json({ success: true, message: 'Subscription activated!' });
 
-  } catch (error) { // FIXED: Added the missing curly brace
+  } catch (error) {
     console.error('Token verification error:', error);
     return res.status(500).json({ success: false, message: 'An internal server error occurred.' });
   }
