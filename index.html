@@ -1063,7 +1063,6 @@
                     <button class="action-btn" style="background: #8b5cf6;" onclick="backupData()">💾 Backup Data</button>
                     <button class="action-btn" style="background: #06b6d4;" onclick="restoreData()">📥 Restore Data</button>
                     <button class="action-btn subscribe-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')">💳 Subscribe - $9.99/mo</button>
-                    <button class="action-btn" onclick="restorePurchase()">🔄 Restore Subscription</button>
                 </div>
             </section>
 
@@ -1417,36 +1416,6 @@
                 initializeApp();
             }
         }
-// =================================================================
-// NEW FUNCTION TO VERIFY THE TOKEN WITH YOUR SERVER
-// =================================================================
-async function verifySubscriptionToken(token) {
-    showNotification('Activating your subscription...', 'info');
-
-    try {
-        const response = await fetch('/api/verify-token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: token })
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-            localStorage.setItem('isSubscribed', 'true');
-            showNotification('Subscription activated successfully!', 'success');
-        } else {
-            showNotification(result.message || 'Failed to activate subscription.', 'error');
-        }
-    } catch (error) {
-        console.error('Verification request failed:', error);
-        showNotification('Could not connect to activation server.', 'error');
-    } finally {
-        // Clean the URL and then initialize the app to show the correct state
-        window.history.replaceState({}, document.title, window.location.pathname);
-        initializeApp();
-    }
-}
 
         function initializeApp() {
             if (isDarkMode) {
