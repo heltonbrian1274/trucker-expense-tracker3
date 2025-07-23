@@ -1417,6 +1417,36 @@
                 initializeApp();
             }
         }
+// =================================================================
+// NEW FUNCTION TO VERIFY THE TOKEN WITH YOUR SERVER
+// =================================================================
+async function verifySubscriptionToken(token) {
+    showNotification('Activating your subscription...', 'info');
+
+    try {
+        const response = await fetch('/api/verify-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: token })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            localStorage.setItem('isSubscribed', 'true');
+            showNotification('Subscription activated successfully!', 'success');
+        } else {
+            showNotification(result.message || 'Failed to activate subscription.', 'error');
+        }
+    } catch (error) {
+        console.error('Verification request failed:', error);
+        showNotification('Could not connect to activation server.', 'error');
+    } finally {
+        // Clean the URL and then initialize the app to show the correct state
+        window.history.replaceState({}, document.title, window.location.pathname);
+        initializeApp();
+    }
+}
 
         function initializeApp() {
             if (isDarkMode) {
