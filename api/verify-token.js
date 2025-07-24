@@ -22,20 +22,15 @@ export default async function handler(req, res) {
 
   try {
     const key = `token:${token}`;
-    const tokenDataString = await redis.get(key);
+    // We just need to check if the token exists. We don't need its value.
+    const tokenExists = await redis.get(key);
 
     // If the token doesn't exist in the database, it's invalid or expired
-    if (!tokenDataString) {
+    if (!tokenExists) {
       return res.status(404).json({ success: false, message: 'Invalid or expired activation link.' });
     }
-
-    const tokenData = JSON.parse(tokenDataString);
-
-    // This is the improved logic we discussed. We are NOT checking if the token has been used.
-    // This allows the user to use the same link to activate on multiple devices.
-    // A successful response is all that's needed.
-
-    // SUCCESS! The token is valid.
+    
+    // SUCCESS! The token is valid because it exists in our database.
     return res.status(200).json({ success: true, message: 'Subscription activated!' });
 
   } catch (error) {
