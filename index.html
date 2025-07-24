@@ -1366,30 +1366,54 @@
             localStorage.setItem('trialStartDate', trialStartDate);
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const token = urlParams.get('token');
-
-            if (token) {
-                verifySubscriptionToken(token);
-            } else {
-                initializeApp();
+       document.addEventListener('DOMContentLoaded', function() {
+    // =================================================================
+    // AGGRESSIVE SERVICE WORKER UNREGISTER SCRIPT
+    // This runs first to ensure a clean slate.
+    // =================================================================
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for (let registration of registrations) {
+                registration.unregister();
+                console.log('Old service worker unregistered successfully.');
             }
-
-            if (urlParams.get('reset') === 'trial') {
-                localStorage.clear();
-                sessionStorage.clear();
-                alert('Trial has been reset! Redirecting...');
-                window.location.href = window.location.pathname;
-                return;
-            }
-            
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(registration => console.log('SW registered'))
-                    .catch(error => console.log('SW registration failed'));
-            }
+        }).catch(function(err) {
+            console.error('Service worker unregistration failed: ', err);
         });
+    }
+
+    // --- The rest of the initialization logic follows ---
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    // If a token is in the URL, verify it first.
+    if (token) {
+        verifySubscriptionToken(token);
+    } else {
+        // If no token, initialize the app normally.
+        initializeApp();
+    }
+
+    // Keep the trial reset functionality
+    if (urlParams.get('reset') === 'trial') {
+        localStorage.clear();
+        sessionStorage.clear();
+        alert('Trial has been reset! Redirecting...');
+        window.location.href = window.location.pathname;
+        return;
+    }
+    
+    // Register the NEW service worker after a short delay
+    // to ensure the old one is gone.
+    setTimeout(() => {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => console.log('New SW registered:', registration))
+                .catch(error => console.log('New SW registration failed:', error));
+        }
+    }, 500); // 500ms delay
+});
 
         async function verifySubscriptionToken(token) {
             try {
