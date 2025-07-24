@@ -15,7 +15,7 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 async function sendActivationEmail(recipientEmail, token) {
   const zeptoMailToken = process.env.ZEPTOMAIL_TOKEN;
   // IMPORTANT: This "from" address must be an address from your verified domain in ZeptoMail
-  const fromAddress = "activate@truckerexpensetracker.com"; 
+  const fromAddress = "support@truckerexpensetracker.com"; // CHANGED
 
   const emailBody = {
     from: {
