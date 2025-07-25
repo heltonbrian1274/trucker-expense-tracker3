@@ -2,8 +2,8 @@
   "name": "Trucker Expense Tracker",
   "short_name": "Trucker Expense",
   "description": "Professional expense tracking for owner-operator truck drivers",
-  "version": "2.1.0",
-  "start_url": "./",
+  "version": "2.1.1",
+  "start_url": "./?v=2.1.1",
   "display": "standalone",
   "background_color": "#1e40af",
   "theme_color": "#2563eb",
@@ -98,3 +98,4 @@
     }
   ]
 }
+
