@@ -1,16 +1,13 @@
 {
   "name": "Trucker Expense Tracker",
-  "short_name": "Trucker Expense",
-  "description": "Professional expense tracking for owner-operator truck drivers",
-  "version": "2.1.0",
+  "short_name": "TruckerExpenses",
+  "description": "Simple, Private Expense Management for Owner-Operators",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#1e40af",
+  "background_color": "#0f172a",
   "theme_color": "#2563eb",
   "orientation": "portrait-primary",
   "scope": "./",
-  "lang": "en-US",
-  "dir": "ltr",
   "categories": ["business", "finance", "productivity"],
   "icons": [
     {
@@ -58,43 +55,18 @@
   ],
   "shortcuts": [
     {
-      "name": "Add Fuel Expense",
-      "short_name": "Add Fuel",
-      "description": "Quickly add a fuel expense",
-      "url": "./?action=add-fuel",
-      "icons": [
-        {
-          "src": "./icon-96x96.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
       "name": "View History",
       "short_name": "History",
-      "description": "View expense history",
+      "description": "View all recorded expenses",
       "url": "./?action=history",
-      "icons": [
-        {
-          "src": "./icon-96x96.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
+      "icons": [{ "src": "./icon-96x96.png", "sizes": "96x96" }]
     },
     {
-      "name": "Export Data",
-      "short_name": "Export",
-      "description": "Export expense data",
-      "url": "./?action=export",
-      "icons": [
-        {
-          "src": "./icon-96x96.png",
-          "sizes": "96x96",
-          "type": "image/png"
-        }
-      ]
+      "name": "View Insights",
+      "short_name": "Insights",
+      "description": "See a breakdown of your spending",
+      "url": "./?action=insights",
+      "icons": [{ "src": "./icon-96x96.png", "sizes": "96x96" }]
     }
   ]
 }
