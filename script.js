@@ -1,36 +1,46 @@
-// Add this function to your script.js file
-// Place it near the top with your other utility functions
-
+// ---------- Utility: Clear PWA Cache ----------
 function clearPWACache() {
-    // Send message to service worker to clear index cache
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({
             type: 'CLEAR_INDEX_CACHE'
         });
     }
-    
-    // Also clear relevant localStorage items that might affect PWA behavior
-    // (Keep user data but clear installation-related cache flags)
-    const keysToKeep = ['truckerExpenses', 'trialStartDate', 'darkMode', 'hasSeenWelcome', 'isSubscribed'];
+    const keysToKeep = [
+        'truckerExpenses',
+        'trialStartDate',
+        'darkMode',
+        'hasSeenWelcome',
+        'isSubscribed'
+    ];
     const currentStorage = {};
-    
-    // Backup important data
     keysToKeep.forEach(key => {
         const value = localStorage.getItem(key);
-        if (value !== null) {
-            currentStorage[key] = value;
-        }
+        if (value !== null) currentStorage[key] = value;
     });
-    
-    // Clear all localStorage
     localStorage.clear();
-    
-    // Restore important data
     Object.keys(currentStorage).forEach(key => {
         localStorage.setItem(key, currentStorage[key]);
     });
 }
 
+// ---------- Subscription Status Check Utility ----------
+async function checkSubscriptionStatusFromServer() {
+    const token = localStorage.getItem('subscriptionToken');
+    if (!token) return initializeApp();
+    try {
+        const response = await fetch(`/api/check-subscription?token=${token}`);
+        const result = await response.json();
+        if (response.ok && result.success && result.active) {
+            localStorage.setItem('isSubscribed', 'true');
+        }
+    } catch (error) {
+        console.warn('Subscription check failed:', error);
+    } finally {
+        initializeApp();
+    }
+}
+
+// ---------- Expense Categories ----------
 const expenseCategories = [
     { id: 'fuel', name: 'Fuel', icon: '⛽' },
     { id: 'maintenance', name: 'Maintenance & Repairs', icon: '🔧' },
@@ -49,6 +59,7 @@ const expenseCategories = [
     { id: 'other', name: 'Other Business Expenses', icon: '💼' }
 ];
 
+// ---------- State Variables ----------
 let expenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
 let isDarkMode = localStorage.getItem('darkMode') === 'true';
 let currentSection = 'today';
@@ -59,36 +70,29 @@ if (!localStorage.getItem('trialStartDate')) {
     localStorage.setItem('trialStartDate', trialStartDate);
 }
 
+// ========== DOMContentLoaded and Initialization ==========
 document.addEventListener('DOMContentLoaded', function() {
-    // =================================================================
-    // AGGRESSIVE SERVICE WORKER UNREGISTER SCRIPT
-    // This runs first to ensure a clean slate.
-    // =================================================================
+    // Aggressive Service Worker Unregister
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            for (let registration of registrations) {
-                registration.unregister();
-                console.log('Old service worker unregistered successfully.');
-            }
+            for (let registration of registrations) registration.unregister();
         }).catch(function(err) {
             console.error('Service worker unregistration failed: ', err);
         });
     }
 
-    // --- The rest of the initialization logic follows ---
-
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
 
-    // If a token is in the URL, verify it first.
+    // Subscription logic with token and server check
     if (token) {
+        localStorage.setItem('subscriptionToken', token);
         verifySubscriptionToken(token);
     } else {
-        // If no token, initialize the app normally.
-        initializeApp();
+        checkSubscriptionStatusFromServer();
     }
 
-    // Keep the trial reset functionality
+    // Reset trial logic (for URL ?reset=trial) 
     if (urlParams.get('reset') === 'trial') {
         localStorage.clear();
         sessionStorage.clear();
@@ -96,9 +100,8 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = window.location.pathname;
         return;
     }
-    
-    // Register the NEW service worker after a short delay
-    // to ensure the old one is gone.
+
+    // Register NEW service worker after a short delay 
     setTimeout(() => {
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js')
@@ -108,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500); // 500ms delay
 });
 
-// Update your verifySubscriptionToken function to call clearPWACache
+// ---------- verifySubscriptionToken updated to clear PWA cache ----------
 async function verifySubscriptionToken(token) {
     try {
         const response = await fetch('/api/verify-token', {
@@ -116,22 +119,12 @@ async function verifySubscriptionToken(token) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token: token })
         });
-
         const result = await response.json();
-
         if (response.ok && result.success) {
             localStorage.setItem('isSubscribed', 'true');
-            
-            // CRITICAL: Clear PWA cache after subscription change
             clearPWACache();
-            
             showNotification('Subscription activated! Thank you for your support.', 'success');
-            
-            // Force a reload to ensure clean state
-            setTimeout(() => {
-                window.location.reload(true);
-            }, 1500);
-            
+            setTimeout(() => { window.location.reload(true); }, 1500);
         } else {
             showNotification(result.message || 'Failed to activate subscription.', 'error');
         }
@@ -144,18 +137,17 @@ async function verifySubscriptionToken(token) {
     }
 }
 
+// ---------- App Initialization Logic ----------
 function initializeApp() {
     if (isDarkMode) {
         document.body.classList.add('dark-mode');
         document.querySelector('.dark-mode-toggle').textContent = '☀️';
     }
-
     const currentExpenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
     if (currentExpenses.length === 0 && !localStorage.getItem('hasSeenWelcome')) {
         showWelcomeModal();
     }
     document.getElementById('closeWelcomeBtn').addEventListener('click', closeWelcomeModal);
-
     updateTrialCountdown();
     populateExpenseGrid();
     updateToggleIcon();
@@ -177,17 +169,14 @@ function updateTrialCountdown() {
     const elapsed = Date.now() - parseInt(trialStartDate);
     const remaining = trialDuration - elapsed;
     const daysLeft = Math.max(0, Math.ceil(remaining / (1000 * 60 * 60 * 24)));
-
     const trialElement = document.getElementById('trialCountdown');
     const textElement = document.getElementById('trialText');
-
     if (localStorage.getItem('isSubscribed')) {
          trialElement.style.background = 'linear-gradient(135deg, #047857, #059669)';
          textElement.innerHTML = '✅ Pro Subscription Active';
          isTrialExpired = false;
          return;
     }
-
     if (daysLeft <= 0) {
         isTrialExpired = true;
         trialElement.className = 'trial-countdown expired';
@@ -204,7 +193,6 @@ function updateTrialCountdown() {
 function populateExpenseGrid() {
     const grid = document.getElementById('expenseGrid');
     grid.innerHTML = '';
-
     expenseCategories.forEach(category => {
         const card = document.createElement('div');
         card.className = 'expense-card';
@@ -212,7 +200,6 @@ function populateExpenseGrid() {
         card.setAttribute('role', 'button');
         card.setAttribute('tabindex', '0');
         card.setAttribute('aria-label', `Add ${category.name} expense`);
-
         card.innerHTML = `
             <div class="expense-header">
                 <div class="expense-icon">${category.icon}</div>
@@ -244,12 +231,10 @@ function populateExpenseGrid() {
                 </form>
             </div>
         `;
-
         card.addEventListener('click', (e) => {
             if (e.target.closest('.expense-form')) return;
             toggleExpenseCard(category.id);
         });
-
         card.addEventListener('keydown', (e) => {
             if (e.target.closest('.expense-form')) return;
             if (e.key === 'Enter' || e.key === ' ') {
@@ -268,18 +253,14 @@ function toggleExpenseCard(categoryId) {
         alert('Your trial has expired. Please subscribe to continue adding expenses.');
         return;
     }
-
     const card = document.getElementById(`card-${categoryId}`);
     const form = document.getElementById(`form-${categoryId}`);
     const allCards = document.querySelectorAll('.expense-card');
-
     const isExpanded = card.classList.contains('expanded');
-    
     allCards.forEach(c => {
         c.classList.remove('expanded');
         c.querySelector('.expense-form').classList.remove('active');
     });
-
     if (!isExpanded) {
         card.classList.add('expanded');
         form.classList.add('active');
@@ -293,10 +274,8 @@ function addExpense(event, categoryId) {
         alert('Your trial has expired. Please subscribe to continue adding expenses.');
         return;
     }
-
     const amountInput = document.getElementById(`amount-${categoryId}`);
     const amount = parseFloat(amountInput.value);
-
     if (isNaN(amount) || amount <= 0) {
         showNotification('Please enter a valid amount greater than $0.00', 'error');
         amountInput.focus();
@@ -307,16 +286,13 @@ function addExpense(event, categoryId) {
         amountInput.focus();
         return;
     }
-
     const description = document.getElementById(`description-${categoryId}`).value.trim();
     const location = document.getElementById(`location-${categoryId}`).value.trim();
     const receiptFile = document.getElementById(`receipt-${categoryId}`).files[0];
-
     if (receiptFile && receiptFile.size > 5 * 1024 * 1024) {
         showNotification('Receipt file must be smaller than 5MB', 'error');
         return;
     }
-
     const category = expenseCategories.find(cat => cat.id === categoryId);
     const expense = {
         id: Date.now() + Math.random(),
@@ -329,7 +305,6 @@ function addExpense(event, categoryId) {
         date: new Date().toISOString(),
         receipt: null
     };
-
     if (receiptFile) {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -340,7 +315,6 @@ function addExpense(event, categoryId) {
     } else {
         saveExpense(expense);
     }
-
     function saveExpense(expense) {
         expenses.push(expense);
         localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
@@ -381,38 +355,31 @@ function updateInsights() {
     const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
     const uniqueDays = [...new Set(expenses.map(ex => new Date(ex.date).toDateString()))].length;
     const averageDaily = uniqueDays > 0 ? totalExpenses / uniqueDays : 0;
-
     const categoryTotals = {};
     expenses.forEach(ex => {
         categoryTotals[ex.categoryName] = (categoryTotals[ex.categoryName] || 0) + ex.amount;
     });
     const topCategory = Object.keys(categoryTotals).reduce((a, b) => categoryTotals[a] > categoryTotals[b] ? a : b, 'None');
-
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
     const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const lastMonth = lastMonthDate.getMonth();
     const lastMonthYear = lastMonthDate.getFullYear();
-
     const currentMonthExpenses = expenses.filter(ex => {
         const d = new Date(ex.date);
         return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
     }).reduce((sum, ex) => sum + ex.amount, 0);
-
     const lastMonthExpenses = expenses.filter(ex => {
         const d = new Date(ex.date);
         return d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear;
     }).reduce((sum, ex) => sum + ex.amount, 0);
-
     const monthlyChange = lastMonthExpenses > 0 ? ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses * 100).toFixed(1) : (currentMonthExpenses > 0 ? '∞' : '0');
-
     document.getElementById('insightsTotalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
     document.getElementById('averageDailyExpense').textContent = `$${averageDaily.toFixed(2)}`;
     document.getElementById('topCategory').textContent = topCategory;
     document.getElementById('currentMonthTotal').textContent = `$${currentMonthExpenses.toFixed(2)}`;
     document.getElementById('lastMonthTotal').textContent = `$${lastMonthExpenses.toFixed(2)}`;
-    
     const changeElement = document.getElementById('monthlyChange');
     if (monthlyChange === '∞') {
         changeElement.textContent = 'New spending';
@@ -425,7 +392,6 @@ function updateInsights() {
         changeElement.textContent = `${changeValue > 0 ? '+' : ''}${changeValue}%`;
         changeElement.style.color = changeValue > 0 ? '#ef4444' : '#10b981';
     }
-
     updateCategoryBreakdown(categoryTotals);
     updateMonthlyBreakdown();
 }
@@ -436,10 +402,8 @@ function updateCategoryBreakdown(categoryTotals) {
         categoryList.innerHTML = '<p class="no-data-message">No expense data available for analysis.</p>';
         return;
     }
-
     const sortedCategories = Object.entries(categoryTotals).sort(([,a], [,b]) => b - a).slice(0, 10);
     const totalAmount = Object.values(categoryTotals).reduce((a, b) => a + b, 0);
-
     categoryList.innerHTML = sortedCategories.map(([category, amount]) => {
         const percentage = totalAmount > 0 ? ((amount / totalAmount) * 100).toFixed(1) : 0;
         const icon = expenseCategories.find(cat => cat.name === category)?.icon || '💼';
@@ -465,20 +429,17 @@ function updateMonthlyBreakdown() {
         monthlyBreakdown.innerHTML = '<p class="no-data-message">No expense data available for monthly analysis.</p>';
         return;
     }
-
     const monthlyTotals = {};
     expenses.forEach(ex => {
         const date = new Date(ex.date);
         const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         const monthName = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-
         if (!monthlyTotals[monthKey]) {
             monthlyTotals[monthKey] = { name: monthName, total: 0, count: 0 };
         }
         monthlyTotals[monthKey].total += ex.amount;
         monthlyTotals[monthKey].count += 1;
     });
-
     const sortedMonths = Object.entries(monthlyTotals).sort(([a], [b]) => b.localeCompare(a)).slice(0, 6);
     monthlyBreakdown.innerHTML = sortedMonths.map(([monthKey, data]) => {
         const average = data.count > 0 ? data.total / data.count : 0;
@@ -503,7 +464,6 @@ function updateHistory() {
     const filter = document.getElementById('dateFilter').value;
     let filteredExpenses = [...expenses];
     const now = new Date();
-
     switch (filter) {
         case 'today':
             filteredExpenses = expenses.filter(ex => new Date(ex.date).toDateString() === now.toDateString());
@@ -519,12 +479,10 @@ function updateHistory() {
             filteredExpenses = expenses.filter(ex => new Date(ex.date).getFullYear() === now.getFullYear());
             break;
     }
-
     if (filteredExpenses.length === 0) {
         historyList.innerHTML = '<p class="no-data-message">No expenses found for the selected period.</p>';
         return;
     }
-
     filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
     historyList.innerHTML = filteredExpenses.map(ex => `
         <li><div class="expense-card" style="margin-bottom: 15px;">
@@ -568,7 +526,6 @@ function showSection(sectionName) {
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
     currentSection = sectionName;
-
     if (sectionName === 'history') updateHistory();
     else if (sectionName === 'insights') updateInsights();
 }
