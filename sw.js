@@ -31,6 +31,7 @@ self.addEventListener('activate', (event) => {
           if (cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
+          return null;
         })
       );
     })
@@ -75,7 +76,7 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
   
-  // CRITICAL: Handle HTML/navigation requests specially
+  // Handle HTML/navigation requests specially
   if (event.request.mode === 'navigate' || 
       url.pathname.endsWith('.html') || 
       url.pathname === '/') {
@@ -91,13 +92,16 @@ self.addEventListener('fetch', (event) => {
         })
       );
     } else {
-      // For regular navigation, check localStorage for subscription changes
+      // For regular navigation, network first, cache fallback
       event.respondWith(
         fetch(event.request).then((networkResponse) => {
           if (networkResponse.ok) {
-            // Only cache if this isn't a subscription-related request
-            const cache = caches.open(CACHE_NAME);
-            cache.then(c => c.put(event.request, networkResponse.clone()));
+            // Clone the response immediately before using or caching
+            const responseClone = networkResponse.clone();
+
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseClone);
+            });
           }
           return networkResponse;
         }).catch(() => {
@@ -106,7 +110,7 @@ self.addEventListener('fetch', (event) => {
             if (cachedResponse) {
               return cachedResponse;
             }
-            // If no cache available, return a basic offline page
+            // Basic offline fallback page
             return new Response(
               '<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>Offline</h1><p>Please check your internet connection.</p></body></html>',
               { headers: { 'Content-Type': 'text/html' } }
@@ -116,13 +120,20 @@ self.addEventListener('fetch', (event) => {
       );
     }
   } else {
-    // For static assets, use cache first strategy
+    // For static assets, use cache-first strategy
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
-        return cachedResponse || fetch(event.request).then((networkResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        return fetch(event.request).then((networkResponse) => {
           if (networkResponse.ok) {
-            const cache = caches.open(CACHE_NAME);
-            cache.then(c => c.put(event.request, networkResponse.clone()));
+            // Clone the response immediately before caching
+            const responseClone = networkResponse.clone();
+
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseClone);
+            });
           }
           return networkResponse;
         });
