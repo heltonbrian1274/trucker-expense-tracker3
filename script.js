@@ -808,3 +808,253 @@ document.addEventListener('click', function(event) {
 // ======================
 // Start interval update for trial countdown to keep UI in sync
 setInterval(updateTrialCountdown, 60000);
+
+// ======================
+// --- Already Subscribed Feature ---
+// ======================
+// ADD THIS CODE TO THE END OF YOUR EXISTING script.js file
+
+// Function to show the Already Subscribed modal
+function showAlreadySubscribedModal() {
+    document.getElementById('alreadySubscribedModal').classList.add('active');
+}
+
+// Function to close the Already Subscribed modal
+function closeAlreadySubscribedModal() {
+    document.getElementById('alreadySubscribedModal').classList.remove('active');
+    resetAlreadySubscribedForm();
+}
+
+// Function to reset the form
+function resetAlreadySubscribedForm() {
+    const form = document.getElementById('alreadySubscribedForm');
+    const successDiv = document.getElementById('subscriptionResendSuccess');
+    const submitBtn = document.getElementById('resendActivationBtn');
+    
+    form.style.display = 'block';
+    successDiv.style.display = 'none';
+    form.reset();
+    
+    submitBtn.textContent = 'Send Activation Email';
+    submitBtn.disabled = false;
+    submitBtn.style.background = '';
+}
+
+// Function to resend activation email
+async function resendActivationEmail(event) {
+    event.preventDefault();
+    
+    const submitBtn = document.getElementById('resendActivationBtn');
+    const emailInput = document.getElementById('subscriptionEmailInput');
+    const email = emailInput.value.trim();
+    
+    // Validate email
+    if (!email) {
+        showNotification('Please enter your email address', 'error');
+        emailInput.focus();
+        return;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showNotification('Please enter a valid email address', 'error');
+        emailInput.focus();
+        return;
+    }
+    
+    // Update button state
+    submitBtn.textContent = 'Sending...';
+    submitBtn.disabled = true;
+    submitBtn.style.background = '#6b7280';
+    
+    try {
+        console.log('📧 Requesting activation email for:', email);
+        
+        const response = await fetch('/api/resend-activation', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email: email })
+        });
+        
+        const result = await response.json();
+        console.log('📡 Resend response:', result);
+        
+        if (result.success) {
+            console.log('✅ Activation email sent successfully');
+            
+            // Show success message
+            const form = document.getElementById('alreadySubscribedForm');
+            const successDiv = document.getElementById('subscriptionResendSuccess');
+            
+            form.style.display = 'none';
+            successDiv.style.display = 'block';
+            
+            // Update the success message with details
+            const successMessage = document.getElementById('resendSuccessMessage');
+            successMessage.innerHTML = `
+                <strong>Activation Email Sent!</strong><br>
+                We found your active subscription and sent a new activation link to:<br>
+                <strong>${result.details?.email || email}</strong><br><br>
+                <small>Plan: ${result.details?.planName || 'Pro Plan'}</small>
+            `;
+            
+            showNotification('Activation email sent! Please check your inbox.', 'success');
+            
+            // Auto-close modal after 5 seconds
+            setTimeout(() => {
+                closeAlreadySubscribedModal();
+            }, 5000);
+            
+        } else {
+            console.error('❌ Failed to send activation email:', result.message);
+            showNotification(result.message || 'Failed to send activation email', 'error');
+        }
+        
+    } catch (error) {
+        console.error('💥 Resend request failed:', error);
+        showNotification('Could not connect to server. Please try again.', 'error');
+    } finally {
+        // Reset button state
+        submitBtn.textContent = 'Send Activation Email';
+        submitBtn.disabled = false;
+        submitBtn.style.background = '';
+    }
+}
+
+// Function to inject the Already Subscribed modal HTML
+function injectAlreadySubscribedModal() {
+    // Check if modal already exists
+    if (document.getElementById('alreadySubscribedModal')) {
+        return;
+    }
+    
+    const modalHTML = `
+    <div id="alreadySubscribedModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAlreadySubscribedModal()">&times;</button>
+            <h2>🔑 Already Subscribed?</h2>
+            <div id="alreadySubscribedForm">
+                <p style="margin-bottom: 20px; color: var(--text-light);">
+                    Enter the email address you used when subscribing. We'll send you a new activation link to activate your Pro subscription on this device.
+                </p>
+                <form onsubmit="resendActivationEmail(event)">
+                    <div class="form-group">
+                        <label for="subscriptionEmailInput">Email Address:</label>
+                        <input type="email" id="subscriptionEmailInput" required 
+                               placeholder="Enter your subscription email">
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" id="resendActivationBtn" class="btn">
+                            Send Activation Email
+                        </button>
+                        <button type="button" class="btn btn-secondary" 
+                                onclick="closeAlreadySubscribedModal()">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div id="subscriptionResendSuccess" style="display: none; text-align: center;">
+                <div style="color: #10b981; font-size: 3rem; margin-bottom: 15px;">📧</div>
+                <div id="resendSuccessMessage" style="font-size: 1.1rem; margin-bottom: 20px;">
+                    <strong>Activation Email Sent!</strong>
+                </div>
+                <p style="color: #6b7280; margin-bottom: 15px;">
+                    Check your inbox and click the activation link to unlock your Pro features.
+                </p>
+                <p style="color: #6b7280; font-size: 0.9rem;">
+                    This modal will close automatically in a few seconds...
+                </p>
+            </div>
+        </div>
+    </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
+
+// Function to add the Already Subscribed button to action-buttons
+function addAlreadySubscribedButton() {
+    // Only add if not already subscribed
+    if (localStorage.getItem('isSubscribed') === 'true') {
+        return;
+    }
+    
+    // Check if button already exists
+    if (document.getElementById('alreadySubscribedActionBtn')) {
+        return;
+    }
+    
+    // Find the action-buttons container
+    const actionButtons = document.querySelector('.action-buttons');
+    if (!actionButtons) {
+        console.warn('Action buttons container not found');
+        return;
+    }
+    
+    // Create the button
+    const button = document.createElement('button');
+    button.id = 'alreadySubscribedActionBtn';
+    button.className = 'action-btn';
+    button.style.cssText = `
+        background: linear-gradient(135deg, #059669, #047857) !important;
+        color: white !important;
+        border-color: #059669 !important;
+    `;
+    button.innerHTML = '🔑 Already Subscribed?';
+    button.onclick = showAlreadySubscribedModal;
+    
+    // Add hover effect
+    button.addEventListener('mouseenter', () => {
+        button.style.background = 'linear-gradient(135deg, #047857, #065f46) !important';
+    });
+    button.addEventListener('mouseleave', () => {
+        button.style.background = 'linear-gradient(135deg, #059669, #047857) !important';
+    });
+    
+    // Insert the button before the subscribe button
+    const subscribeBtn = actionButtons.querySelector('.subscribe-btn');
+    if (subscribeBtn) {
+        actionButtons.insertBefore(button, subscribeBtn);
+    } else {
+        // If no subscribe button found, append to the end
+        actionButtons.appendChild(button);
+    }
+    
+    console.log('✅ Already Subscribed button added to action buttons');
+}
+
+// Function to remove the Already Subscribed button (when user becomes subscribed)
+function removeAlreadySubscribedButton() {
+    const button = document.getElementById('alreadySubscribedActionBtn');
+    if (button) {
+        button.remove();
+        console.log('🗑️ Already Subscribed button removed');
+    }
+}
+
+// Enhanced updateTrialCountdown function to manage the button
+function updateTrialCountdownWithAlreadySubscribed() {
+    // Call the original updateTrialCountdown function
+    updateTrialCountdown();
+    
+    // Manage the Already Subscribed button based on subscription status
+    if (localStorage.getItem('isSubscribed') === 'true') {
+        removeAlreadySubscribedButton();
+    } else {
+        addAlreadySubscribedButton();
+    }
+}
+
+// Initialize the Already Subscribed feature
+function initializeAlreadySubscribedFeature() {
+    // Inject the modal HTML
+    injectAlreadySubscribedModal();
+    
+    // Add the button to action buttons
+    addAlreadySubscribedButton();
+    
+    console.log('✅ Already Subscribed feature initialized');
+}
