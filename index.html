@@ -181,112 +181,293 @@
         </div>
     </div>
     
-    <div id="faqModal" class="modal">
+      <div id="faqModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeFAQ()">&times;</button>
             <h2>❓ Frequently Asked Questions</h2>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    What expenses can I track? <span>+</span>
+            
+            <!-- SUBSCRIPTION & ACTIVATION SECTION -->
+            <div class="faq-section">
+                <h3 style="color: var(--primary-color); margin: 30px 0 15px 0; font-size: 1.2rem;">💳 Subscription & Activation</h3>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        How do I activate my subscription after purchasing? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Two ways to activate:</strong></p>
+                        <p><strong>1. Email Link (Automatic):</strong> After purchasing, you'll receive an email with an activation link. Click it to activate your subscription.</p>
+                        <p><strong>2. Already Subscribed Button (New!):</strong> If you're having trouble with the email link, look for the green "🔑 Already Subscribed?" button in the app. Enter your subscription email address and we'll verify your subscription with Stripe and activate it immediately.</p>
+                    </div>
                 </div>
-                <div class="faq-answer">
-                    You can track 15 different categories of expenses including fuel, maintenance, meals, lodging, tolls, permits, insurance, phone bills, and more. Each category is specifically designed for trucking business needs.
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        I purchased a subscription but the app still shows "Free Trial" - what do I do? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>This can happen due to browser caching. Here's how to fix it:</p>
+                        <p><strong>Quick Fix:</strong> Click the green "🔑 Already Subscribed?" button, enter the email address you used when purchasing, and we'll activate your subscription instantly.</p>
+                        <p><strong>Alternative:</strong> Check your email for the activation link and click it again. If you can't find the email, use the "Already Subscribed" button instead.</p>
+                    </div>
                 </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    When did my 30-day free trial start? <span>+</span>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        How do I activate my subscription on a new device? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Subscription activation on new devices:</strong></p>
+                        <p>1. Open the app on your new device</p>
+                        <p>2. Click the "🔑 Already Subscribed?" button</p>
+                        <p>3. Enter your subscription email address</p>
+                        <p>4. Your subscription will be verified and activated immediately</p>
+                        <p><strong>Important:</strong> This only activates your subscription status. Your expense data does NOT transfer automatically - see the data backup section below.</p>
+                    </div>
                 </div>
-                <div class="faq-answer">
-                    <p>Your trial started on: <strong id="trial-start-date-display">loading...</strong></p>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        What happens if I cancel my subscription? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>If you cancel your subscription through Stripe:</p>
+                        <p>• Your Pro access will be revoked within 24 hours</p>
+                        <p>• The app will automatically detect the cancellation and switch back to trial mode</p>
+                        <p>• Your expense data remains safely stored on your device</p>
+                        <p>• You can resubscribe anytime to regain Pro access</p>
+                    </div>
                 </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    Is my data secure? <span>+</span>
-                </div>
-                <div class="faq-answer">
-                    Yes! All your data is stored locally on your device using your browser's local storage. Nothing is sent to our servers, ensuring complete privacy and security.
-                </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    Can I export my data? <span>+</span>
-                </div>
-                <div class="faq-answer">
-                    Absolutely! You can export your expense data as PDF reports or CSV files for your accountant or tax preparation.
-                </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    Does this work offline? <span>+</span>
-                </div>
-                <div class="faq-answer">
-                    Yes! This is a Progressive Web App (PWA) that works offline. You can add expenses even without an internet connection.
-                </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    What happens after the trial period? <span>+</span>
-                </div>
-                <div class="faq-answer">
-                    After the 30-day trial, you'll need to subscribe for $9.99/month to continue using the app. Your data will remain on your device during the trial period.
-                </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                     How do I use my subscription on a new device? <span>+</span>
-                </div>
-                <div class="faq-answer">
-                     Your subscription is activated via the unique link sent to your email after purchase. To activate the app on a new device, or if you've cleared your browser data, simply find that original activation email and click the link again on the new device. If you can't find the email, please contact support.
-                </div>
-             </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    How do I backup my expense data? <span>+</span>
-                </div>
-                <div class="faq-answer">
-                    Use the "Backup Data" button to download your expenses as a JSON file. On your new device, use "Restore Data" to import this backup file. Note that this only backs up your expense entries, not your subscription status.
-                </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    Can I track per-mile expenses? <span>+</span>
-                </div>
-                <div class="faq-answer">
-                    Yes! You can use the "Other Business Expenses" category to track per-mile costs, or add mile information in the description field of fuel and maintenance entries.
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        Do I get charged again every month? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Yes, this is a monthly subscription service ($9.99/month). Your subscription automatically renews each month and you keep full access without needing to reactivate. You'll only receive activation emails for new purchases, not monthly renewals.</p>
+                    </div>
                 </div>
             </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    Can I track expenses for multiple trucks? <span>+</span>
+            
+            <!-- DATA & DEVICE USAGE SECTION -->
+            <div class="faq-section">
+                <h3 style="color: var(--primary-color); margin: 30px 0 15px 0; font-size: 1.2rem;">📱 Multiple Devices & Data</h3>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        Can I use this app on multiple devices? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Subscription:</strong> ✅ Yes - You can activate your Pro subscription on any device using the "Already Subscribed" button.</p>
+                        <p><strong>Expense Data:</strong> ❌ No automatic sync - Your expenses, receipts, and business data stay local to each device for privacy.</p>
+                        <p><strong>What this means:</strong></p>
+                        <p>• Phone: 50 expenses logged + Pro subscription active</p>
+                        <p>• Tablet: 0 expenses (starts fresh) + Pro subscription can be activated</p>
+                        <p>• Each device maintains its own separate expense database</p>
+                    </div>
                 </div>
-                <div class="faq-answer">
-                    Currently, the app tracks expenses in one account. You can use the description field to specify which truck/trailer an expense relates to, or use separate devices/browsers for different trucks.
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        How do I transfer my expense data to a new device? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Manual transfer required for privacy:</strong></p>
+                        <p><strong>Step 1 - Backup (Old Device):</strong></p>
+                        <p>• Use "💾 Backup Data" button to download your expenses as a file</p>
+                        <p><strong>Step 2 - Restore (New Device):</strong></p>
+                        <p>• Use "📥 Restore Data" button to import the backup file</p>
+                        <p><strong>Step 3 - Activate Subscription:</strong></p>
+                        <p>• Use "🔑 Already Subscribed?" button to activate your Pro subscription</p>
+                        <p><strong>Why manual?</strong> We never store your business data on our servers to protect your privacy.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        Can I track expenses for multiple trucks on different devices? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Yes! This actually works well:</strong></p>
+                        <p><strong>Option 1 - Separate Devices:</strong></p>
+                        <p>• Use different devices/tablets for each truck</p>
+                        <p>• Each device tracks expenses for one truck</p>
+                        <p>• Activate your subscription on each device</p>
+                        <p><strong>Option 2 - Single Device:</strong></p>
+                        <p>• Use description field to specify truck (e.g., "Truck #1 - Fuel")</p>
+                        <p>• Export data and filter by truck in your spreadsheet</p>
+                        <p><strong>Option 3 - Browser Profiles:</strong></p>
+                        <p>• Use different browser profiles for each truck on the same device</p>
+                    </div>
                 </div>
             </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    What if I need to edit or delete an expense? <span>+</span>
+            
+            <!-- TRIAL & USAGE SECTION -->
+            <div class="faq-section">
+                <h3 style="color: var(--primary-color); margin: 30px 0 15px 0; font-size: 1.2rem;">🎁 Trial & Usage</h3>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        When did my 30-day free trial start? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Your trial started on: <strong id="trial-start-date-display">loading...</strong></p>
+                        <p>You have 30 days from this date to try all features before needing to subscribe.</p>
+                    </div>
                 </div>
-                <div class="faq-answer">
-                    You can delete expenses from the History section by clicking the "Delete" button on any expense entry. Currently, editing requires deleting and re-adding the expense.
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        What happens after the trial period? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>After the 30-day trial expires:</p>
+                        <p>• You'll need to subscribe for $9.99/month to continue adding expenses</p>
+                        <p>• Your existing data remains safely stored on your device</p>
+                        <p>• You can still view your expense history and export data</p>
+                        <p>• Subscribe anytime to regain full access</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        What expenses can I track? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>You can track 15 different categories specifically designed for trucking businesses:</p>
+                        <p>⛽ Fuel • 🔧 Maintenance & Repairs • 🍽️ Meals • 🏨 Lodging • 🛣️ Tolls & Parking • 📋 Permits & Licenses • 🛡️ Insurance • 📱 Phone & Communication • 📦 Supplies & Equipment • 📚 Training & Education • 🏥 Medical & DOT Exams • 🏢 Office Expenses • 🏦 Bank & Financial Fees • ⚖️ Legal & Professional • 💼 Other Business Expenses</p>
+                    </div>
                 </div>
             </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    Does the app work on both mobile and desktop? <span>+</span>
+            
+            <!-- DATA & PRIVACY SECTION -->
+            <div class="faq-section">
+                <h3 style="color: var(--primary-color); margin: 30px 0 15px 0; font-size: 1.2rem;">🔒 Data & Privacy</h3>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        Is my data secure and private? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>100% Private:</strong> All your expense data is stored locally on your device using your browser's secure storage. Nothing is sent to our servers.</p>
+                        <p><strong>What we store on our servers:</strong> Only your subscription status (to verify you're a paying customer)</p>
+                        <p><strong>What we never see:</strong> Your expenses, receipts, locations, amounts, or any business data</p>
+                        <p><strong>Why local storage?</strong> This ensures your business data stays completely private and gives you full control.</p>
+                    </div>
                 </div>
-                <div class="faq-answer">
-                    Yes! This PWA is designed to work seamlessly on smartphones, tablets, and desktop computers. You can install it on your phone's home screen for easy access.
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        How do I backup and restore my expense data? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Backup:</strong> Use the "💾 Backup Data" button to download your expenses as a secure JSON file to your device.</p>
+                        <p><strong>Restore:</strong> Use the "📥 Restore Data" button to import your backup file on any device.</p>
+                        <p><strong>Important notes:</strong></p>
+                        <p>• Backups contain your expense data but not your subscription status</p>
+                        <p>• Use the "Already Subscribed" button to reactivate your subscription after restoring</p>
+                        <p>• Keep backup files secure as they contain your business data</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        Can I export my data for taxes or accounting? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Multiple export options:</strong></p>
+                        <p>📄 <strong>PDF Reports:</strong> Professional formatted reports for each section</p>
+                        <p>📊 <strong>CSV Files:</strong> Spreadsheet-compatible data for your accountant</p>
+                        <p>🖨️ <strong>Print:</strong> Direct printing of any section</p>
+                        <p>All exports include dates, categories, amounts, descriptions, and locations.</p>
+                    </div>
                 </div>
             </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    Can I print my expense reports? <span>+</span>
+            
+            <!-- TECHNICAL SECTION -->
+            <div class="faq-section">
+                <h3 style="color: var(--primary-color); margin: 30px 0 15px 0; font-size: 1.2rem;">⚙️ Technical Features</h3>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        Does this work offline and on all devices? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Works everywhere:</strong> This Progressive Web App (PWA) works on smartphones, tablets, and desktop computers.</p>
+                        <p><strong>Offline capable:</strong> Add expenses even without internet connection. Data is stored locally and doesn't need to sync.</p>
+                        <p><strong>Install like an app:</strong> Add to your phone's home screen for quick access.</p>
+                        <p><strong>Note:</strong> Subscription verification requires internet, but expense tracking works offline.</p>
+                    </div>
                 </div>
-                <div class="faq-answer">
-                    Absolutely! Each section (Today, History, Insights) has print functionality. You can also export PDF reports and CSV files for your records.
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        Can I edit or delete expenses? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Delete:</strong> Go to History section and click "Delete" on any expense entry</p>
+                        <p><strong>Edit:</strong> Currently requires deleting and re-adding the expense with correct information</p>
+                        <p><strong>Tip:</strong> Double-check amounts and details before saving to avoid needing to re-enter</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        Can I track per-mile expenses or mileage? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Yes!</strong> Use these methods:</p>
+                        <p>• Add mile information in the description field (e.g., "Fuel - 1,250 miles")</p>
+                        <p>• Use "Other Business Expenses" category for per-mile costs</p>
+                        <p>• Include starting/ending locations in the location field</p>
+                        <p>• Export to CSV and calculate mileage rates in your spreadsheet</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SUPPORT SECTION -->
+            <div class="faq-section">
+                <h3 style="color: var(--primary-color); margin: 30px 0 15px 0; font-size: 1.2rem;">🆘 Support & Troubleshooting</h3>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        I'm having trouble with my subscription - who can help? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>First try:</strong> The "🔑 Already Subscribed?" button - this solves 90% of subscription issues instantly.</p>
+                        <p><strong>Still need help?</strong> Use the "💬 Feedback" button to contact support with:</p>
+                        <p>• Your subscription email address</p>
+                        <p>• Description of the issue</p>
+                        <p>• What device/browser you're using</p>
+                        <p>We typically respond within 24 hours.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        The app seems slow or isn't working properly - what should I do? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Quick fixes:</strong></p>
+                        <p>1. <strong>Hard refresh:</strong> Press Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)</p>
+                        <p>2. <strong>Clear browser cache:</strong> Go to browser settings and clear cache for this site</p>
+                        <p>3. <strong>Check for updates:</strong> Use the "🔄 Check for Updates" button</p>
+                        <p>4. <strong>Restart browser:</strong> Close and reopen your browser</p>
+                        <p>If issues persist, contact support via the Feedback button.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        How do I request new features or report bugs? <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Use the "💬 Feedback" button and select:</p>
+                        <p>🐛 <strong>Bug Report:</strong> For issues or errors (goes to support@truckerexpensetracker.com)</p>
+                        <p>💡 <strong>Feature Request:</strong> For new feature ideas (goes to features@truckerexpensetracker.com)</p>
+                        <p>⚡ <strong>Improvement:</strong> For suggestions to make existing features better</p>
+                        <p>💬 <strong>General Feedback:</strong> For any other comments or questions</p>
+                    </div>
                 </div>
             </div>
         </div>
