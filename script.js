@@ -2,6 +2,10 @@
 // --- Subscription & Trial Core Logic ---
 // ======================
 
+// Global variable to track last validation time
+let lastValidationTime = 0;
+const VALIDATION_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
 // Utility: Clear PWA Cache except essential keys
 function clearPWACache() {
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -13,7 +17,8 @@ function clearPWACache() {
         'darkMode',
         'hasSeenWelcome',
         'isSubscribed',
-        'subscriptionToken'
+        'subscriptionToken',
+        'lastValidationTime'
     ];
     const currentStorage = {};
     keysToKeep.forEach(key => {
@@ -26,25 +31,167 @@ function clearPWACache() {
     });
 }
 
-// Check subscription status from server (using stored subscriptionToken)
+// Enhanced subscription status check with Stripe validation
 async function checkSubscriptionStatusFromServer() {
     const token = localStorage.getItem('subscriptionToken');
-    if (!token) return initializeApp();
+    if (!token) {
+        console.log('🔍 No subscription token found, initializing app normally');
+        return initializeApp();
+    }
 
     try {
-        const response = await fetch(`/api/check-subscription?token=${token}`);
+        console.log('🔍 Validating subscription with Stripe...');
+        
+        const response = await fetch('/api/validate-subscription', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ token: token })
+        });
+        
         const result = await response.json();
-        if (response.ok && result.success && result.active) {
+        console.log('📡 Validation response:', result);
+        
+        if (result.success && result.active) {
+            // Subscription is active
             localStorage.setItem('isSubscribed', 'true');
+            localStorage.setItem('lastValidationTime', Date.now().toString());
+            console.log('✅ Subscription validated and active');
+        } else if (result.shouldDowngrade) {
+            // Subscription is cancelled/expired - downgrade user
+            console.log('⬇️ Subscription no longer active, downgrading...');
+            handleSubscriptionDowngrade(result.message);
         } else {
-            localStorage.removeItem('isSubscribed');
+            // Validation failed but don't downgrade (network issues, etc.)
+            console.warn('⚠️ Validation failed but keeping current status:', result.message);
+            // Keep existing subscription state
         }
     } catch (error) {
-        console.warn('Subscription check failed:', error);
-        // fallback: keep existing subscription state
+        console.warn('💥 Subscription validation failed:', error);
+        // On network errors, keep existing subscription state
+        // Don't downgrade due to temporary connectivity issues
     } finally {
         initializeApp();
     }
+}
+
+// Handle subscription downgrade
+function handleSubscriptionDowngrade(reason) {
+    // Remove subscription status
+    localStorage.removeItem('isSubscribed');
+    localStorage.removeItem('subscriptionToken');
+    localStorage.removeItem('lastValidationTime');
+    
+    // Clear PWA cache
+    clearPWACache();
+    
+    // Show notification to user
+    showNotification(`Subscription Status: ${reason}. Please renew to continue using Pro features.`, 'error');
+    
+    // Update UI to show trial/expired state
+    updateTrialCountdownWithAlreadySubscribed();
+}
+
+// Check if validation is needed (called periodically)
+function checkIfValidationNeeded() {
+    const token = localStorage.getItem('subscriptionToken');
+    const isSubscribed = localStorage.getItem('isSubscribed') === 'true';
+    const lastValidation = parseInt(localStorage.getItem('lastValidationTime') || '0');
+    const timeSinceLastValidation = Date.now() - lastValidation;
+    
+    // Only validate if:
+    // 1. User has a token and thinks they're subscribed
+    // 2. It's been more than 24 hours since last validation
+    if (token && isSubscribed && timeSinceLastValidation > VALIDATION_INTERVAL) {
+        console.log('⏰ Periodic validation needed, checking subscription status...');
+        validateSubscriptionInBackground();
+    }
+}
+
+// Background validation (doesn't reinitialize app)
+async function validateSubscriptionInBackground() {
+    const token = localStorage.getItem('subscriptionToken');
+    if (!token) return;
+
+    try {
+        console.log('🔄 Background subscription validation...');
+        
+        const response = await fetch('/api/validate-subscription', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ token: token })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success && result.active) {
+            // Still active - update validation time
+            localStorage.setItem('lastValidationTime', Date.now().toString());
+            console.log('✅ Background validation: Subscription still active');
+        } else if (result.shouldDowngrade) {
+            // Subscription cancelled/expired
+            console.log('⬇️ Background validation: Subscription no longer active');
+            handleSubscriptionDowngrade(result.message);
+        }
+    } catch (error) {
+        console.warn('💥 Background validation failed:', error);
+        // Don't downgrade on network errors
+    }
+}
+
+// Validate before critical actions (like adding expenses)
+function validateBeforeAction(callback) {
+    const token = localStorage.getItem('subscriptionToken');
+    const isSubscribed = localStorage.getItem('isSubscribed') === 'true';
+    
+    // If not subscribed, proceed normally (trial user)
+    if (!isSubscribed || !token) {
+        callback();
+        return;
+    }
+    
+    const lastValidation = parseInt(localStorage.getItem('lastValidationTime') || '0');
+    const timeSinceLastValidation = Date.now() - lastValidation;
+    
+    // If validation is recent, proceed
+    if (timeSinceLastValidation < VALIDATION_INTERVAL) {
+        callback();
+        return;
+    }
+    
+    // Need validation before proceeding
+    console.log('🔍 Validating subscription before action...');
+    validateSubscriptionInBackground().then(() => {
+        // Check if still subscribed after validation
+        if (localStorage.getItem('isSubscribed') === 'true') {
+            callback();
+        } else {
+            showNotification('Please renew your subscription to continue using Pro features.', 'error');
+        }
+    });
+}
+
+// Initialize enhanced validation system
+function initializeEnhancedValidation() {
+    console.log('🚀 Initializing enhanced subscription validation...');
+    
+    // Set up periodic validation timer (every 24 hours)
+    setInterval(checkIfValidationNeeded, VALIDATION_INTERVAL);
+    
+    // Check when app regains focus
+    window.addEventListener('focus', checkIfValidationNeeded);
+    
+    // Check when user becomes active after being idle
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            checkIfValidationNeeded();
+        }
+    });
+    
+    console.log('✅ Enhanced validation system initialized');
 }
 
 // Verify subscription token on subscription purchase link usage
@@ -58,6 +205,7 @@ async function verifySubscriptionToken(token) {
         const result = await response.json();
         if (response.ok && result.success) {
             localStorage.setItem('isSubscribed', 'true');
+            localStorage.setItem('lastValidationTime', Date.now().toString());
             clearPWACache();
             showNotification('Subscription activated! Thank you for your support.', 'success');
             setTimeout(() => { window.location.reload(true); }, 1500);
@@ -76,8 +224,6 @@ async function verifySubscriptionToken(token) {
 // ======================
 // --- Already Subscribed Feature ---
 // ======================
-
-// UPDATED FRONTEND CODE - Replace the existing Already Subscribed functions in your script.js
 
 // Function to show the Already Subscribed modal
 function showAlreadySubscribedModal() {
@@ -152,6 +298,7 @@ async function verifyAndActivateSubscription(event) {
             // Store the subscription status and token
             localStorage.setItem('isSubscribed', 'true');
             localStorage.setItem('subscriptionToken', result.token);
+            localStorage.setItem('lastValidationTime', Date.now().toString());
             
             // Clear PWA cache to ensure clean state
             clearPWACache();
@@ -253,13 +400,6 @@ function injectAlreadySubscribedModal() {
     
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 }
-
-// Keep all other existing functions the same:
-// - addAlreadySubscribedButton()
-// - removeAlreadySubscribedButton() 
-// - updateTrialCountdownWithAlreadySubscribed()
-// - initializeAlreadySubscribedFeature()
-
 
 // FIXED FUNCTION - Function to add the Already Subscribed button to action-buttons
 function addAlreadySubscribedButton() {
@@ -466,6 +606,9 @@ function initializeApp() {
     // Initialize the Already Subscribed feature
     initializeAlreadySubscribedFeature();
     
+    // Initialize enhanced validation system
+    initializeEnhancedValidation();
+    
     // Use the enhanced trial countdown function
     updateTrialCountdownWithAlreadySubscribed();
     
@@ -520,6 +663,13 @@ function updateTrialCountdown() {
 // --- Core App Functions ---
 // ======================
 
+// Enhanced addExpense function with validation
+function addExpenseWithValidation(event, categoryId) {
+    validateBeforeAction(() => {
+        addExpense(event, categoryId);
+    });
+}
+
 function populateExpenseGrid() {
     const grid = document.getElementById('expenseGrid');
     grid.innerHTML = '';
@@ -536,7 +686,7 @@ function populateExpenseGrid() {
                 <div class="expense-title">${category.name}</div>
             </div>
             <div class="expense-form" id="form-${category.id}">
-                <form onsubmit="addExpense(event, '${category.id}')">
+                <form onsubmit="addExpenseWithValidation(event, '${category.id}')">
                     <div class="form-group">
                         <label for="amount-${category.id}">Amount ($):</label>
                         <input type="number" id="amount-${category.id}" step="0.01" min="0" required>
