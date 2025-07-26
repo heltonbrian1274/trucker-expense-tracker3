@@ -238,7 +238,7 @@ function injectAlreadySubscribedModal() {
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 }
 
-// Function to add the Already Subscribed button to action-buttons
+// FIXED FUNCTION - Function to add the Already Subscribed button to action-buttons
 function addAlreadySubscribedButton() {
     // Only add if not already subscribed
     if (localStorage.getItem('isSubscribed') === 'true') {
@@ -253,7 +253,31 @@ function addAlreadySubscribedButton() {
     // Find the action-buttons container
     const actionButtons = document.querySelector('.action-buttons');
     if (!actionButtons) {
-        console.warn('Action buttons container not found');
+        console.warn('Action buttons container not found - trying alternative placement');
+        // Try alternative: add to trial countdown area
+        const trialCountdown = document.getElementById('trialCountdown');
+        if (trialCountdown) {
+            const button = document.createElement('button');
+            button.id = 'alreadySubscribedActionBtn';
+            button.style.cssText = `
+                background: linear-gradient(135deg, #059669, #047857) !important;
+                color: white !important;
+                border: 2px solid #059669 !important;
+                padding: 8px 16px;
+                border-radius: 8px;
+                font-weight: 600;
+                cursor: pointer;
+                margin-top: 10px;
+                display: block;
+                width: 100%;
+                font-size: 14px;
+            `;
+            button.innerHTML = '🔑 Already Subscribed?';
+            button.onclick = showAlreadySubscribedModal;
+            
+            trialCountdown.appendChild(button);
+            console.log('✅ Already Subscribed button added to trial countdown area');
+        }
         return;
     }
     
