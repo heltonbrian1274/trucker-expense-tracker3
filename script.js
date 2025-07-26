@@ -77,6 +77,8 @@ async function verifySubscriptionToken(token) {
 // --- Already Subscribed Feature ---
 // ======================
 
+// UPDATED FRONTEND CODE - Replace the existing Already Subscribed functions in your script.js
+
 // Function to show the Already Subscribed modal
 function showAlreadySubscribedModal() {
     document.getElementById('alreadySubscribedModal').classList.add('active');
@@ -91,23 +93,23 @@ function closeAlreadySubscribedModal() {
 // Function to reset the form
 function resetAlreadySubscribedForm() {
     const form = document.getElementById('alreadySubscribedForm');
-    const successDiv = document.getElementById('subscriptionResendSuccess');
-    const submitBtn = document.getElementById('resendActivationBtn');
+    const successDiv = document.getElementById('subscriptionVerificationSuccess');
+    const submitBtn = document.getElementById('verifySubscriptionBtn');
     
     form.style.display = 'block';
     successDiv.style.display = 'none';
     form.reset();
     
-    submitBtn.textContent = 'Send Activation Email';
+    submitBtn.textContent = 'Verify & Activate';
     submitBtn.disabled = false;
     submitBtn.style.background = '';
 }
 
-// Function to resend activation email
-async function resendActivationEmail(event) {
+// UPDATED FUNCTION - Direct verification and activation
+async function verifyAndActivateSubscription(event) {
     event.preventDefault();
     
-    const submitBtn = document.getElementById('resendActivationBtn');
+    const submitBtn = document.getElementById('verifySubscriptionBtn');
     const emailInput = document.getElementById('subscriptionEmailInput');
     const email = emailInput.value.trim();
     
@@ -126,14 +128,14 @@ async function resendActivationEmail(event) {
     }
     
     // Update button state
-    submitBtn.textContent = 'Sending...';
+    submitBtn.textContent = 'Verifying...';
     submitBtn.disabled = true;
     submitBtn.style.background = '#6b7280';
     
     try {
-        console.log('📧 Requesting activation email for:', email);
+        console.log('🔍 Verifying subscription for email:', email);
         
-        const response = await fetch('/api/resend-activation', {
+        const response = await fetch('/api/verify-and-activate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -142,51 +144,63 @@ async function resendActivationEmail(event) {
         });
         
         const result = await response.json();
-        console.log('📡 Resend response:', result);
+        console.log('📡 Verification response:', result);
         
         if (result.success) {
-            console.log('✅ Activation email sent successfully');
+            console.log('✅ Subscription verified and activated!');
+            
+            // Store the subscription status and token
+            localStorage.setItem('isSubscribed', 'true');
+            localStorage.setItem('subscriptionToken', result.token);
+            
+            // Clear PWA cache to ensure clean state
+            clearPWACache();
             
             // Show success message
             const form = document.getElementById('alreadySubscribedForm');
-            const successDiv = document.getElementById('subscriptionResendSuccess');
+            const successDiv = document.getElementById('subscriptionVerificationSuccess');
             
             form.style.display = 'none';
             successDiv.style.display = 'block';
             
             // Update the success message with details
-            const successMessage = document.getElementById('resendSuccessMessage');
+            const successMessage = document.getElementById('verificationSuccessMessage');
             successMessage.innerHTML = `
-                <strong>Activation Email Sent!</strong><br>
-                We found your active subscription and sent a new activation link to:<br>
+                <strong>Subscription Activated!</strong><br>
+                Your Pro subscription has been verified and activated for:<br>
                 <strong>${result.details?.email || email}</strong><br><br>
                 <small>Plan: ${result.details?.planName || 'Pro Plan'}</small>
             `;
             
-            showNotification('Activation email sent! Please check your inbox.', 'success');
+            showNotification('Subscription activated successfully!', 'success');
             
-            // Auto-close modal after 5 seconds
+            // Update the UI immediately
+            updateTrialCountdownWithAlreadySubscribed();
+            
+            // Auto-close modal after 3 seconds and refresh
             setTimeout(() => {
                 closeAlreadySubscribedModal();
-            }, 5000);
+                // Force a reload to ensure all UI updates properly
+                window.location.reload();
+            }, 3000);
             
         } else {
-            console.error('❌ Failed to send activation email:', result.message);
-            showNotification(result.message || 'Failed to send activation email', 'error');
+            console.error('❌ Subscription verification failed:', result.message);
+            showNotification(result.message || 'Failed to verify subscription', 'error');
         }
         
     } catch (error) {
-        console.error('💥 Resend request failed:', error);
+        console.error('💥 Verification request failed:', error);
         showNotification('Could not connect to server. Please try again.', 'error');
     } finally {
         // Reset button state
-        submitBtn.textContent = 'Send Activation Email';
+        submitBtn.textContent = 'Verify & Activate';
         submitBtn.disabled = false;
         submitBtn.style.background = '';
     }
 }
 
-// Function to inject the Already Subscribed modal HTML
+// UPDATED FUNCTION - Inject the Already Subscribed modal HTML with better styling
 function injectAlreadySubscribedModal() {
     // Check if modal already exists
     if (document.getElementById('alreadySubscribedModal')) {
@@ -200,17 +214,19 @@ function injectAlreadySubscribedModal() {
             <h2>🔑 Already Subscribed?</h2>
             <div id="alreadySubscribedForm">
                 <p style="margin-bottom: 20px; color: var(--text-light);">
-                    Enter the email address you used when subscribing. We'll send you a new activation link to activate your Pro subscription on this device.
+                    Enter the email address you used when subscribing. We'll verify your subscription with Stripe and activate it immediately on this device.
                 </p>
-                <form onsubmit="resendActivationEmail(event)">
+                <form onsubmit="verifyAndActivateSubscription(event)">
                     <div class="form-group">
                         <label for="subscriptionEmailInput">Email Address:</label>
                         <input type="email" id="subscriptionEmailInput" required 
-                               placeholder="Enter your subscription email">
+                               placeholder="Enter your subscription email"
+                               style="width: 100%; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; font-size: 16px; background: var(--bg-color); color: var(--text-color);">
                     </div>
                     <div style="display: flex; gap: 10px; margin-top: 20px;">
-                        <button type="submit" id="resendActivationBtn" class="btn">
-                            Send Activation Email
+                        <button type="submit" id="verifySubscriptionBtn" class="btn" 
+                                style="background: linear-gradient(135deg, #059669, #047857); border-color: #059669;">
+                            Verify & Activate
                         </button>
                         <button type="button" class="btn btn-secondary" 
                                 onclick="closeAlreadySubscribedModal()">
@@ -219,16 +235,16 @@ function injectAlreadySubscribedModal() {
                     </div>
                 </form>
             </div>
-            <div id="subscriptionResendSuccess" style="display: none; text-align: center;">
-                <div style="color: #10b981; font-size: 3rem; margin-bottom: 15px;">📧</div>
-                <div id="resendSuccessMessage" style="font-size: 1.1rem; margin-bottom: 20px;">
-                    <strong>Activation Email Sent!</strong>
+            <div id="subscriptionVerificationSuccess" style="display: none; text-align: center;">
+                <div style="color: #10b981; font-size: 3rem; margin-bottom: 15px;">✅</div>
+                <div id="verificationSuccessMessage" style="font-size: 1.1rem; margin-bottom: 20px;">
+                    <strong>Subscription Activated!</strong>
                 </div>
                 <p style="color: #6b7280; margin-bottom: 15px;">
-                    Check your inbox and click the activation link to unlock your Pro features.
+                    Your Pro features are now active! The app will refresh automatically to show your Pro status.
                 </p>
                 <p style="color: #6b7280; font-size: 0.9rem;">
-                    This modal will close automatically in a few seconds...
+                    Refreshing in a few seconds...
                 </p>
             </div>
         </div>
@@ -237,6 +253,13 @@ function injectAlreadySubscribedModal() {
     
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 }
+
+// Keep all other existing functions the same:
+// - addAlreadySubscribedButton()
+// - removeAlreadySubscribedButton() 
+// - updateTrialCountdownWithAlreadySubscribed()
+// - initializeAlreadySubscribedFeature()
+
 
 // FIXED FUNCTION - Function to add the Already Subscribed button to action-buttons
 function addAlreadySubscribedButton() {
