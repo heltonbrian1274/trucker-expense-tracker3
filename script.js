@@ -1,16 +1,19 @@
-// ---------- Utility: Clear PWA Cache ----------
+// ======================
+// --- Subscription & Trial Core Logic ---
+// ======================
+
+// Utility: Clear PWA Cache except essential keys
 function clearPWACache() {
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({
-            type: 'CLEAR_INDEX_CACHE'
-        });
+        navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_INDEX_CACHE' });
     }
     const keysToKeep = [
         'truckerExpenses',
         'trialStartDate',
         'darkMode',
         'hasSeenWelcome',
-        'isSubscribed'
+        'isSubscribed',
+        'subscriptionToken'
     ];
     const currentStorage = {};
     keysToKeep.forEach(key => {
@@ -23,24 +26,56 @@ function clearPWACache() {
     });
 }
 
-// ---------- Subscription Status Check Utility ----------
+// Check subscription status from server (using stored subscriptionToken)
 async function checkSubscriptionStatusFromServer() {
     const token = localStorage.getItem('subscriptionToken');
     if (!token) return initializeApp();
+
     try {
         const response = await fetch(`/api/check-subscription?token=${token}`);
         const result = await response.json();
         if (response.ok && result.success && result.active) {
             localStorage.setItem('isSubscribed', 'true');
+        } else {
+            localStorage.removeItem('isSubscribed');
         }
     } catch (error) {
         console.warn('Subscription check failed:', error);
+        // fallback: keep existing subscription state
     } finally {
         initializeApp();
     }
 }
 
-// ---------- Expense Categories ----------
+// Verify subscription token on subscription purchase link usage
+async function verifySubscriptionToken(token) {
+    try {
+        const response = await fetch('/api/verify-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: token })
+        });
+        const result = await response.json();
+        if (response.ok && result.success) {
+            localStorage.setItem('isSubscribed', 'true');
+            clearPWACache();
+            showNotification('Subscription activated! Thank you for your support.', 'success');
+            setTimeout(() => { window.location.reload(true); }, 1500);
+        } else {
+            showNotification(result.message || 'Failed to activate subscription.', 'error');
+        }
+    } catch (error) {
+        console.error('Verification request failed:', error);
+        showNotification('Could not connect to activation server.', 'error');
+    } finally {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        // We reload on success, so no initializeApp call here
+    }
+}
+
+// ======================
+// --- Expense Categories ---
+// ======================
 const expenseCategories = [
     { id: 'fuel', name: 'Fuel', icon: '⛽' },
     { id: 'maintenance', name: 'Maintenance & Repairs', icon: '🔧' },
@@ -59,24 +94,31 @@ const expenseCategories = [
     { id: 'other', name: 'Other Business Expenses', icon: '💼' }
 ];
 
-// ---------- State Variables ----------
+// ======================
+// --- State Variables ---
+// ======================
 let expenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
 let isDarkMode = localStorage.getItem('darkMode') === 'true';
 let currentSection = 'today';
-let trialStartDate = localStorage.getItem('trialStartDate') || Date.now();
-let isTrialExpired = false;
+let isSubscribed = localStorage.getItem('isSubscribed') === 'true';
 
-if (!localStorage.getItem('trialStartDate')) {
+// Trial initialization
+let trialStartDate = localStorage.getItem('trialStartDate');
+if (!trialStartDate) {
+    trialStartDate = Date.now().toString();
     localStorage.setItem('trialStartDate', trialStartDate);
 }
+let isTrialExpired = false;
 
-// ========== DOMContentLoaded and Initialization ==========
-document.addEventListener('DOMContentLoaded', function() {
+// ======================
+// --- DOMContentLoaded & Initialization ---
+// ======================
+document.addEventListener('DOMContentLoaded', function () {
     // Aggressive Service Worker Unregister
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
             for (let registration of registrations) registration.unregister();
-        }).catch(function(err) {
+        }).catch(function (err) {
             console.error('Service worker unregistration failed: ', err);
         });
     }
@@ -111,33 +153,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500); // 500ms delay
 });
 
-// ---------- verifySubscriptionToken updated to clear PWA cache ----------
-async function verifySubscriptionToken(token) {
-    try {
-        const response = await fetch('/api/verify-token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: token })
-        });
-        const result = await response.json();
-        if (response.ok && result.success) {
-            localStorage.setItem('isSubscribed', 'true');
-            clearPWACache();
-            showNotification('Subscription activated! Thank you for your support.', 'success');
-            setTimeout(() => { window.location.reload(true); }, 1500);
-        } else {
-            showNotification(result.message || 'Failed to activate subscription.', 'error');
-        }
-    } catch (error) {
-        console.error('Verification request failed:', error);
-        showNotification('Could not connect to activation server.', 'error');
-    } finally {
-        window.history.replaceState({}, document.title, window.location.pathname);
-        // Don't call initializeApp here since we're reloading
-    }
-}
-
-// ---------- App Initialization Logic ----------
+// ======================
+// --- App Initialization Logic ---
+// ======================
 function initializeApp() {
     if (isDarkMode) {
         document.body.classList.add('dark-mode');
@@ -164,6 +182,9 @@ function initializeApp() {
     }
 }
 
+// ======================
+// --- Trial Countdown & UI Update ---
+// ======================
 function updateTrialCountdown() {
     const trialDuration = 30 * 24 * 60 * 60 * 1000;
     const elapsed = Date.now() - parseInt(trialStartDate);
@@ -171,12 +192,15 @@ function updateTrialCountdown() {
     const daysLeft = Math.max(0, Math.ceil(remaining / (1000 * 60 * 60 * 24)));
     const trialElement = document.getElementById('trialCountdown');
     const textElement = document.getElementById('trialText');
-    if (localStorage.getItem('isSubscribed')) {
-         trialElement.style.background = 'linear-gradient(135deg, #047857, #059669)';
-         textElement.innerHTML = '✅ Pro Subscription Active';
-         isTrialExpired = false;
-         return;
+
+    // If subscribed, override trial UI
+    if (localStorage.getItem('isSubscribed') === 'true') {
+        trialElement.style.background = 'linear-gradient(135deg, #047857, #059669)';
+        textElement.innerHTML = '✅ Pro Subscription Active';
+        isTrialExpired = false;
+        return;
     }
+
     if (daysLeft <= 0) {
         isTrialExpired = true;
         trialElement.className = 'trial-countdown expired';
@@ -189,6 +213,10 @@ function updateTrialCountdown() {
         textElement.innerHTML = `🎁 Free Trial: <span id="daysLeft">${daysLeft}</span> days remaining`;
     }
 }
+
+// ======================
+// --- Core App Functions ---
+// ======================
 
 function populateExpenseGrid() {
     const grid = document.getElementById('expenseGrid');
@@ -249,7 +277,7 @@ function populateExpenseGrid() {
 }
 
 function toggleExpenseCard(categoryId) {
-    if (isTrialExpired && !localStorage.getItem('isSubscribed')) {
+    if (isTrialExpired && localStorage.getItem('isSubscribed') !== 'true') {
         alert('Your trial has expired. Please subscribe to continue adding expenses.');
         return;
     }
@@ -270,7 +298,7 @@ function toggleExpenseCard(categoryId) {
 
 function addExpense(event, categoryId) {
     event.preventDefault();
-    if (isTrialExpired && !localStorage.getItem('isSubscribed')) {
+    if (isTrialExpired && localStorage.getItem('isSubscribed') !== 'true') {
         alert('Your trial has expired. Please subscribe to continue adding expenses.');
         return;
     }
@@ -307,7 +335,7 @@ function addExpense(event, categoryId) {
     };
     if (receiptFile) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             expense.receipt = e.target.result;
             saveExpense(expense);
         };
@@ -548,6 +576,9 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
+// ======================
+// --- Export Functions ---
+// ======================
 function exportToPDF() { window.print(); }
 function printSection() { window.print(); }
 function exportToCSV() {
@@ -581,6 +612,9 @@ function exportInsightsToPDF() { showSection('insights'); setTimeout(window.prin
 function printInsights() { showSection('insights'); setTimeout(window.print, 500); }
 function exportInsightsToCSV() { exportToCSV(); }
 
+// ======================
+// --- FAQ Functions ---
+// ======================
 function updateFAQWithTrialDate() {
     const displayElement = document.getElementById('trial-start-date-display');
     if (displayElement) {
@@ -604,6 +638,9 @@ function toggleFAQ(element) {
     icon.textContent = answer.classList.contains('active') ? '-' : '+';
 }
 
+// ======================
+// --- Feedback Functions ---
+// ======================
 function showFeedback() { document.getElementById('feedbackModal').classList.add('active'); }
 function closeFeedback() {
     document.getElementById('feedbackModal').classList.remove('active');
@@ -657,6 +694,9 @@ function resetFeedbackForm() {
     submitBtn.style.background = '';
 }
 
+// ======================
+// --- Settings Functions ---
+// ======================
 function checkForUpdates() { showNotification('You are using the latest version (v2.1.0)', 'success'); }
 function backupData() {
     try {
@@ -727,14 +767,9 @@ function restorePurchase() {
     alert("Please check your email for your unique subscription activation link. If you can't find it, please contact support.");
 }
 
-document.addEventListener('click', function(event) {
-    if (event.target.classList.contains('modal')) {
-        event.target.classList.remove('active');
-    }
-});
-
-setInterval(updateTrialCountdown, 60000);
-
+// ======================
+// --- Dark Mode Functions ---
+// ======================
 function toggleDarkMode() {
     isDarkMode = !isDarkMode;
     document.body.classList.toggle('dark-mode', isDarkMode);
@@ -748,6 +783,9 @@ function updateToggleIcon() {
     }
 }
 
+// ======================
+// --- Welcome Modal Functions ---
+// ======================
 function showWelcomeModal() {
     document.getElementById('welcomeModal').classList.add('active');
 }
@@ -755,3 +793,18 @@ function closeWelcomeModal() {
     document.getElementById('welcomeModal').classList.remove('active');
     localStorage.setItem('hasSeenWelcome', 'true');
 }
+
+// ======================
+// --- Event Listeners ---
+// ======================
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('modal')) {
+        event.target.classList.remove('active');
+    }
+});
+
+// ======================
+// --- Intervals ---
+// ======================
+// Start interval update for trial countdown to keep UI in sync
+setInterval(updateTrialCountdown, 60000);
