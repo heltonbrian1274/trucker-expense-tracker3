@@ -590,14 +590,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 .catch(error => console.log('New SW registration failed:', error));
         }
     }, 500); // 500ms delay
-
-    // *** NEW FIX: EVENT DELEGATION ***
-    // This single event listener on the grid container will handle all clicks
-    // for the cards, even after they are recreated.
-    const expenseGrid = document.getElementById('expenseGrid');
-    if (expenseGrid) {
-        expenseGrid.addEventListener('click', handleGridClick);
-    }
 });
 
 // ======================
@@ -668,36 +660,13 @@ function updateTrialCountdown() {
 // --- Core App Functions ---
 // ======================
 
-// *** NEW FIX: Event handler for the grid container ***
-function handleGridClick(event) {
-    const card = event.target.closest('.expense-card');
-    if (!card) return; // Click was not on a card
-
-    // Check if the click was on the cancel button inside the form
-    if (event.target.matches('.btn-secondary')) {
-        const categoryId = card.dataset.categoryId;
-        toggleExpenseCard(categoryId);
-        return;
-    }
-
-    // Ignore clicks inside the form itself, except for the cancel button
-    if (event.target.closest('.expense-form')) {
-        return;
-    }
-
-    const categoryId = card.dataset.categoryId;
-    toggleExpenseCard(categoryId);
-}
-
 function populateExpenseGrid() {
     const grid = document.getElementById('expenseGrid');
-    grid.innerHTML = ''; // Clear existing cards
+    grid.innerHTML = '';
     expenseCategories.forEach(category => {
         const card = document.createElement('div');
         card.className = 'expense-card';
         card.id = `card-${category.id}`;
-        // *** NEW: Store category ID in a data attribute for easy access ***
-        card.dataset.categoryId = category.id; 
         card.setAttribute('role', 'button');
         card.setAttribute('tabindex', '0');
         card.setAttribute('aria-label', `Add ${category.name} expense`);
@@ -727,39 +696,74 @@ function populateExpenseGrid() {
                     </div>
                     <div style="display: flex; gap: 10px; margin-top: 15px;">
                         <button type="submit" class="btn">Add Expense</button>
-                        <button type="button" class="btn btn-secondary">Cancel</button>
+                        <button type="button" class="btn btn-secondary" onclick="toggleExpenseCard('${category.id}')">Cancel</button>
                     </div>
                 </form>
             </div>
         `;
+        // This event listener is for the card itself, not the form inside it.
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('.expense-form')) return;
+            toggleExpenseCard(category.id);
+        });
+        card.addEventListener('keydown', (e) => {
+            if (e.target.closest('.expense-form')) return;
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (!card.classList.contains('expanded')) {
+                    toggleExpenseCard(category.id);
+                }
+            }
+        });
         grid.appendChild(card);
     });
 }
 
+// *** THE DEFINITIVE FIX IS HERE ***
 function toggleExpenseCard(categoryId) {
     if (isTrialExpired && localStorage.getItem('isSubscribed') !== 'true') {
         alert('Your trial has expired. Please subscribe to continue adding expenses.');
         return;
     }
     const cardToToggle = document.getElementById(`card-${categoryId}`);
-    if (!cardToToggle) return;
+    const formToToggle = document.getElementById(`form-${categoryId}`);
+    const allCards = document.querySelectorAll('.expense-card');
+    
+    if (!cardToToggle) {
+        console.error(`Cannot find card with ID: card-${categoryId}`);
+        return;
+    }
 
     const isOpening = !cardToToggle.classList.contains('expanded');
-    
-    // Close all cards first
-    document.querySelectorAll('.expense-card').forEach(card => {
-        card.classList.remove('expanded');
-        card.querySelector('.expense-form').classList.remove('active');
+
+    // First, close all other cards to avoid conflicts
+    allCards.forEach(c => {
+        if (c.id !== `card-${categoryId}`) {
+            c.classList.remove('expanded');
+            const form = c.querySelector('.expense-form');
+            // *** THIS IS THE CRITICAL NULL CHECK ***
+            // We verify the form element exists before trying to access its classList.
+            if (form) {
+                form.classList.remove('active');
+            }
+        }
     });
 
-    // If we are opening a card, open it now
+    // Now, toggle the specific card we care about
     if (isOpening) {
         cardToToggle.classList.add('expanded');
-        cardToToggle.querySelector('.expense-form').classList.add('active');
-        setTimeout(() => {
-            const amountInput = document.getElementById(`amount-${categoryId}`);
-            if (amountInput) amountInput.focus();
-        }, 100);
+        if (formToToggle) {
+            formToToggle.classList.add('active');
+            setTimeout(() => {
+                const amountInput = document.getElementById(`amount-${categoryId}`);
+                if (amountInput) amountInput.focus();
+            }, 100);
+        }
+    } else {
+        cardToToggle.classList.remove('expanded');
+        if (formToToggle) {
+            formToToggle.classList.remove('active');
+        }
     }
 }
 
@@ -804,7 +808,7 @@ function addExpense(event, categoryId) {
 
         const saveAndRefreshUI = (exp) => {
             expenses.push(exp);
-            localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
+            localStorage.setItem('truckerExpenses', JSON.stringify(exp));
             
             // This will close the form after submission
             toggleExpenseCard(categoryId); 
