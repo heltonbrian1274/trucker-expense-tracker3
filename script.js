@@ -701,7 +701,6 @@ function populateExpenseGrid() {
                 </form>
             </div>
         `;
-        // This event listener is for the card itself, not the form inside it.
         card.addEventListener('click', (e) => {
             if (e.target.closest('.expense-form')) return;
             toggleExpenseCard(category.id);
@@ -719,50 +718,39 @@ function populateExpenseGrid() {
     });
 }
 
-// *** THE DEFINITIVE FIX IS HERE ***
+// *** THE FINAL, CORRECTED FUNCTION ***
+// This logic is inspired by your older, working script and is much more robust.
 function toggleExpenseCard(categoryId) {
     if (isTrialExpired && localStorage.getItem('isSubscribed') !== 'true') {
         alert('Your trial has expired. Please subscribe to continue adding expenses.');
         return;
     }
-    const cardToToggle = document.getElementById(`card-${categoryId}`);
-    const formToToggle = document.getElementById(`form-${categoryId}`);
-    const allCards = document.querySelectorAll('.expense-card');
-    
-    if (!cardToToggle) {
-        console.error(`Cannot find card with ID: card-${categoryId}`);
-        return;
-    }
 
-    const isOpening = !cardToToggle.classList.contains('expanded');
+    const clickedCard = document.getElementById(`card-${categoryId}`);
+    if (!clickedCard) return; // Safety check
 
-    // First, close all other cards to avoid conflicts
-    allCards.forEach(c => {
-        if (c.id !== `card-${categoryId}`) {
-            c.classList.remove('expanded');
-            const form = c.querySelector('.expense-form');
-            // *** THIS IS THE CRITICAL NULL CHECK ***
-            // We verify the form element exists before trying to access its classList.
-            if (form) {
-                form.classList.remove('active');
-            }
+    const isAlreadyExpanded = clickedCard.classList.contains('expanded');
+
+    // First, unconditionally close all cards. This resets the state.
+    document.querySelectorAll('.expense-card').forEach(card => {
+        card.classList.remove('expanded');
+        const form = card.querySelector('.expense-form');
+        if (form) { // The crucial null check
+            form.classList.remove('active');
         }
     });
 
-    // Now, toggle the specific card we care about
-    if (isOpening) {
-        cardToToggle.classList.add('expanded');
-        if (formToToggle) {
-            formToToggle.classList.add('active');
+    // If the card we clicked was NOT already open, then open it.
+    // This prevents a card from closing and immediately reopening on the same click.
+    if (!isAlreadyExpanded) {
+        clickedCard.classList.add('expanded');
+        const form = clickedCard.querySelector('.expense-form');
+        if (form) {
+            form.classList.add('active');
             setTimeout(() => {
-                const amountInput = document.getElementById(`amount-${categoryId}`);
+                const amountInput = form.querySelector(`#amount-${categoryId}`);
                 if (amountInput) amountInput.focus();
             }, 100);
-        }
-    } else {
-        cardToToggle.classList.remove('expanded');
-        if (formToToggle) {
-            formToToggle.classList.remove('active');
         }
     }
 }
@@ -808,9 +796,9 @@ function addExpense(event, categoryId) {
 
         const saveAndRefreshUI = (exp) => {
             expenses.push(exp);
-            localStorage.setItem('truckerExpenses', JSON.stringify(exp));
+            localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
             
-            // This will close the form after submission
+            // This will now correctly close the form after submission
             toggleExpenseCard(categoryId); 
 
             updateSummary();
