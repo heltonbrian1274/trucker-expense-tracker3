@@ -733,20 +733,30 @@ function toggleExpenseCard(categoryId) {
         alert('Your trial has expired. Please subscribe to continue adding expenses.');
         return;
     }
+
     const card = document.getElementById(`card-${categoryId}`);
     const form = document.getElementById(`form-${categoryId}`);
     const allCards = document.querySelectorAll('.expense-card');
-    const isExpanded = card.classList.contains('expanded');
+    const isExpanded = card?.classList.contains('expanded');
+
     allCards.forEach(c => {
         c.classList.remove('expanded');
-        c.querySelector('.expense-form').classList.remove('active');
+        const expenseForm = c.querySelector('.expense-form');
+        if (expenseForm) {
+            expenseForm.classList.remove('active');
+        }
     });
-    if (!isExpanded) {
+
+    if (!isExpanded && card && form) {
         card.classList.add('expanded');
         form.classList.add('active');
-        setTimeout(() => document.getElementById(`amount-${categoryId}`).focus(), 100);
+        setTimeout(() => {
+            const amountInput = document.getElementById(`amount-${categoryId}`);
+            if (amountInput) amountInput.focus();
+        }, 100);
     }
 }
+
 
 function addExpense(event, categoryId) {
     event.preventDefault();
