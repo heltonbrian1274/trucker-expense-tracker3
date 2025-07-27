@@ -718,110 +718,98 @@ function populateExpenseGrid() {
     });
 }
 
-// *** THE FINAL, CORRECTED FUNCTION ***
-// This logic is inspired by your older, working script and is much more robust.
+// *** THE DEFINITIVE FIX IS HERE ***
 function toggleExpenseCard(categoryId) {
     if (isTrialExpired && localStorage.getItem('isSubscribed') !== 'true') {
         alert('Your trial has expired. Please subscribe to continue adding expenses.');
         return;
     }
+    const card = document.getElementById(`card-${categoryId}`);
+    const form = document.getElementById(`form-${categoryId}`);
+    
+    // *** THIS IS THE FIX: We only select cards from the main grid ***
+    // This prevents the function from touching the display-only cards in the history list.
+    const allCardsInGrid = document.querySelectorAll('#expenseGrid .expense-card');
+    
+    const isExpanded = card.classList.contains('expanded');
 
-    const clickedCard = document.getElementById(`card-${categoryId}`);
-    if (!clickedCard) return; // Safety check
-
-    const isAlreadyExpanded = clickedCard.classList.contains('expanded');
-
-    // First, unconditionally close all cards. This resets the state.
-    document.querySelectorAll('.expense-card').forEach(card => {
-        card.classList.remove('expanded');
-        const form = card.querySelector('.expense-form');
-        if (form) { // The crucial null check
-            form.classList.remove('active');
+    allCardsInGrid.forEach(c => {
+        c.classList.remove('expanded');
+        // The null check is still good practice, even though this new selector should prevent the error.
+        const expenseForm = c.querySelector('.expense-form');
+        if (expenseForm) {
+            expenseForm.classList.remove('active');
         }
     });
 
-    // If the card we clicked was NOT already open, then open it.
-    // This prevents a card from closing and immediately reopening on the same click.
-    if (!isAlreadyExpanded) {
-        clickedCard.classList.add('expanded');
-        const form = clickedCard.querySelector('.expense-form');
-        if (form) {
-            form.classList.add('active');
-            setTimeout(() => {
-                const amountInput = form.querySelector(`#amount-${categoryId}`);
-                if (amountInput) amountInput.focus();
-            }, 100);
-        }
+    if (!isExpanded) {
+        card.classList.add('expanded');
+        form.classList.add('active');
+        setTimeout(() => document.getElementById(`amount-${categoryId}`).focus(), 100);
     }
 }
 
 function addExpense(event, categoryId) {
     event.preventDefault();
-    validateBeforeAction(() => {
-        if (isTrialExpired && localStorage.getItem('isSubscribed') !== 'true') {
-            alert('Your trial has expired. Please subscribe to continue adding expenses.');
-            return;
-        }
-        const amountInput = document.getElementById(`amount-${categoryId}`);
-        const amount = parseFloat(amountInput.value);
-        if (isNaN(amount) || amount <= 0) {
-            showNotification('Please enter a valid amount greater than $0.00', 'error');
-            amountInput.focus();
-            return;
-        }
-        if (amount > 999999) {
-            showNotification('Amount cannot exceed $999,999.00', 'error');
-            amountInput.focus();
-            return;
-        }
-        const description = document.getElementById(`description-${categoryId}`).value.trim();
-        const location = document.getElementById(`location-${categoryId}`).value.trim();
-        const receiptFile = document.getElementById(`receipt-${categoryId}`).files[0];
-        if (receiptFile && receiptFile.size > 5 * 1024 * 1024) {
-            showNotification('Receipt file must be smaller than 5MB', 'error');
-            return;
-        }
-        const category = expenseCategories.find(cat => cat.id === categoryId);
-        const newExpense = {
-            id: Date.now() + Math.random(),
-            categoryId: categoryId,
-            categoryName: category.name,
-            icon: category.icon,
-            amount: amount,
-            description: description,
-            location: location,
-            date: new Date().toISOString(),
-            receipt: null
+    if (isTrialExpired && localStorage.getItem('isSubscribed') !== 'true') {
+        alert('Your trial has expired. Please subscribe to continue adding expenses.');
+        return;
+    }
+    const amountInput = document.getElementById(`amount-${categoryId}`);
+    const amount = parseFloat(amountInput.value);
+    if (isNaN(amount) || amount <= 0) {
+        showNotification('Please enter a valid amount greater than $0.00', 'error');
+        amountInput.focus();
+        return;
+    }
+    if (amount > 999999) {
+        showNotification('Amount cannot exceed $999,999.00', 'error');
+        amountInput.focus();
+        return;
+    }
+    const description = document.getElementById(`description-${categoryId}`).value.trim();
+    const location = document.getElementById(`location-${categoryId}`).value.trim();
+    const receiptFile = document.getElementById(`receipt-${categoryId}`).files[0];
+    if (receiptFile && receiptFile.size > 5 * 1024 * 1024) {
+        showNotification('Receipt file must be smaller than 5MB', 'error');
+        return;
+    }
+    const category = expenseCategories.find(cat => cat.id === categoryId);
+    const expense = {
+        id: Date.now() + Math.random(),
+        categoryId: categoryId,
+        categoryName: category.name,
+        icon: category.icon,
+        amount: amount,
+        description: description,
+        location: location,
+        date: new Date().toISOString(),
+        receipt: null
+    };
+    
+    // Using a nested function was part of the original code, so we will keep it.
+    function saveExpense(expense) {
+        expenses.push(expense);
+        localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
+        event.target.reset();
+        document.getElementById(`receipt-preview-container-${categoryId}`).innerHTML = '';
+        toggleExpenseCard(categoryId); // This now safely closes the card
+        updateSummary();
+        updateInsights();
+        updateHistory();
+        showNotification(`${category.name} expense added successfully!`, 'success');
+    }
+
+    if (receiptFile) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            expense.receipt = e.target.result;
+            saveExpense(expense);
         };
-
-        const saveAndRefreshUI = (exp) => {
-            expenses.push(exp);
-            localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
-            
-            // This will now correctly close the form after submission
-            toggleExpenseCard(categoryId); 
-
-            updateSummary();
-            updateInsights();
-            updateHistory();
-            showNotification(`${category.name} expense added successfully!`, 'success');
-            
-            // Reset the form fields for the next use
-            event.target.reset();
-            document.getElementById(`receipt-preview-container-${categoryId}`).innerHTML = '';
-        };
-
-        if (receiptFile) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                newExpense.receipt = e.target.result;
-                saveAndRefreshUI(newExpense);
-            };
-            reader.readAsDataURL(receiptFile);
-        } else {
-            saveAndRefreshUI(newExpense);
-        }
-    });
+        reader.readAsDataURL(receiptFile);
+    } else {
+        saveExpense(expense);
+    }
 }
 
 function previewReceipt(categoryId) {
@@ -845,7 +833,7 @@ function updateSummary() {
     const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
     document.getElementById('dailyTotal').textContent = `$${dailyTotal.toFixed(2)}`;
     document.getElementById('totalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
-}
+}```
 function updateInsights() {
     const insightsSection = document.getElementById('insightsSection');
     if (!insightsSection) return;
