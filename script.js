@@ -313,9 +313,13 @@ async function verifyAndActivateSubscription(event) {
             // Update the success message with details
             const successMessage = document.getElementById('verificationSuccessMessage');
             successMessage.innerHTML = `
-                <strong>Subscription Activated!</strong><br>
-                Your Pro subscription has been verified and activated for:<br>
-                <strong>${result.details?.email || email}</strong><br><br>
+                <strong>Subscription Activated!</strong>  
+
+                Your Pro subscription has been verified and activated for:  
+
+                <strong>${result.details?.email || email}</strong>  
+  
+
                 <small>Plan: ${result.details?.planName || 'Pro Plan'}</small>
             `;
             
@@ -508,7 +512,6 @@ function initializeAlreadySubscribedFeature() {
     
     console.log('✅ Already Subscribed feature initialized');
 }
-
 // ======================
 // --- Expense Categories ---
 // ======================
@@ -733,30 +736,43 @@ function toggleExpenseCard(categoryId) {
         alert('Your trial has expired. Please subscribe to continue adding expenses.');
         return;
     }
-
     const card = document.getElementById(`card-${categoryId}`);
     const form = document.getElementById(`form-${categoryId}`);
     const allCards = document.querySelectorAll('.expense-card');
-    const isExpanded = card?.classList.contains('expanded');
+    
+    if (!card) {
+        console.error(`Card with id 'card-${categoryId}' not found.`);
+        return;
+    }
+    
+    const isExpanded = card.classList.contains('expanded');
 
     allCards.forEach(c => {
-        c.classList.remove('expanded');
-        const expenseForm = c.querySelector('.expense-form');
-        if (expenseForm) {
-            expenseForm.classList.remove('active');
+        if (c.id !== `card-${categoryId}`) {
+            c.classList.remove('expanded');
+            const otherForm = c.querySelector('.expense-form');
+            if (otherForm) {
+                otherForm.classList.remove('active');
+            }
         }
     });
 
-    if (!isExpanded && card && form) {
+    if (!isExpanded) {
         card.classList.add('expanded');
-        form.classList.add('active');
-        setTimeout(() => {
-            const amountInput = document.getElementById(`amount-${categoryId}`);
-            if (amountInput) amountInput.focus();
-        }, 100);
+        if (form) {
+            form.classList.add('active');
+            setTimeout(() => {
+                const amountInput = document.getElementById(`amount-${categoryId}`);
+                if (amountInput) amountInput.focus();
+            }, 100);
+        }
+    } else {
+        card.classList.remove('expanded');
+        if (form) {
+            form.classList.remove('active');
+        }
     }
 }
-
 
 function addExpense(event, categoryId) {
     event.preventDefault();
@@ -795,26 +811,32 @@ function addExpense(event, categoryId) {
         date: new Date().toISOString(),
         receipt: null
     };
-    if (receiptFile) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            expense.receipt = e.target.result;
-            saveExpense(expense);
-        };
-        reader.readAsDataURL(receiptFile);
-    } else {
-        saveExpense(expense);
-    }
-    function saveExpense(expense) {
-        expenses.push(expense);
+    
+    const saveAndRefreshUI = (exp) => {
+        expenses.push(exp);
         localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
-        event.target.reset();
-        document.getElementById(`receipt-preview-container-${categoryId}`).innerHTML = '';
-        toggleExpenseCard(categoryId);
+        
+        // *** THE FIX IS HERE ***
+        // Instead of just toggling the card, which caused the error,
+        // we re-populate the entire grid. This ensures the DOM is in a
+        // clean and predictable state for the next interaction.
+        populateExpenseGrid(); 
+
         updateSummary();
         updateInsights();
         updateHistory();
         showNotification(`${category.name} expense added successfully!`, 'success');
+    };
+
+    if (receiptFile) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            expense.receipt = e.target.result;
+            saveAndRefreshUI(expense);
+        };
+        reader.readAsDataURL(receiptFile);
+    } else {
+        saveAndRefreshUI(expense);
     }
 }
 
@@ -840,7 +862,6 @@ function updateSummary() {
     document.getElementById('dailyTotal').textContent = `$${dailyTotal.toFixed(2)}`;
     document.getElementById('totalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
 }
-
 function updateInsights() {
     const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
     const uniqueDays = [...new Set(expenses.map(ex => new Date(ex.date).toDateString()))].length;
