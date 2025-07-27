@@ -65,7 +65,6 @@ async function checkSubscriptionStatusFromServer() {
         } else {
             // Validation failed but don't downgrade (network issues, etc.)
             console.warn('⚠️ Validation failed but keeping current status:', result.message);
-            // Keep existing subscription state
         }
     } catch (error) {
         console.warn('💥 Subscription validation failed:', error);
@@ -665,7 +664,8 @@ function populateExpenseGrid() {
     grid.innerHTML = '';
     expenseCategories.forEach(category => {
         const card = document.createElement('div');
-        card.className = 'expense-card';
+        // *** FIX STEP 1: Use a unique class name for interactive cards ***
+        card.className = 'interactive-card'; 
         card.id = `card-${category.id}`;
         card.setAttribute('role', 'button');
         card.setAttribute('tabindex', '0');
@@ -718,34 +718,42 @@ function populateExpenseGrid() {
     });
 }
 
-// *** THE DEFINITIVE FIX IS HERE ***
+// *** FIX STEP 2: The corrected function that only targets interactive cards ***
 function toggleExpenseCard(categoryId) {
     if (isTrialExpired && localStorage.getItem('isSubscribed') !== 'true') {
         alert('Your trial has expired. Please subscribe to continue adding expenses.');
         return;
     }
-    const card = document.getElementById(`card-${categoryId}`);
-    const form = document.getElementById(`form-${categoryId}`);
-    
-    // *** THIS IS THE FIX: We only select cards from the main grid ***
-    // This prevents the function from touching the display-only cards in the history list.
-    const allCardsInGrid = document.querySelectorAll('#expenseGrid .expense-card');
-    
-    const isExpanded = card.classList.contains('expanded');
 
-    allCardsInGrid.forEach(c => {
-        c.classList.remove('expanded');
-        // The null check is still good practice, even though this new selector should prevent the error.
-        const expenseForm = c.querySelector('.expense-form');
-        if (expenseForm) {
-            expenseForm.classList.remove('active');
+    const clickedCard = document.getElementById(`card-${categoryId}`);
+    if (!clickedCard) return; 
+
+    const wasExpanded = clickedCard.classList.contains('expanded');
+
+    // This selector now ONLY gets the cards from the grid, ignoring history cards.
+    const allCards = document.querySelectorAll('.interactive-card');
+
+    // This loop is now safe and will not crash.
+    allCards.forEach(card => {
+        card.classList.remove('expanded');
+        const form = card.querySelector('.expense-form');
+        if (form) {
+            form.classList.remove('active');
         }
     });
 
-    if (!isExpanded) {
-        card.classList.add('expanded');
-        form.classList.add('active');
-        setTimeout(() => document.getElementById(`amount-${categoryId}`).focus(), 100);
+    if (!wasExpanded) {
+        clickedCard.classList.add('expanded');
+        const formToOpen = clickedCard.querySelector('.expense-form');
+        if (formToOpen) {
+            formToOpen.classList.add('active');
+            setTimeout(() => {
+                const amountInput = formToOpen.querySelector(`#amount-${categoryId}`);
+                if (amountInput) {
+                    amountInput.focus();
+                }
+            }, 100);
+        }
     }
 }
 
@@ -775,25 +783,15 @@ function addExpense(event, categoryId) {
         return;
     }
     const category = expenseCategories.find(cat => cat.id === categoryId);
-    const expense = {
-        id: Date.now() + Math.random(),
-        categoryId: categoryId,
-        categoryName: category.name,
-        icon: category.icon,
-        amount: amount,
-        description: description,
-        location: location,
-        date: new Date().toISOString(),
-        receipt: null
-    };
+    const expense = { id: Date.now() + Math.random(), categoryId: categoryId, categoryName: category.name, icon: category.icon, amount: amount, description: description, location: location, date: new Date().toISOString(), receipt: null };
     
-    // Using a nested function was part of the original code, so we will keep it.
-    function saveExpense(expense) {
-        expenses.push(expense);
+    function saveExpense(expenseToSave) {
+        expenses.push(expenseToSave);
         localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
         event.target.reset();
         document.getElementById(`receipt-preview-container-${categoryId}`).innerHTML = '';
-        toggleExpenseCard(categoryId); // This now safely closes the card
+        // *** FIX STEP 3: This call now works perfectly because the function is fixed ***
+        toggleExpenseCard(categoryId); 
         updateSummary();
         updateInsights();
         updateHistory();
@@ -833,7 +831,7 @@ function updateSummary() {
     const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
     document.getElementById('dailyTotal').textContent = `$${dailyTotal.toFixed(2)}`;
     document.getElementById('totalExpenses').textContent = `$${totalExpenses.toFixed(2)}`;
-}```
+}
 function updateInsights() {
     const insightsSection = document.getElementById('insightsSection');
     if (!insightsSection) return;
@@ -975,6 +973,7 @@ function updateHistory() {
         return;
     }
     filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Note: The history list still uses 'expense-card' for styling, which is fine because it's separate now.
     historyList.innerHTML = filteredExpenses.map(ex => `
         <li><div class="expense-card" style="margin-bottom: 15px;">
             <div class="expense-header">
