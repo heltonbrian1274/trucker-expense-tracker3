@@ -1,8 +1,13 @@
 // Service Worker for Trucker Expense Tracker PWA
-// Version 2.1.4 - Fixed subscription cache issue
+// Version 2.1.5 - Implemented Stale-While-Revalidate for robust caching
 
-const CACHE_NAME = 'trucker-expense-tracker-v2.1.4';
+// Use a new cache name to ensure the service worker updates properly on install
+const CACHE_NAME = 'trucker-expense-tracker-v2.1.5';
 const urlsToCache = [
+  '/',
+  './index.html',
+  './style.css',
+  './script.js',
   './manifest.json',
   './icon-72x72.png',
   './icon-96x96.png',
@@ -11,11 +16,12 @@ const urlsToCache = [
   './icon-512x512.png'
 ];
 
-// Install event - cache static resources
+// Install event - cache the core shell of the application
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
+  console.log('[Service Worker] Install');
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
+      console.log('[Service Worker] Caching all: app shell and content');
       return cache.addAll(urlsToCache);
     })
   );
@@ -23,121 +29,51 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  self.clients.claim();
+  console.log('[Service Worker] Activate');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
+          // If the cache name is different from our current one, delete it
           if (cacheName !== CACHE_NAME) {
+            console.log('[Service Worker] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
-          return null;
         })
       );
     })
   );
+  // Tell the active service worker to take control of the page immediately
+  return self.clients.claim();
 });
 
-// Listen for messages from the main app
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'CLEAR_INDEX_CACHE') {
-    // Clear cached index page when subscription status changes
-    event.waitUntil(
-      caches.open(CACHE_NAME).then((cache) => {
-        // Clear all potential index page variations
-        const indexUrls = [
-          './',
-          './index.html',
-          self.registration.scope,
-          self.registration.scope + 'index.html'
-        ];
-        
-        return Promise.all(
-          indexUrls.map(url => cache.delete(url))
-        ).then(() => {
-          // Notify all clients to reload
-          return self.clients.matchAll().then((clients) => {
-            clients.forEach((client) => {
-              client.postMessage({ type: 'INDEX_CACHE_CLEARED' });
-            });
-          });
-        });
-      })
-    );
-  }
-});
-
-// Fetch event - Handle subscription state changes
+// Fetch event - This is where the caching strategy is defined
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
-  if (event.request.method !== 'GET') {
-    return;
-  }
-
-  const url = new URL(event.request.url);
-  
-  // Handle HTML/navigation requests specially
-  if (event.request.mode === 'navigate' || 
-      url.pathname.endsWith('.html') || 
-      url.pathname === '/') {
-    
-    // For token requests, always fetch from network and don't cache
-    if (url.searchParams.has('token')) {
-      event.respondWith(
-        fetch(event.request).then((networkResponse) => {
-          // Don't cache token responses
-          return networkResponse;
-        }).catch(() => {
-          throw new Error('Network required for subscription activation');
-        })
-      );
-    } else {
-      // For regular navigation, network first, cache fallback
-      event.respondWith(
-        fetch(event.request).then((networkResponse) => {
-          if (networkResponse.ok) {
-            // Clone the response immediately before using or caching
-            const responseClone = networkResponse.clone();
-
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, responseClone);
-            });
-          }
-          return networkResponse;
-        }).catch(() => {
-          // Fallback to cache for offline access
-          return caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-              return cachedResponse;
-            }
-            // Basic offline fallback page
-            return new Response(
-              '<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>Offline</h1><p>Please check your internet connection.</p></body></html>',
-              { headers: { 'Content-Type': 'text/html' } }
-            );
-          });
-        })
-      );
-    }
-  } else {
-    // For static assets, use cache-first strategy
-    event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-        return fetch(event.request).then((networkResponse) => {
-          if (networkResponse.ok) {
-            // Clone the response immediately before caching
-            const responseClone = networkResponse.clone();
-
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, responseClone);
-            });
+  // Use a "Stale-While-Revalidate" strategy for most requests.
+  // This provides a fast response from the cache while updating it in the background.
+  event.respondWith(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.match(event.request).then((cachedResponse) => {
+        // Fetch from the network in the background
+        const fetchPromise = fetch(event.request).then((networkResponse) => {
+          // If we get a valid response, update the cache
+          if (networkResponse && networkResponse.status === 200) {
+            cache.put(event.request, networkResponse.clone());
           }
           return networkResponse;
         });
-      })
-    );
+
+        // Return the cached response immediately if it exists, otherwise wait for the network
+        return cachedResponse || fetchPromise;
+      });
+    })
+  );
+});
+
+// Listen for messages from the main app to trigger a skipWaiting
+// This helps new service workers activate faster
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
   }
 });
