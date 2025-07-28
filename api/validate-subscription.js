@@ -55,18 +55,28 @@ export default async function handler(req, res) {
       });
     }
     
-    // Parse token data
-    let parsedTokenData;
-    try {
-      parsedTokenData = JSON.parse(tokenData);
-    } catch (error) {
-      console.error('❌ Failed to parse token data:', error);
-      return res.status(500).json({ 
-        success: false, 
-        message: 'Invalid token data',
-        shouldDowngrade: true
-      });
-    }
+  // Parse token data
+let parsedTokenData;
+try {
+  console.log('Raw token data from Redis:', tokenData);
+  console.log('Type of token data:', typeof tokenData);
+  
+  // If tokenData is already an object, don't parse it
+  if (typeof tokenData === 'object') {
+    parsedTokenData = tokenData;
+  } else {
+    parsedTokenData = JSON.parse(tokenData);
+  }
+} catch (error) {
+  console.error('❌ Failed to parse token data:', error);
+  console.error('Raw token data was:', tokenData);
+  return res.status(500).json({ 
+    success: false, 
+    message: 'Invalid token data',
+    shouldDowngrade: true
+  });
+}
+
     
     const customerEmail = parsedTokenData.email;
     if (!customerEmail) {
