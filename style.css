@@ -437,18 +437,17 @@
             min-width: 120px;
         }
 
-       .action-buttons {
+.action-buttons {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
     margin: 25px 20px;
     max-width: calc(100% - 40px);
     box-sizing: border-box;
-    min-height: 80px; /* Reserve space to prevent layout shifts */
-    align-items: center;
-    transition: all 0.3s ease; /* Smooth transitions when buttons appear/disappear */
+    min-height: 320px; /* Space for 4 rows of 80px buttons + gaps */
+    align-items: start;
+    transition: all 0.3s ease;
 }
-
         }
 
         .action-btn {
