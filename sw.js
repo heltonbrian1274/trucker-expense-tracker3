@@ -1,7 +1,7 @@
 // Service Worker for Trucker Expense Tracker PWA
-// Version 2.1.4 - Fixed subscription cache issue
+// Version 2.1.5 - Fixed Response cloning issue
 
-const CACHE_NAME = 'trucker-expense-tracker-v2.1.4';
+const CACHE_NAME = 'trucker-expense-tracker-v2.1.5';
 const urlsToCache = [
   './manifest.json',
   './icon-72x72.png',
@@ -84,7 +84,7 @@ self.addEventListener('fetch', (event) => {
     if (url.searchParams.has('token')) {
       event.respondWith(
         fetch(event.request).then((networkResponse) => {
-          // Don't cache token responses
+          // Don't cache token responses - return directly
           return networkResponse;
         }).catch(() => {
           throw new Error('Network required for subscription activation');
@@ -95,9 +95,13 @@ self.addEventListener('fetch', (event) => {
       event.respondWith(
         fetch(event.request).then((networkResponse) => {
           if (networkResponse.ok) {
-            // Only cache if this isn't a subscription-related request
-            const cache = caches.open(CACHE_NAME);
-            cache.then(c => c.put(event.request, networkResponse.clone()));
+            // FIXED: Clone the response before caching to avoid "Response body is already used" error
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseClone);
+            }).catch(err => {
+              console.warn('Cache put failed:', err);
+            });
           }
           return networkResponse;
         }).catch(() => {
@@ -119,10 +123,19 @@ self.addEventListener('fetch', (event) => {
     // For static assets, use cache first strategy
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
-        return cachedResponse || fetch(event.request).then((networkResponse) => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        
+        return fetch(event.request).then((networkResponse) => {
           if (networkResponse.ok) {
-            const cache = caches.open(CACHE_NAME);
-            cache.then(c => c.put(event.request, networkResponse.clone()));
+            // FIXED: Clone the response before caching
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseClone);
+            }).catch(err => {
+              console.warn('Cache put failed:', err);
+            });
           }
           return networkResponse;
         });
@@ -130,3 +143,4 @@ self.addEventListener('fetch', (event) => {
     );
   }
 });
+
