@@ -244,7 +244,10 @@ function resetAlreadySubscribedForm() {
     
     form.style.display = 'block';
     successDiv.style.display = 'none';
-    form.reset();
+    const actualForm = form.querySelector('form');
+    if (actualForm) {
+    actualForm.reset();
+}
     
     submitBtn.textContent = 'Verify & Activate';
     submitBtn.disabled = false;
