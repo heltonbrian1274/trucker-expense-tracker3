@@ -236,19 +236,19 @@ function closeAlreadySubscribedModal() {
     resetAlreadySubscribedForm();
 }
 
-// FIXED: Function to reset the form
+// FIXED: Function to reset the form - ONLY MINIMAL CHANGE
 function resetAlreadySubscribedForm() {
-    const formContainer = document.getElementById('alreadySubscribedForm');
+    const form = document.getElementById('alreadySubscribedForm');
     const successDiv = document.getElementById('subscriptionVerificationSuccess');
     const submitBtn = document.getElementById('verifySubscriptionBtn');
     
-    formContainer.style.display = 'block';
+    form.style.display = 'block';
     successDiv.style.display = 'none';
     
-    // FIXED: Get the actual form element instead of the div
-    const formElement = document.querySelector('#alreadySubscribedForm form');
-    if (formElement) {
-        formElement.reset();
+    // FIXED: Only this line changed - get the actual form element and reset it
+    const actualForm = form.querySelector('form');
+    if (actualForm) {
+        actualForm.reset();
     }
     
     submitBtn.textContent = 'Verify & Activate';
