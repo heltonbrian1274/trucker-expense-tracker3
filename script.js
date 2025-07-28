@@ -729,22 +729,49 @@ function populateExpenseGrid() {
 }
 
 function toggleExpenseCard(categoryId) {
-    if (isTrialExpired && localStorage.getItem('isSubscribed') !== 'true') {
+    if (isTrialExpired && !localStorage.getItem('isSubscribed')) {
         alert('Your trial has expired. Please subscribe to continue adding expenses.');
         return;
     }
-    const card = document.getElementById(`card-${categoryId}`);
-    const form = document.getElementById(`form-${categoryId}`);
+
+    const clickedCard = document.getElementById(`card-${categoryId}`);
+    if (!clickedCard) return; // Safety check in case the clicked card doesn't exist
+
+    const wasExpanded = clickedCard.classList.contains('expanded');
+
+    // Get all elements that look like an expense card
     const allCards = document.querySelectorAll('.expense-card');
-    const isExpanded = card.classList.contains('expanded');
+
+    // Loop through every card
     allCards.forEach(c => {
+        // First, remove the 'expanded' class from the card itself. This is always safe.
         c.classList.remove('expanded');
-        c.querySelector('.expense-form').classList.remove('active');
+
+        // *** THIS IS THE FIX ***
+        // Find the form inside this specific card.
+        const form = c.querySelector('.expense-form');
+
+        // IMPORTANT: Only if the form actually exists, then try to change its class.
+        if (form) {
+            form.classList.remove('active');
+        }
+        // If 'form' is null (like in the history cards), this block is safely skipped,
+        // and the script DOES NOT CRASH.
     });
-    if (!isExpanded) {
-        card.classList.add('expanded');
-        form.classList.add('active');
-        setTimeout(() => document.getElementById(`amount-${categoryId}`).focus(), 100);
+
+    // If the card we clicked was not already open, open it now.
+    if (!wasExpanded) {
+        clickedCard.classList.add('expanded');
+        const formToOpen = clickedCard.querySelector('.expense-form');
+        if (formToOpen) { // Another safety check here
+            formToOpen.classList.add('active');
+            setTimeout(() => {
+                const amountInput = formToOpen.querySelector(`#amount-${categoryId}`);
+                if (amountInput) {
+                    amountInput.focus();
+                }
+            }, 100);
+        }
     }
 }
 
