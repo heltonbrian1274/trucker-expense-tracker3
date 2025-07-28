@@ -526,7 +526,6 @@ function initializeAlreadySubscribedFeature() {
 // This is the missing code that continues from the end of your last file.
         console.error('Backup error:', error);
     }
-}
 function restoreData() {
     const input = document.createElement('input');
     input.type = 'file';
