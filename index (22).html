@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional expense tracking PWA for owner-operator truck drivers. Track fuel, maintenance, meals, and all business expenses with receipt management and tax insights.">
+    <meta name="keywords" content="trucker expenses, owner operator, truck driver, expense tracker, tax deductions, fuel tracking, maintenance records">
+    <meta name="author" content="Trucker Expense Tracker">
+    <meta name="robots" content="index, follow">
+
+    <link rel="canonical" href="https://www.truckerexpensetracker.com/" />
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://trucker-expense-tracker.vercel.app/">
+    <meta property="og:title" content="Trucker Expense Tracker - Professional Expense Management">
+    <meta property="og:description" content="Track your trucking expenses professionally with our PWA designed for owner-operators.">
+    <meta property="og:image" content="https://trucker-expense-tracker.vercel.app/icon-512x512.png">
+
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://trucker-expense-tracker.vercel.app/">
+    <meta property="twitter:title" content="Trucker Expense Tracker - Professional Expense Management">
+    <meta property="twitter:description" content="Track your trucking expenses professionally with our PWA designed for owner-operators.">
+    <meta property="twitter:image" content="https://trucker-expense-tracker.vercel.app/icon-512x512.png">
+
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self';">
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+
+    <title>Trucker Expense Tracker - Simple, Private Expense Management for Owner-Operators</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="32x32" href="icon-72x72.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="icon-96x96.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512x512.png">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Trucker Expense Tracker">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <link rel="preload" href="/style.css" as="style">
+    <link rel="preload" href="/script.js" as="script">
+    <link rel="stylesheet" href="/style.css">
+
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div class="container">
+        <header class="header">
+            <div class="header-controls">
+                <button class="dark-mode-toggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode">🌙</button>
+                <div class="version-display">v2.1.0</div>
+            </div>
+            <h1>🚛 Trucker Expense Tracker</h1>
+            <p class="subtitle">Simple, Private Expense Management for Owner-Operators</p>
+            <div id="trialCountdown" class="trial-countdown">
+                <span id="trialText">🎁 Free Trial: <span id="daysLeft">30</span> days remaining</span>
+            </div>
+        </header>
+
+        <main id="main-content">
+            <section id="todaySection" class="section">
+                <h2>📅 Log your expenses for today</h2>
+                <div class="expense-grid" id="expenseGrid" aria-label="Expense categories"></div>
+                <fieldset style="border: none; margin: 0; padding: 0;">
+                    <legend class="sr-only">Expense categories</legend>
+                </fieldset>
+                <div class="summary-card">
+                    <h3>📊 Today's Summary</h3>
+                    <div class="summary-item">
+                        <span>Total Daily Expenses:</span>
+                        <span id="dailyTotal" class="summary-value">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Total Expenses:</span>
+                        <span id="totalExpenses" class="summary-value">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-btn export-btn" onclick="exportToPDF()">📄 Export PDF</button>
+                    <button class="action-btn print-btn" onclick="printSection()">🖨️ Print</button>
+                    <button class="action-btn csv-btn" onclick="exportToCSV()">📊 Export CSV</button>
+                    <button class="action-btn feedback-btn" onclick="showFeedback()">💬 Feedback</button>
+                    <button class="action-btn faq-btn" onclick="showFAQ()">❓ FAQ</button>
+                    <button class="action-btn update-btn" onclick="checkForUpdates()">🔄 Check for Updates</button>
+                    <button class="action-btn" style="background: #8b5cf6;" onclick="backupData()">💾 Backup Data</button>
+                    <button class="action-btn" style="background: #06b6d4;" onclick="restoreData()">📥 Restore Data</button>
+                    <button class="action-btn subscribe-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')">💳 Subscribe - $9.99/mo</button>
+                </div>
+            </section>
+
+            <section id="historySection" class="section hidden">
+                <h2>📚 Expense History</h2>
+                <div class="form-group">
+                    <label for="dateFilter">Filter by Date Range:</label>
+                    <select id="dateFilter" onchange="filterExpenses()">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="year">This Year</option>
+                    </select>
+                </div>
+                <ul id="historyList" aria-label="Expense history" style="list-style: none; padding: 0; margin: 0;">
+                    <p style="text-align: center; color: var(--text-light); opacity: 0.7; margin: 40px 0;">No expenses recorded yet. Your expense history will appear here. Remember, everything you add is stored securely and privately on your device.</p>
+                </ul>
+                <div class="action-buttons">
+                    <button class="action-btn export-btn" onclick="exportHistoryToPDF()">📄 Export PDF</button>
+                    <button class="action-btn print-btn" onclick="printHistory()">🖨️ Print</button>
+                    <button class="action-btn csv-btn" onclick="exportHistoryToCSV()">📊 Export CSV</button>
+                </div>
+            </section>
+
+            <section id="insightsSection" class="section hidden">
+                <h2>📈 Expense Insights</h2>
+                <div id="insightsContent">
+                    <div class="insights-breakdown-section">
+                        <h3>💰 Financial Overview</h3>
+                        <div class="summary-card" style="background: linear-gradient(135deg, #047857, #059669);">
+                            <div class="summary-item">
+                                <span>Total Expenses:</span>
+                                <span id="insightsTotalExpenses" class="summary-value">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Average Daily Expense:</span>
+                                <span id="averageDailyExpense" class="summary-value">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Most Expensive Category:</span>
+                                <span id="topCategory" class="summary-value">None</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="insights-breakdown-section">
+                        <h3>📊 Spending Trends</h3>
+                        <div class="summary-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                            <div class="summary-item">
+                                <span>This Month's Total:</span>
+                                <span id="currentMonthTotal" class="summary-value">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Last Month's Total:</span>
+                                <span id="lastMonthTotal" class="summary-value">$0.00</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Monthly Change:</span>
+                                <span id="monthlyChange" class="summary-value">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="insights-breakdown-section">
+                        <h3>📊 Category Breakdown</h3>
+                        <ul id="categoryList" aria-label="Category breakdown">
+                            <p class="no-data-message">No expense data available for analysis.</p>
+                        </ul>
+                    </div>
+                    <div class="insights-breakdown-section">
+                        <h3>📅 Monthly Breakdown</h3>
+                        <ul id="monthlyBreakdown" aria-label="Monthly expense breakdown">
+                            <p class="no-data-message">No expense data available for monthly analysis.</p>
+                        </ul>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-btn export-btn" onclick="exportInsightsToPDF()">📄 Export PDF</button>
+                    <button class="action-btn print-btn" onclick="printInsights()">🖨️ Print</button>
+                    <button class="action-btn csv-btn" onclick="exportInsightsToCSV()">📊 Export CSV</button>
+                </div>
+            </section>
+        </main>
+        <nav class="navigation">
+            <button class="nav-btn active" onclick="showSection('today')" data-section="today">📅 Today</button>
+            <button class="nav-btn" onclick="showSection('history')" data-section="history">📚 History</button>
+            <button class="nav-btn" onclick="showSection('insights')" data-section="insights">📈 Insights</button>
+        </nav>
+        <div class="privacy-notice">
+            <h3>🔒 Our Privacy Promise</h3>
+            <p>You pay a small fee for this software so that we don't have to make money from your data. Everything you enter is stored locally and securely on your device. We have no access to it.</p>
+        </div>
+    </div>
+    
+    <div id="faqModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeFAQ()">&times;</button>
+            <h2>❓ Frequently Asked Questions</h2>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What expenses can I track? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    You can track 15 different categories of expenses including fuel, maintenance, meals, lodging, tolls, permits, insurance, phone bills, and more. Each category is specifically designed for trucking business needs.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    When did my 30-day free trial start? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Your trial started on: <strong id="trial-start-date-display">loading...</strong></p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Is my data secure? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! All your data is stored locally on your device using your browser's local storage. Nothing is sent to our servers, ensuring complete privacy and security.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I export my data? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! You can export your expense data as PDF reports or CSV files for your accountant or tax preparation.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Does this work offline? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! This is a Progressive Web App (PWA) that works offline. You can add expenses even without an internet connection.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What happens after the trial period? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    After the 30-day trial, you'll need to subscribe for $9.99/month to continue using the app. Your data will remain on your device during the trial period.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                     How do I use my subscription on a new device? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                     Your subscription is activated via the unique link sent to your email after purchase. To activate the app on a new device, or if you've cleared your browser data, simply find that original activation email and click the link again on the new device. If you can't find the email, please contact support.
+                </div>
+             </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    How do I backup my expense data? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Use the "Backup Data" button to download your expenses as a JSON file. On your new device, use "Restore Data" to import this backup file. Note that this only backs up your expense entries, not your subscription status.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I track per-mile expenses? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! You can use the "Other Business Expenses" category to track per-mile costs, or add mile information in the description field of fuel and maintenance entries.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I track expenses for multiple trucks? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Currently, the app tracks expenses in one account. You can use the description field to specify which truck/trailer an expense relates to, or use separate devices/browsers for different trucks.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What if I need to edit or delete an expense? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    You can delete expenses from the History section by clicking the "Delete" button on any expense entry. Currently, editing requires deleting and re-adding the expense.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Does the app work on both mobile and desktop? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! This PWA is designed to work seamlessly on smartphones, tablets, and desktop computers. You can install it on your phone's home screen for easy access.
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I print my expense reports? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! Each section (Today, History, Insights) has print functionality. You can also export PDF reports and CSV files for your records.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="feedbackModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeFeedback()">&times;</button>
+            <h2>💬 Send Feedback</h2>
+            <form onsubmit="submitFeedback(event)" id="feedbackForm">
+                <div class="form-group">
+                    <label for="feedbackType">Feedback Type:</label>
+                    <select id="feedbackType" required onchange="updateEmailDisplay()">
+                        <option value="">Select type...</option>
+                        <option value="bug">🐛 Bug Report</option>
+                        <option value="feature">💡 Feature Request</option>
+                        <option value="improvement">⚡ Improvement</option>
+                        <option value="general">💬 General Feedback</option>
+                    </select>
+                    <div id="emailDisplay" style="margin-top: 5px; font-size: 0.9rem; color: #666; min-height: 20px; display: flex; align-items: center;"></div>
+                </div>
+                <div class="form-group">
+                    <label for="feedbackMessage">Message:</label>
+                    <textarea id="feedbackMessage" rows="5" required placeholder="Tell us what you think..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="feedbackEmail">Email (optional):</label>
+                    <input type="email" id="feedbackEmail" placeholder="your@email.com">
+                </div>
+                <button type="submit" class="btn" id="feedbackSubmitBtn">Send Feedback</button>
+            </form>
+            <div id="feedbackSuccess" style="display: none; text-align: center; padding: 30px;">
+                <div style="font-size: 4rem; margin-bottom: 20px; color: var(--success-color);">✓</div>
+                <h3 style="color: var(--success-color); margin-bottom: 15px;">Email Client Opening...</h3>
+                <p style="color: #666; margin-bottom: 20px;">Your default email client should open with a pre-filled message.</p>
+                <div style="background: var(--background-light); padding: 15px; border-radius: 10px; margin: 20px 0; border-left: 4px solid var(--success-color);">
+                    <p style="font-size: 0.9rem; color: #666; margin: 0;"><strong>Next steps:</strong></p>
+                    <p style="font-size: 0.9rem; color: #666; margin: 5px 0 0 0;">1. Check your email client<br>2. Review the pre-filled message<br>3. Click send to reach our team</p>
+                </div>
+                <button onclick="resetFeedbackForm()" class="btn btn-secondary">Send Another Message</button>
+            </div>
+        </div>
+    </div>
+    <div id="welcomeModal" class="modal">
+        <div class="modal-content" style="max-width: 500px; height: auto; text-align: center;">
+            <h2 style="font-size: 1.8rem; margin-bottom: 20px;">Welcome to the Privacy-First Expense Tracker!</h2>
+            <p style="margin-bottom: 30px; font-size: 1.1rem; color: #4b5563;">Your Business Stays Your Business.</p>
+            <ul id="welcome-features">
+                <li>
+                    <span class="welcome-icon">🔒</span>
+                    <div>
+                        <strong>Total Privacy</strong><br>
+                        All your data is saved only on this device. We can never see it.
+                    </div>
+                </li>
+                <li>
+                    <span class="welcome-icon">👍</span>
+                    <div>
+                        <strong>Simple & Focused</strong><br>
+                        No complicated features. Just easy expense tracking for owner-operators.
+                    </div>
+                </li>
+                <li>
+                    <span class="welcome-icon">🚀</span>
+                    <div>
+                        <strong>No Account Needed</strong><br>
+                        Get started right now without signing up.
+                    </div>
+                </li>
+            </ul>
+            <button id="closeWelcomeBtn" class="btn" style="margin-top: 30px; padding: 15px 30px; font-size: 1.1rem;">Start Tracking Expenses</button>
+        </div>
+    </div>
+    
+ <script src="/script.js"></script>
+
+</body>
+</html>
