@@ -6,10 +6,25 @@
       "source": "/(.*)",
       "headers": [
         {
-          "key":  "X-Content-Type-Options",
+          "key": "X-Content-Type-Options",
           "value": "nosniff"
         }
       ]
+    },
+    {
+      "source": "/robots.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain"
+        }
+      ]
+    }
+  ],
+  "routes": [
+    {
+      "src": "/robots.txt",
+      "dest": "/robots.txt"
     }
   ]
 }
