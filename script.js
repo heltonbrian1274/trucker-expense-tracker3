@@ -597,68 +597,7 @@ function addExpense(categoryId) {
 
 function updateSummary(){const today=new Date().toISOString().split('T')[0];const todayExpenses=expenses.filter(ex=>ex.date===today);const totalExpenses=expenses.reduce((sum,ex)=>sum+ex.amount,0);const todayTotal=todayExpenses.reduce((sum,ex)=>sum+ex.amount,0);const dailyEl=document.getElementById('dailyTotal');const totalEl=document.getElementById('totalExpenses');if(dailyEl)dailyEl.textContent=`$${todayTotal.toFixed(2)}`;if(totalEl)totalEl.textContent=`$${totalExpenses.toFixed(2)}`;}
 
-function updateInsights() {
-    const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
-    const uniqueDays = [...new Set(expenses.map(ex => new Date(ex.date).toDateString()))].length;
-    const averageDaily = uniqueDays > 0 ? totalExpenses / uniqueDays : 0;
-
-    const categoryTotals = {};
-    expenses.forEach(ex => {
-        categoryTotals[ex.categoryName] = (categoryTotals[ex.categoryName] || 0) + ex.amount;
-    });
-    const topCategory = Object.keys(categoryTotals).reduce((a, b) => 
-        categoryTotals[a] > categoryTotals[b] ? a : b, 'None');
-
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-    const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const lastMonth = lastMonthDate.getMonth();
-    const lastMonthYear = lastMonthDate.getFullYear();
-
-    const currentMonthExpenses = expenses.filter(ex => {
-        const d = new Date(ex.date);
-        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-    }).reduce((sum, ex) => sum + ex.amount, 0);
-
-    const lastMonthExpenses = expenses.filter(ex => {
-        const d = new Date(ex.date);
-        return d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear;
-    }).reduce((sum, ex) => sum + ex.amount, 0);
-
-    const monthlyChange = lastMonthExpenses > 0 ? 
-        ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses * 100).toFixed(1) : 
-        (currentMonthExpenses > 0 ? '∞' : '0');
-
-    // Update insights display
-    const insightElements = {
-        'insightsTotalExpenses': `$${totalExpenses.toFixed(2)}`,
-        'averageDailyExpense': `$${averageDaily.toFixed(2)}`,
-        'topCategory': topCategory,
-        'currentMonthTotal': `$${currentMonthExpenses.toFixed(2)}`,
-        'lastMonthTotal': `$${lastMonthExpenses.toFixed(2)}`
-    };
-
-    Object.entries(insightElements).forEach(([id, value]) => {
-        const element = document.getElementById(id);
-        if (element) element.textContent = value;
-    });
-
-    const changeElement = document.getElementById('monthlyChange');
-    if (changeElement) {
-        if (monthlyChange === '∞') {
-            changeElement.textContent = 'New spending';
-            changeElement.style.color = '#fbbf24';
-        } else if (monthlyChange === '0') {
-            changeElement.textContent = 'No change';
-            changeElement.style.color = '#6b7280';
-        } else {
-            const changeValue = parseFloat(monthlyChange);
-            changeElement.textContent = `${changeValue > 0 ? '+' : ''}${changeValue}%`;
-            changeElement.style.color = changeValue > 0 ? '#ef4444' : '#10b981';
-        }
-    }
-}
+function updateInsights(){const total=expenses.reduce((s,e)=>s+e.amount,0);const days=[...new Set(expenses.map(e=>new Date(e.date).toDateString()))].length;const avgDaily=days>0?total/days:0;const catTotals={};expenses.forEach(e=>{catTotals[e.categoryName]=(catTotals[e.categoryName]||0)+e.amount});const topCat=Object.keys(catTotals).reduce((a,b)=>catTotals[a]>catTotals[b]?a:b,'None');const now=new Date();const curMonth=now.getMonth();const curYear=now.getFullYear();const lastMonthDate=new Date(now.getFullYear(),now.getMonth()-1,1);const lastMonth=lastMonthDate.getMonth();const lastYear=lastMonthDate.getFullYear();const curMonthExp=expenses.filter(e=>{const d=new Date(e.date);return d.getMonth()===curMonth&&d.getFullYear()===curYear}).reduce((s,e)=>s+e.amount,0);const lastMonthExp=expenses.filter(e=>{const d=new Date(e.date);return d.getMonth()===lastMonth&&d.getFullYear()===lastYear}).reduce((s,e)=>s+e.amount,0);const change=lastMonthExp>0?((curMonthExp-lastMonthExp)/lastMonthExp*100).toFixed(1):(curMonthExp>0?'∞':'0');const elements={'insightsTotalExpenses':`$${total.toFixed(2)}`,'averageDailyExpense':`$${avgDaily.toFixed(2)}`,'topCategory':topCat,'currentMonthTotal':`$${curMonthExp.toFixed(2)}`,'lastMonthTotal':`$${lastMonthExp.toFixed(2)}`};Object.entries(elements).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.textContent=val});const changeEl=document.getElementById('monthlyChange');if(changeEl){if(change==='∞'){changeEl.textContent='New spending';changeEl.style.color='#fbbf24'}else if(change==='0'){changeEl.textContent='No change';changeEl.style.color='#6b7280'}else{const changeVal=parseFloat(change);changeEl.textContent=`${changeVal>0?'+':''}${changeVal}%`;changeEl.style.color=changeVal>0?'#ef4444':'#10b981'}}}
 
 function updateHistory() {
     const historyList = document.getElementById('historyList');

@@ -457,7 +457,7 @@
         }
 
         .action-btn {
-            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+            background: linear-gradient(135deg, #94a3b8, #64748b);
             border: 2px solid var(--border-light);
             border-radius: 12px;
             padding: 20px;
@@ -470,15 +470,15 @@
             justify-content: center;
             gap: 8px;
             touch-action: manipulation;
-            color: #0f172a;
+            color: #000000;
             min-height: 70px;
-            height: auto;
+            height: 70px;
         }
 
         .dark-mode .action-btn {
-            background: linear-gradient(135deg, #475569, #334155);
+            background: linear-gradient(135deg, #475569, #1e293b);
             border-color: var(--border-dark);
-            color: #f8fafc;
+            color: #ffffff;
             font-weight: 700;
         }
 
@@ -745,49 +745,21 @@
         }
 
         .dark-mode .expense-title {
-            color: var(--text-dark) !important;
-            font-weight: 600 !important;
+            color: var(--text-dark);
+            font-weight: 600;
         }
 
         .dark-mode .expense-subtitle {
-            color: rgba(241, 245, 249, 0.8) !important;
+            color: rgba(241, 245, 249, 0.8);
         }
 
         .dark-mode .expense-description {
-            color: var(--text-dark) !important;
-            opacity: 1 !important;
+            color: var(--text-dark);
+            opacity: 1;
         }
 
         .dark-mode .expense-amount {
-            color: var(--secondary-color) !important;
-        }
-
-        .dark-mode .insights-breakdown-section .summary-item span:first-child {
-            color: white !important;
-        }
-
-        .dark-mode .insights-breakdown-section .summary-item span:last-child {
-            color: white !important;
-        }
-
-        .dark-mode .insights-breakdown-section .summary-item span:last-child div {
-            color: white !important;
-        }
-
-        .dark-mode #categoryList .summary-item span {
-            color: var(--text-dark) !important;
-        }
-
-        .dark-mode #categoryList .summary-item span:last-child div:first-child {
-            color: var(--secondary-color) !important;
-        }
-
-        .dark-mode #monthlyBreakdown .summary-item span {
-            color: var(--text-dark) !important;
-        }
-
-        .dark-mode #monthlyBreakdown .summary-item span:last-child div:first-child {
-            color: var(--secondary-color) !important;
+            color: var(--secondary-color);
         }
 
         .btn-delete {
