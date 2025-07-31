@@ -1,4 +1,4 @@
-      :root {
+:root {
             --primary-color: #2563eb;
             --primary-dark: #1e40af;
             --secondary-color: #10b981;
@@ -96,9 +96,11 @@
         }
 
         .header .subtitle {
-            color: rgba(255, 255, 255, 0.9);
             font-size: 1.1rem;
-            font-weight: 300;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            font-weight: 400;
+            margin-top: 0;
         }
 
         .trial-countdown {
@@ -439,7 +441,7 @@
             text-align: right;
             white-space: nowrap;
         }
-        
+
         .summary-value {
             min-width: 120px;
         }
@@ -705,7 +707,7 @@
             padding: 15px 20px;
             max-height: 500px;
         }
-        
+
         #historyList, #categoryList, #monthlyBreakdown {
             min-height: 150px;
         }
@@ -838,7 +840,7 @@
         .skip-link:focus {
             top: 6px;
         }
-        
+
         #welcome-features {
             list-style: none;
             padding: 0;
@@ -941,7 +943,7 @@
             padding: 0;
             margin: 0;
         }
-        
+
         .insights-breakdown-section .summary-card {
             min-height: 150px;
             margin: 0;
