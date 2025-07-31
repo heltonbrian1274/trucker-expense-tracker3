@@ -20,7 +20,8 @@ app.use(express.static('./', {
     if (path.endsWith('.js')) {
       res.setHeader('Content-Type', 'application/javascript');
     }
-    // Headers are now handled by Vercel configuration
+    // Ensure no blocking robots headers from Express
+    res.removeHeader('X-Robots-Tag');
   }
 }));
 
