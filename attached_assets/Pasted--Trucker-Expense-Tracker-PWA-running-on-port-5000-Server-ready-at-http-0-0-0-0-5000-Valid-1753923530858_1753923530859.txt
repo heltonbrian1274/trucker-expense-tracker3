@@ -1,0 +1,71 @@
+🚛 Trucker Expense Tracker PWA running on port 5000
+✅ Server ready at http://0.0.0.0:5000
+🔍 Validating subscription for token: 39cdcacb28257b002e7f3d2862f3ea83b95504ff6ffbe80c
+Raw token data from Redis: {
+  email: 'heltonbrian1274@gmail.com',
+  used: false,
+  subscriptionId: 'sub_1Rp9AnBBY1zHew2i8XxE71kz',
+  customerId: 'cus_SkeTMDNI0IAYoX',
+  directActivation: true,
+  timestamp: 1753922739509
+}
+Type of token data: object
+📧 Validating subscription for email: heltonbrian1274@gmail.com
+✅ Found customer in Stripe: cus_SkeTMDNI0IAYoX
+✅ Active subscription verified: sub_1Rp9AnBBY1zHew2i8XxE71kz
+🔍 Validating subscription for token: 39cdcacb28257b002e7f3d2862f3ea83b95504ff6ffbe80c
+Raw token data from Redis: {
+  email: 'heltonbrian1274@gmail.com',
+  used: false,
+  subscriptionId: 'sub_1Rp9AnBBY1zHew2i8XxE71kz',
+  customerId: 'cus_SkeTMDNI0IAYoX',
+  directActivation: true,
+  timestamp: 1753922739509
+}
+Type of token data: object
+📧 Validating subscription for email: heltonbrian1274@gmail.com
+✅ Found customer in Stripe: cus_SkeTMDNI0IAYoX
+✅ Active subscription verified: sub_1Rp9AnBBY1zHew2i8XxE71kz
+🔍 Verifying subscription for email: heltonbrian1274@gmail.com
+✅ Found customer: cus_SkeTMDNI0IAYoX
+✅ Active subscription verified: sub_1Rp9AnBBY1zHew2i8XxE71kz
+🎉 Subscription activated immediately for token: 8542335b8d135f1f339e97dd4cd7ea95129b3d53ef7cdede
+🔍 Validating subscription for token: 8542335b8d135f1f339e97dd4cd7ea95129b3d53ef7cdede
+Raw token data from Redis: {
+  email: 'heltonbrian1274@gmail.com',
+  used: false,
+  subscriptionId: 'sub_1Rp9AnBBY1zHew2i8XxE71kz',
+  customerId: 'cus_SkeTMDNI0IAYoX',
+  directActivation: true,
+  timestamp: 1753923439044
+}
+Type of token data: object
+📧 Validating subscription for email: heltonbrian1274@gmail.com
+✅ Found customer in Stripe: cus_SkeTMDNI0IAYoX
+✅ Active subscription verified: sub_1Rp9AnBBY1zHew2i8XxE71kz
+🔍 Validating subscription for token: 8542335b8d135f1f339e97dd4cd7ea95129b3d53ef7cdede
+Raw token data from Redis: {
+  email: 'heltonbrian1274@gmail.com',
+  used: false,
+  subscriptionId: 'sub_1Rp9AnBBY1zHew2i8XxE71kz',
+  customerId: 'cus_SkeTMDNI0IAYoX',
+  directActivation: true,
+  timestamp: 1753923439044
+}
+Type of token data: object
+📧 Validating subscription for email: heltonbrian1274@gmail.com
+✅ Found customer in Stripe: cus_SkeTMDNI0IAYoX
+✅ Active subscription verified: sub_1Rp9AnBBY1zHew2i8XxE71kz
+🔍 Validating subscription for token: 8542335b8d135f1f339e97dd4cd7ea95129b3d53ef7cdede
+Raw token data from Redis: {
+  email: 'heltonbrian1274@gmail.com',
+  used: false,
+  subscriptionId: 'sub_1Rp9AnBBY1zHew2i8XxE71kz',
+  customerId: 'cus_SkeTMDNI0IAYoX',
+  directActivation: true,
+  timestamp: 1753923439044
+}
+Type of token data: object
+📧 Validating subscription for email: heltonbrian1274@gmail.com
+✅ Found customer in Stripe: cus_SkeTMDNI0IAYoX
+✅ Active subscription verified: sub_1Rp9AnBBY1zHew2i8XxE71kz
