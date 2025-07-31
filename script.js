@@ -1,23 +1,7 @@
 // ======================
 // --- Global Variables & Constants ---
 // ======================
-const expenseCategories = [
-    { id: 'fuel', name: 'Fuel', icon: '⛽' },
-    { id: 'maintenance', name: 'Maintenance & Repairs', icon: '🔧' },
-    { id: 'meals', name: 'Meals', icon: '🍽️' },
-    { id: 'lodging', name: 'Lodging', icon: '🏨' },
-    { id: 'tolls', name: 'Tolls & Parking', icon: '🛣️' },
-    { id: 'permits', name: 'Permits & Licenses', icon: '📋' },
-    { id: 'insurance', name: 'Insurance', icon: '🛡️' },
-    { id: 'phone', name: 'Phone & Communication', icon: '📱' },
-    { id: 'supplies', name: 'Supplies & Equipment', icon: '📦' },
-    { id: 'training', name: 'Training & Education', icon: '📚' },
-    { id: 'medical', name: 'Medical & DOT Exams', icon: '🏥' },
-    { id: 'office', name: 'Office Expenses', icon: '🏢' },
-    { id: 'bank', name: 'Bank & Financial Fees', icon: '🏦' },
-    { id: 'legal', name: 'Legal & Professional', icon: '⚖️' },
-    { id: 'other', name: 'Other Business Expenses', icon: '💼' }
-];
+const expenseCategories=[{id:'fuel',name:'Fuel',icon:'⛽'},{id:'maintenance',name:'Maintenance & Repairs',icon:'🔧'},{id:'meals',name:'Meals',icon:'🍽️'},{id:'lodging',name:'Lodging',icon:'🏨'},{id:'tolls',name:'Tolls & Parking',icon:'🛣️'},{id:'permits',name:'Permits & Licenses',icon:'📋'},{id:'insurance',name:'Insurance',icon:'🛡️'},{id:'phone',name:'Phone & Communication',icon:'📱'},{id:'supplies',name:'Supplies & Equipment',icon:'📦'},{id:'training',name:'Training & Education',icon:'📚'},{id:'medical',name:'Medical & DOT Exams',icon:'🏥'},{id:'office',name:'Office Expenses',icon:'🏢'},{id:'bank',name:'Bank & Financial Fees',icon:'🏦'},{id:'legal',name:'Legal & Professional',icon:'⚖️'},{id:'other',name:'Other Business Expenses',icon:'💼'}];
 
 // State Variables
 let expenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
@@ -611,24 +595,7 @@ function addExpense(categoryId) {
     }
 }
 
-function updateSummary() {
-    const today = new Date().toISOString().split('T')[0];
-    const todayExpenses = expenses.filter(ex => ex.date === today);
-    const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
-    const todayTotal = todayExpenses.reduce((sum, ex) => sum + ex.amount, 0);
-
-    // Update summary cards
-    const summaryCards = document.querySelectorAll('.summary-card');
-    summaryCards.forEach(card => {
-        const dailyElement = card.querySelector('.daily-amount');
-        const totalElement = card.querySelector('.total-amount');
-
-        if (dailyElement && totalElement) {
-            dailyElement.textContent = `$${todayTotal.toFixed(2)}`;
-            totalElement.textContent = `$${totalExpenses.toFixed(2)}`;
-        }
-    });
-}
+function updateSummary(){const today=new Date().toISOString().split('T')[0];const todayExpenses=expenses.filter(ex=>ex.date===today);const totalExpenses=expenses.reduce((sum,ex)=>sum+ex.amount,0);const todayTotal=todayExpenses.reduce((sum,ex)=>sum+ex.amount,0);const dailyEl=document.getElementById('dailyTotal');const totalEl=document.getElementById('totalExpenses');if(dailyEl)dailyEl.textContent=`$${todayTotal.toFixed(2)}`;if(totalEl)totalEl.textContent=`$${totalExpenses.toFixed(2)}`;}
 
 function updateInsights() {
     const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);

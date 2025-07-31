@@ -397,8 +397,8 @@
             padding: 20px;
             margin: 25px 0;
             text-align: left;
-            min-height: 120px;
-            height: auto;
+            min-height: 140px;
+            height: 140px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -457,7 +457,7 @@
         }
 
         .action-btn {
-            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
             border: 2px solid var(--border-light);
             border-radius: 12px;
             padding: 20px;
@@ -470,15 +470,15 @@
             justify-content: center;
             gap: 8px;
             touch-action: manipulation;
-            color: #1e293b;
+            color: #0f172a;
             min-height: 70px;
             height: auto;
         }
 
         .dark-mode .action-btn {
-            background: linear-gradient(135deg, #475569, #64748b);
+            background: linear-gradient(135deg, #475569, #334155);
             border-color: var(--border-dark);
-            color: #f1f5f9;
+            color: #f8fafc;
             font-weight: 700;
         }
 
