@@ -457,12 +457,12 @@
         }
 
         .action-btn {
-            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
             border: 2px solid var(--border-light);
             border-radius: 12px;
             padding: 20px;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
@@ -470,15 +470,16 @@
             justify-content: center;
             gap: 8px;
             touch-action: manipulation;
-            color: var(--text-light);
+            color: #1e293b;
             min-height: 70px;
             height: auto;
         }
 
         .dark-mode .action-btn {
-            background: linear-gradient(135deg, #334155, #475569);
+            background: linear-gradient(135deg, #475569, #64748b);
             border-color: var(--border-dark);
-            color: var(--text-dark);
+            color: #f1f5f9;
+            font-weight: 700;
         }
 
         .action-btn:hover {
@@ -863,7 +864,7 @@
 
         .dark-mode #welcomeModal p {
             color: #9ca3af;
-        }
+        }</old_str>
 
         @media (max-width: 768px) {
             .container { padding: 10px; }

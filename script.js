@@ -479,29 +479,32 @@ function populateExpenseGrid() {
     const grid = document.getElementById('expenseGrid');
     if (!grid) return;
 
-    grid.innerHTML = expenseCategories.map(category => `
-        <div class="expense-card" data-category="${category.id}" onclick="toggleExpenseCard('${category.id}')">
+    const today = new Date().toISOString().split('T')[0];
+    const fragment = document.createDocumentFragment();
+    
+    expenseCategories.forEach(category => {
+        const card = document.createElement('div');
+        card.className = 'expense-card';
+        card.dataset.category = category.id;
+        card.onclick = () => toggleExpenseCard(category.id);
+        card.innerHTML = `
             <div class="expense-icon">${category.icon}</div>
             <div class="expense-name">${category.name}</div>
             <div class="expense-form" id="form-${category.id}">
                 <input type="number" id="amount-${category.id}" placeholder="Amount ($)" step="0.01" min="0" required>
                 <input type="text" id="description-${category.id}" placeholder="Description (optional)">
-                <input type="date" id="date-${category.id}" required>
+                <input type="date" id="date-${category.id}" value="${today}" required>
                 <input type="file" id="receipt-${category.id}" accept="image/*" class="receipt-input">
                 <div class="form-buttons">
                     <button type="button" onclick="addExpense('${category.id}')" class="btn-primary">Add Expense</button>
                     <button type="button" onclick="toggleExpenseCard('${category.id}')" class="btn-secondary">Cancel</button>
                 </div>
             </div>
-        </div>
-    `).join('');
-
-    // Set today's date as default for all date inputs
-    const today = new Date().toISOString().split('T')[0];
-    expenseCategories.forEach(category => {
-        const dateInput = document.getElementById(`date-${category.id}`);
-        if (dateInput) dateInput.value = today;
+        `;
+        fragment.appendChild(card);
     });
+    
+    grid.appendChild(fragment);
 }
 
 function toggleExpenseCard(categoryId) {
