@@ -3,6 +3,9 @@ const express = require('express');
 const path = require('path');
 const app = express();
 
+// Parse JSON bodies
+app.use(express.json());
+
 // Serve static files from the current directory
 app.use(express.static('./', {
   setHeaders: (res, path) => {
@@ -16,7 +19,26 @@ app.use(express.static('./', {
   }
 }));
 
-// Serve index.html for all routes (SPA behavior)
+// API routes - handle these BEFORE the catch-all
+app.use('/api', async (req, res, next) => {
+  const apiPath = req.path.slice(1); // Remove leading slash
+  const apiFile = path.join(__dirname, 'api', `${apiPath}.js`);
+  
+  try {
+    // Dynamically import the API handler
+    const handler = await import(apiFile);
+    if (handler.default) {
+      await handler.default(req, res);
+    } else {
+      res.status(404).json({ success: false, message: 'API endpoint not found' });
+    }
+  } catch (error) {
+    console.error(`API Error for ${apiPath}:`, error);
+    res.status(404).json({ success: false, message: 'API endpoint not found' });
+  }
+});
+
+// Serve index.html for all non-API routes (SPA behavior)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
