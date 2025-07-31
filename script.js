@@ -69,6 +69,11 @@ async function checkSubscriptionStatusFromServer() {
         }
     } catch (error) {
         console.warn('💥 Subscription validation failed:', error);
+        console.warn('💥 Validation error details:', {
+            message: error.message,
+            name: error.name,
+            stack: error.stack
+        });
         // On network errors, keep existing subscription state
         // Don't downgrade due to temporary connectivity issues
     } finally {
@@ -292,6 +297,13 @@ async function verifyAndActivateSubscription(event) {
             body: JSON.stringify({ email: email })
         });
 
+        console.log('📡 Raw response status:', response.status);
+        console.log('📡 Raw response ok:', response.ok);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
         const result = await response.json();
         console.log('📡 Verification response:', result);
 
@@ -340,8 +352,22 @@ async function verifyAndActivateSubscription(event) {
         }
 
     } catch (error) {
-        console.error('💥 Verification request failed:', error);
-        showNotification('Could not connect to server. Please try again.', 'error');
+        console.log('💥 Verification request failed:', error);
+        console.log('💥 Error details:', {
+            message: error.message,
+            name: error.name,
+            stack: error.stack,
+            toString: error.toString()
+        });
+        
+        // More specific error messages
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            showNotification('Network error: Unable to connect to server. Check your connection.', 'error');
+        } else if (error.name === 'SyntaxError') {
+            showNotification('Server response error: Invalid data received.', 'error');
+        } else {
+            showNotification(`Failed to verify subscription: ${error.message || 'Unknown error'}. Please try again.`, 'error');
+        }
     } finally {
         // Reset button state
         submitBtn.textContent = 'Verify & Activate';
