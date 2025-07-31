@@ -20,6 +20,10 @@ app.use(express.static('./', {
     if (path.endsWith('.js')) {
       res.setHeader('Content-Type', 'application/javascript');
     }
+    // Ensure pages are indexable
+    if (path.endsWith('.html') || path === '/') {
+      res.setHeader('X-Robots-Tag', 'index, follow');
+    }
   }
 }));
 
