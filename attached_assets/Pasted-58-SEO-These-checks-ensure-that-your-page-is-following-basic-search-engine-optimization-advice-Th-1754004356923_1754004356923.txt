@@ -1,0 +1,1180 @@
+58
+SEO
+These checks ensure that your page is following basic search engine optimization advice. There are many additional factors Lighthouse does not score here that may affect your search ranking, including performance on Core Web Vitals. Learn more about Google Search Essentials.
+Crawling and Indexing
+Page is blocked from indexing
+Search engines are unable to include your pages in search results if they don't have permission to crawl them. Learn more about crawler directives.
+Blocking Directive Source
+X-Robots-Tag: none, noindex, noarchive, nofollow, nositelinkssearchbox, noimageindex, none, noindex, noarchive, nofollow, nositelinkssearchbox, noimageindex
+robots.txt is not valid 384 errors found
+If your robots.txt file is malformed, crawlers may not be able to understand how you want your website to be crawled or indexed. Learn more about robots.txt.
+Line #
+Content
+Error
+1
+<!DOCTYPE html>
+Syntax not understood
+2
+<html lang="en">
+Syntax not understood
+3
+<head>
+Syntax not understood
+4
+<meta charset="UTF-8">
+Syntax not understood
+5
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+Syntax not understood
+6
+<meta name="description" content="Free 30-day trial! Simple expense tracking app for owner-operator truck drivers. Track fuel, maintenance, meals & business expenses. Export PDF reports for taxes. Works offline, stores data locally for complete privacy.">
+Syntax not understood
+7
+<meta name="keywords" content="trucker expenses, owner operator, truck driver, expense tracker, tax deductions, fuel tracking, maintenance records, trucking business, IFTA, DOT expenses, commercial vehicle expenses">
+Syntax not understood
+8
+<link rel="alternate" hreflang="en-us" href="https://www.truckerexpensetracker.com/" />
+Unknown directive
+9
+<link rel="alternate" hreflang="x-default" href="https://www.truckerexpensetracker.com/" />
+Unknown directive
+10
+<meta name="author" content="Trucker Expense Tracker">
+Syntax not understood
+11
+<meta name="robots" content="index, follow">
+Syntax not understood
+13
+<link rel="canonical" href="https://www.truckerexpensetracker.com/" />
+Unknown directive
+15
+<meta property="og:type" content="website">
+Unknown directive
+16
+<meta property="og:url" content="https://trucker-expense-tracker.vercel.app/">
+Unknown directive
+17
+<meta property="og:title" content="Trucker Expense Tracker - Professional Expense Management">
+Unknown directive
+18
+<meta property="og:description" content="Track your trucking expenses professionally with our PWA designed for owner-operators.">
+Unknown directive
+19
+<meta property="og:image" content="https://trucker-expense-tracker.vercel.app/icon-512x512.png">
+Unknown directive
+21
+<meta property="twitter:card" content="summary_large_image">
+Unknown directive
+22
+<meta property="twitter:url" content="https://trucker-expense-tracker.vercel.app/">
+Unknown directive
+23
+<meta property="twitter:title" content="Trucker Expense Tracker - Professional Expense Management">
+Unknown directive
+24
+<meta property="twitter:description" content="Track your trucking expenses professionally with our PWA designed for owner-operators.">
+Unknown directive
+25
+<meta property="twitter:image" content="https://trucker-expense-tracker.vercel.app/icon-512x512.png">
+Unknown directive
+27
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self';">
+Unknown directive
+28
+<meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+Syntax not understood
+30
+<title>Free Trucker Expense Tracker | Owner-Operator Tax Deduction App | 30-Day Trial</title>
+Syntax not understood
+31
+<link rel="manifest" href="manifest.json">
+Syntax not understood
+32
+<link rel="icon" type="image/png" sizes="32x32" href="icon-72x72.png">
+Syntax not understood
+33
+<link rel="icon" type="image/png" sizes="96x96" href="icon-96x96.png">
+Syntax not understood
+34
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192x192.png">
+Syntax not understood
+35
+<link rel="shortcut icon" href="icon-192x192.png">
+Syntax not understood
+36
+<link rel="apple-touch-icon" sizes="72x72" href="icon-72x72.png">
+Syntax not understood
+37
+<link rel="apple-touch-icon" sizes="96x96" href="icon-96x96.png">
+Syntax not understood
+38
+<link rel="apple-touch-icon" sizes="144x144" href="icon-144x144.png">
+Syntax not understood
+39
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192x192.png">
+Syntax not understood
+40
+<link rel="apple-touch-icon" sizes="512x512" href="icon-512x512.png">
+Syntax not understood
+41
+<link rel="apple-touch-startup-image" href="icon-512x512.png">
+Syntax not understood
+42
+<meta name="theme-color" content="#2563eb"></link>
+Syntax not understood
+43
+<meta name="apple-mobile-web-app-capable" content="yes">
+Syntax not understood
+44
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+Syntax not understood
+45
+<meta name="apple-mobile-web-app-title" content="Trucker Expense Tracker">
+Syntax not understood
+46
+<meta name="mobile-web-app-capable" content="yes">
+Syntax not understood
+48
+<link rel="preload" href="/style.css" as="style">
+Syntax not understood
+49
+<link rel="preload" href="/script.js" as="script">
+Syntax not understood
+50
+<link rel="stylesheet" href="/style.css">
+Syntax not understood
+52
+<script type="application/ld+json">
+Syntax not understood
+53
+{
+Syntax not understood
+54
+"@context": "https://schema.org",
+Unknown directive
+55
+"@type": "SoftwareApplication",
+Unknown directive
+56
+"name": "Trucker Expense Tracker",
+Unknown directive
+57
+"applicationCategory": "BusinessApplication",
+Unknown directive
+58
+"operatingSystem": "Web, iOS, Android",
+Unknown directive
+59
+"description": "Professional expense tracking app for owner-operator truck drivers with offline capability and complete privacy",
+Unknown directive
+60
+"offers": {
+Unknown directive
+61
+"@type": "Offer",
+Unknown directive
+62
+"price": "9.99",
+Unknown directive
+63
+"priceCurrency": "USD",
+Unknown directive
+64
+"priceValidUntil": "2025-12-31",
+Unknown directive
+65
+"eligibleRegion": "US"
+Unknown directive
+66
+},
+Syntax not understood
+67
+"aggregateRating": {
+Unknown directive
+68
+"@type": "AggregateRating",
+Unknown directive
+69
+"ratingValue": "4.8",
+Unknown directive
+70
+"ratingCount": "127"
+Unknown directive
+71
+},
+Syntax not understood
+72
+"creator": {
+Unknown directive
+73
+"@type": "Organization",
+Unknown directive
+74
+"name": "Trucker Expense Tracker"
+Unknown directive
+75
+}
+Syntax not understood
+76
+}
+Syntax not understood
+77
+</script>
+Syntax not understood
+79
+</head>
+Syntax not understood
+80
+<body>
+Syntax not understood
+81
+<a href="#main-content" class="skip-link">Skip to main content</a>
+Syntax not understood
+82
+<div class="container">
+Syntax not understood
+83
+<header class="header">
+Syntax not understood
+84
+<div class="header-controls">
+Syntax not understood
+85
+<button class="dark-mode-toggle" onclick="toggleDarkMode()" aria-label="Toggle dark mode">🌙</button>
+Syntax not understood
+86
+<div class="version-display">v2.1.5</div>
+Syntax not understood
+87
+</div>
+Syntax not understood
+88
+<h1>🚛 Trucker Expense Tracker</h1>
+Syntax not understood
+89
+<h2 class="subtitle">Simple, Private Expense Management for Owner-Operators</h2>
+Syntax not understood
+90
+<div id="trialCountdown" class="trial-countdown">
+Syntax not understood
+91
+<span id="trialText">🎁 Free Trial: <span id="daysLeft">30</span> days remaining</span>
+Unknown directive
+92
+</div>
+Syntax not understood
+93
+</header>
+Syntax not understood
+95
+<main id="main-content">
+Syntax not understood
+96
+<section id="todaySection" class="section">
+Syntax not understood
+97
+<h2>📅 Log your expenses for today</h2>
+Syntax not understood
+98
+<div class="expense-grid" id="expenseGrid" role="main" aria-label="Expense tracking categories for truckers"></div>
+Syntax not understood
+99
+<fieldset style="border: none; margin: 0; padding: 0;">
+Unknown directive
+100
+<legend class="sr-only">Expense categories for truck drivers</legend>
+Syntax not understood
+101
+</fieldset>
+Syntax not understood
+102
+<div class="summary-card">
+Syntax not understood
+103
+<h3>📊 Today's Summary</h3>
+Syntax not understood
+104
+<div class="summary-item">
+Syntax not understood
+105
+<span>Total Daily Expenses:</span>
+Unknown directive
+106
+<span id="dailyTotal" class="summary-value">$0.00</span>
+Syntax not understood
+107
+</div>
+Syntax not understood
+108
+<div class="summary-item">
+Syntax not understood
+109
+<span>Total Expenses:</span>
+Unknown directive
+110
+<span id="totalExpenses" class="summary-value">$0.00</span>
+Syntax not understood
+111
+</div>
+Syntax not understood
+112
+</div>
+Syntax not understood
+114
+<div class="action-buttons">
+Syntax not understood
+115
+<button class="action-btn export-btn" onclick="exportToPDF()">📄 Export PDF</button>
+Syntax not understood
+116
+<button class="action-btn print-btn" onclick="printSection()">🖨️ Print</button>
+Syntax not understood
+117
+<button class="action-btn csv-btn" onclick="exportToCSV()">📊 Export CSV</button>
+Syntax not understood
+118
+<button class="action-btn feedback-btn" onclick="showFeedback()">💬 Feedback</button>
+Syntax not understood
+119
+<button class="action-btn faq-btn" onclick="showFAQ()">❓ FAQ</button>
+Syntax not understood
+120
+<button class="action-btn update-btn" onclick="checkForUpdates()">🔄 Check for Updates</button>
+Syntax not understood
+121
+<button class="action-btn" style="background: #8b5cf6;" onclick="backupData()">💾 Backup Data</button>
+Unknown directive
+122
+<button class="action-btn" style="background: #06b6d4;" onclick="restoreData()">📥 Restore Data</button>
+Unknown directive
+123
+<button class="action-btn subscribe-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')">💳 Subscribe - $9.99/mo</button>
+Unknown directive
+124
+</div>
+Syntax not understood
+125
+</section>
+Syntax not understood
+127
+<section id="historySection" class="section hidden">
+Syntax not understood
+128
+<h2>📚 Expense History</h2>
+Syntax not understood
+129
+<div class="form-group">
+Syntax not understood
+130
+<label for="dateFilter">Filter by Date Range:</label>
+Unknown directive
+131
+<select id="dateFilter" onchange="filterExpenses()">
+Syntax not understood
+132
+<option value="all">All Time</option>
+Syntax not understood
+133
+<option value="today">Today</option>
+Syntax not understood
+134
+<option value="week">This Week</option>
+Syntax not understood
+135
+<option value="month">This Month</option>
+Syntax not understood
+136
+<option value="year">This Year</option>
+Syntax not understood
+137
+</select>
+Syntax not understood
+138
+</div>
+Syntax not understood
+139
+<ul id="historyList" aria-label="Expense history" style="list-style: none; padding: 0; margin: 0;">
+Unknown directive
+140
+<p style="text-align: center; color: var(--text-light); opacity: 0.7; margin: 40px 0;">No expenses recorded yet. Your expense history will appear here. Remember, everything you add is stored securely and privately on your device.</p>
+Unknown directive
+141
+</ul>
+Syntax not understood
+142
+<div class="action-buttons">
+Syntax not understood
+143
+<button class="action-btn export-btn" onclick="exportHistoryToPDF()">📄 Export PDF</button>
+Syntax not understood
+144
+<button class="action-btn print-btn" onclick="printHistory()">🖨️ Print</button>
+Syntax not understood
+145
+<button class="action-btn csv-btn" onclick="exportHistoryToCSV()">📊 Export CSV</button>
+Syntax not understood
+146
+</div>
+Syntax not understood
+147
+</section>
+Syntax not understood
+149
+<section id="insightsSection" class="section hidden">
+Syntax not understood
+150
+<h2>📈 Expense Insights</h2>
+Syntax not understood
+151
+<div id="insightsContent">
+Syntax not understood
+152
+<div class="insights-breakdown-section">
+Syntax not understood
+153
+<h3>💰 Financial Overview</h3>
+Syntax not understood
+154
+<div class="summary-card" style="background: linear-gradient(135deg, #047857, #059669);">
+Unknown directive
+155
+<div class="summary-item">
+Syntax not understood
+156
+<span>Total Expenses:</span>
+Unknown directive
+157
+<span id="insightsTotalExpenses" class="summary-value">$0.00</span>
+Syntax not understood
+158
+</div>
+Syntax not understood
+159
+<div class="summary-item">
+Syntax not understood
+160
+<span>Average Daily Expense:</span>
+Unknown directive
+161
+<span id="averageDailyExpense" class="summary-value">$0.00</span>
+Syntax not understood
+162
+</div>
+Syntax not understood
+163
+<div class="summary-item">
+Syntax not understood
+164
+<span>Most Expensive Category:</span>
+Unknown directive
+165
+<span id="topCategory" class="summary-value">None</span>
+Syntax not understood
+166
+</div>
+Syntax not understood
+167
+</div>
+Syntax not understood
+168
+</div>
+Syntax not understood
+169
+<div class="insights-breakdown-section">
+Syntax not understood
+170
+<h3>📊 Spending Trends</h3>
+Syntax not understood
+171
+<div class="summary-card" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+Unknown directive
+172
+<div class="summary-item">
+Syntax not understood
+173
+<span>This Month's Total:</span>
+Unknown directive
+174
+<span id="currentMonthTotal" class="summary-value">$0.00</span>
+Syntax not understood
+175
+</div>
+Syntax not understood
+176
+<div class="summary-item">
+Syntax not understood
+177
+<span>Last Month's Total:</span>
+Unknown directive
+178
+<span id="lastMonthTotal" class="summary-value">$0.00</span>
+Syntax not understood
+179
+</div>
+Syntax not understood
+180
+<div class="summary-item">
+Syntax not understood
+181
+<span>Monthly Change:</span>
+Unknown directive
+182
+<span id="monthlyChange" class="summary-value">--</span>
+Syntax not understood
+183
+</div>
+Syntax not understood
+184
+</div>
+Syntax not understood
+185
+</div>
+Syntax not understood
+186
+<div class="insights-breakdown-section">
+Syntax not understood
+187
+<h3>📊 Category Breakdown</h3>
+Syntax not understood
+188
+<ul id="categoryList" aria-label="Category breakdown">
+Syntax not understood
+189
+<p class="no-data-message">No expense data available for analysis.</p>
+Syntax not understood
+190
+</ul>
+Syntax not understood
+191
+</div>
+Syntax not understood
+192
+<div class="insights-breakdown-section">
+Syntax not understood
+193
+<h3>📅 Monthly Breakdown</h3>
+Syntax not understood
+194
+<ul id="monthlyBreakdown" aria-label="Monthly expense breakdown">
+Syntax not understood
+195
+<p class="no-data-message">No expense data available for monthly analysis.</p>
+Syntax not understood
+196
+</ul>
+Syntax not understood
+197
+</div>
+Syntax not understood
+198
+</div>
+Syntax not understood
+199
+<div class="action-buttons">
+Syntax not understood
+200
+<button class="action-btn export-btn" onclick="exportInsightsToPDF()">📄 Export PDF</button>
+Syntax not understood
+201
+<button class="action-btn print-btn" onclick="printInsights()">🖨️ Print</button>
+Syntax not understood
+202
+<button class="action-btn csv-btn" onclick="exportInsightsToCSV()">📊 Export CSV</button>
+Syntax not understood
+203
+</div>
+Syntax not understood
+204
+</section>
+Syntax not understood
+205
+</main>
+Syntax not understood
+206
+<nav class="navigation">
+Syntax not understood
+207
+<button class="nav-btn active" onclick="showSection('today')" data-section="today">📅 Today</button>
+Syntax not understood
+208
+<button class="nav-btn" onclick="showSection('history')" data-section="history">📚 History</button>
+Syntax not understood
+209
+<button class="nav-btn" onclick="showSection('insights')" data-section="insights">📈 Insights</button>
+Syntax not understood
+210
+</nav>
+Syntax not understood
+211
+<div class="privacy-notice">
+Syntax not understood
+212
+<h3>🔒 Our Privacy Promise</h3>
+Syntax not understood
+213
+<p>You pay a small fee for this software so that we don't have to make money from your data. Everything you enter is stored locally and securely on your device. We have no access to it.</p>
+Syntax not understood
+214
+</div>
+Syntax not understood
+215
+</div>
+Syntax not understood
+217
+<div id="faqModal" class="modal">
+Syntax not understood
+218
+<div class="modal-content">
+Syntax not understood
+219
+<button class="modal-close" onclick="closeFAQ()">&times;</button>
+Syntax not understood
+220
+<h2>❓ Frequently Asked Questions</h2>
+Syntax not understood
+221
+<div class="faq-item">
+Syntax not understood
+222
+<div class="faq-question" onclick="toggleFAQ(this)">
+Syntax not understood
+223
+What expenses can I track? <span>+</span>
+Syntax not understood
+224
+</div>
+Syntax not understood
+225
+<div class="faq-answer">
+Syntax not understood
+226
+You can track 15 different categories of expenses including fuel, maintenance, meals, lodging, tolls, permits, insurance, phone bills, and more. Each category is specifically designed for trucking business needs.
+Syntax not understood
+227
+</div>
+Syntax not understood
+228
+</div>
+Syntax not understood
+229
+<div class="faq-item">
+Syntax not understood
+230
+<div class="faq-question" onclick="toggleFAQ(this)">
+Syntax not understood
+231
+When did my 30-day free trial start? <span>+</span>
+Syntax not understood
+232
+</div>
+Syntax not understood
+233
+<div class="faq-answer">
+Syntax not understood
+234
+<p>Your trial started on: <strong id="trial-start-date-display">loading...</strong></p>
+Unknown directive
+235
+</div>
+Syntax not understood
+236
+</div>
+Syntax not understood
+237
+<div class="faq-item">
+Syntax not understood
+238
+<div class="faq-question" onclick="toggleFAQ(this)">
+Syntax not understood
+239
+Is my data secure? <span>+</span>
+Syntax not understood
+240
+</div>
+Syntax not understood
+241
+<div class="faq-answer">
+Syntax not understood
+242
+Yes! All your data is stored locally on your device using your browser's local storage. Nothing is sent to our servers, ensuring complete privacy and security.
+Syntax not understood
+243
+</div>
+Syntax not understood
+244
+</div>
+Syntax not understood
+245
+<div class="faq-item">
+Syntax not understood
+246
+<div class="faq-question" onclick="toggleFAQ(this)">
+Syntax not understood
+247
+Can I export my data? <span>+</span>
+Syntax not understood
+248
+</div>
+Syntax not understood
+249
+<div class="faq-answer">
+Syntax not understood
+250
+Absolutely! You can export your expense data as PDF reports or CSV files for your accountant or tax preparation.
+Syntax not understood
+251
+</div>
+Syntax not understood
+252
+</div>
+Syntax not understood
+253
+<div class="faq-item">
+Syntax not understood
+254
+<div class="faq-question" onclick="toggleFAQ(this)">
+Syntax not understood
+255
+Does this work offline? <span>+</span>
+Syntax not understood
+256
+</div>
+Syntax not understood
+257
+<div class="faq-answer">
+Syntax not understood
+258
+Yes! This is a Progressive Web App (PWA) that works offline. You can add expenses even without an internet connection.
+Syntax not understood
+259
+</div>
+Syntax not understood
+260
+</div>
+Syntax not understood
+261
+<div class="faq-item">
+Syntax not understood
+262
+<div class="faq-question" onclick="toggleFAQ(this)">
+Syntax not understood
+263
+What happens after the trial period? <span>+</span>
+Syntax not understood
+264
+</div>
+Syntax not understood
+265
+<div class="faq-answer">
+Syntax not understood
+266
+After the 30-day trial, you'll need to subscribe for $9.99/month to continue using the app. Your data will remain on your device during the trial period.
+Syntax not understood
+267
+</div>
+Syntax not understood
+268
+</div>
+Syntax not understood
+269
+<div class="faq-item">
+Syntax not understood
+270
+<div class="faq-question" onclick="toggleFAQ(this)">
+Syntax not understood
+271
+How do I use my subscription on a new device? <span>+</span>
+Syntax not understood
+272
+</div>
+Syntax not understood
+273
+<div class="faq-answer">
+Syntax not understood
+274
+Your subscription is activated via the unique link sent to your email after purchase. To activate the app on a new device, or if you've cleared your browser data, simply find that original activation email and click the link again on the new device. If you can't find the email, please contact support.
+Syntax not understood
+275
+</div>
+Syntax not understood
+276
+</div>
+Syntax not understood
+277
+<div class="faq-item">
+Syntax not understood
+278
+<div class="faq-question" onclick="toggleFAQ(this)">
+Syntax not understood
+279
+How do I backup my expense data? <span>+</span>
+Syntax not understood
+280
+</div>
+Syntax not understood
+281
+<div class="faq-answer">
+Syntax not understood
+282
+Use the "Backup Data" button to download your expenses as a JSON file. On your new device, use "Restore Data" to import this backup file. Note that this only backs up your expense entries, not your subscription status.
+Syntax not understood
+283
+</div>
+Syntax not understood
+284
+</div>
+Syntax not understood
+285
+<div class="faq-item">
+Syntax not understood
+286
+<div class="faq-question" onclick="toggleFAQ(this)">
+Syntax not understood
+287
+Can I track per-mile expenses? <span>+</span>
+Syntax not understood
+288
+</div>
+Syntax not understood
+289
+<div class="faq-answer">
+Syntax not understood
+290
+Yes! You can use the "Other Business Expenses" category to track per-mile costs, or add mile information in the description field of fuel and maintenance entries.
+Syntax not understood
+291
+</div>
+Syntax not understood
+292
+</div>
+Syntax not understood
+293
+<div class="faq-item">
+Syntax not understood
+294
+<div class="faq-question" onclick="toggleFAQ(this)">
+Syntax not understood
+295
+Can I track expenses for multiple trucks? <span>+</span>
+Syntax not understood
+296
+</div>
+Syntax not understood
+297
+<div class="faq-answer">
+Syntax not understood
+298
+Currently, the app tracks expenses in one account. You can use the description field to specify which truck/trailer an expense relates to, or use separate devices/browsers for different trucks.
+Syntax not understood
+299
+</div>
+Syntax not understood
+300
+</div>
+Syntax not understood
+301
+<div class="faq-item">
+Syntax not understood
+302
+<div class="faq-question" onclick="toggleFAQ(this)">
+Syntax not understood
+303
+What if I need to edit or delete an expense? <span>+</span>
+Syntax not understood
+304
+</div>
+Syntax not understood
+305
+<div class="faq-answer">
+Syntax not understood
+306
+You can delete expenses from the History section by clicking the "Delete" button on any expense entry. Currently, editing requires deleting and re-adding the expense.
+Syntax not understood
+307
+</div>
+Syntax not understood
+308
+</div>
+Syntax not understood
+309
+<div class="faq-item">
+Syntax not understood
+310
+<div class="faq-question" onclick="toggleFAQ(this)">
+Syntax not understood
+311
+Does the app work on both mobile and desktop? <span>+</span>
+Syntax not understood
+312
+</div>
+Syntax not understood
+313
+<div class="faq-answer">
+Syntax not understood
+314
+Yes! This PWA is designed to work seamlessly on smartphones, tablets, and desktop computers. You can install it on your phone's home screen for easy access.
+Syntax not understood
+315
+</div>
+Syntax not understood
+316
+</div>
+Syntax not understood
+317
+<div class="faq-item">
+Syntax not understood
+318
+<div class="faq-question" onclick="toggleFAQ(this)">
+Syntax not understood
+319
+Can I print my expense reports? <span>+</span>
+Syntax not understood
+320
+</div>
+Syntax not understood
+321
+<div class="faq-answer">
+Syntax not understood
+322
+Absolutely! Each section (Today, History, Insights) has print functionality. You can also export PDF reports and CSV files for your records.
+Syntax not understood
+323
+</div>
+Syntax not understood
+324
+</div>
+Syntax not understood
+325
+</div>
+Syntax not understood
+326
+</div>
+Syntax not understood
+328
+<div id="feedbackModal" class="modal">
+Syntax not understood
+329
+<div class="modal-content">
+Syntax not understood
+330
+<button class="modal-close" onclick="closeFeedback()">&times;</button>
+Syntax not understood
+331
+<h2>💬 Send Feedback</h2>
+Syntax not understood
+332
+<form onsubmit="submitFeedback(event)" id="feedbackForm">
+Syntax not understood
+333
+<div class="form-group">
+Syntax not understood
+334
+<label for="feedbackType">Feedback Type:</label>
+Unknown directive
+335
+<select id="feedbackType" required onchange="updateEmailDisplay()">
+Syntax not understood
+336
+<option value="">Select type...</option>
+Syntax not understood
+337
+<option value="bug">🐛 Bug Report</option>
+Syntax not understood
+338
+<option value="feature">💡 Feature Request</option>
+Syntax not understood
+339
+<option value="improvement">⚡ Improvement</option>
+Syntax not understood
+340
+<option value="general">💬 General Feedback</option>
+Syntax not understood
+341
+</select>
+Syntax not understood
+342
+<div id="emailDisplay" style="margin-top: 5px; font-size: 0.9rem; color: #666; min-height: 20px; display: flex; align-items: center;"></div>
+Unknown directive
+343
+</div>
+Syntax not understood
+344
+<div class="form-group">
+Syntax not understood
+345
+<label for="feedbackMessage">Message:</label>
+Unknown directive
+346
+<textarea id="feedbackMessage" rows="5" required placeholder="Tell us what you think..."></textarea>
+Syntax not understood
+347
+</div>
+Syntax not understood
+348
+<div class="form-group">
+Syntax not understood
+349
+<label for="feedbackEmail">Email (optional):</label>
+Unknown directive
+350
+<input type="email" id="feedbackEmail" placeholder="your@email.com">
+Syntax not understood
+351
+</div>
+Syntax not understood
+352
+<button type="submit" class="btn" id="feedbackSubmitBtn">Send Feedback</button>
+Syntax not understood
+353
+</form>
+Syntax not understood
+354
+<div id="feedbackSuccess" style="display: none; text-align: center; padding: 30px;">
+Unknown directive
+355
+<div style="font-size: 4rem; margin-bottom: 20px; color: var(--success-color);">✓</div>
+Unknown directive
+356
+<h3 style="color: var(--success-color); margin-bottom: 15px;">Email Client Opening...</h3>
+Unknown directive
+357
+<p style="color: #666; margin-bottom: 20px;">Your default email client should open with a pre-filled message.</p>
+Unknown directive
+358
+<div style="background: var(--background-light); padding: 15px; border-radius: 10px; margin: 20px 0; border-left: 4px solid var(--success-color);">
+Unknown directive
+359
+<p style="font-size: 0.9rem; color: #666; margin: 0;"><strong>Next steps:</strong></p>
+Unknown directive
+360
+<p style="font-size: 0.9rem; color: #666; margin: 5px 0 0 0;">1. Check your email client<br>2. Review the pre-filled message<br>3. Click send to reach our team</p>
+Unknown directive
+361
+</div>
+Syntax not understood
+362
+<button onclick="resetFeedbackForm()" class="btn btn-secondary">Send Another Message</button>
+Syntax not understood
+363
+</div>
+Syntax not understood
+364
+</div>
+Syntax not understood
+365
+</div>
+Syntax not understood
+366
+<div id="welcomeModal" class="modal">
+Syntax not understood
+367
+<div class="modal-content" style="max-width: 500px; height: auto; text-align: center;">
+Unknown directive
+368
+<h2 style="font-size: 1.8rem; margin-bottom: 20px;">Welcome to the Privacy-First Expense Tracker!</h2>
+Unknown directive
+369
+<p style="margin-bottom: 30px; font-size: 1.1rem; color: #4b5563;">Your Business Stays Your Business.</p>
+Unknown directive
+370
+<ul id="welcome-features">
+Syntax not understood
+371
+<li>
+Syntax not understood
+372
+<span class="welcome-icon">🔒</span>
+Syntax not understood
+373
+<div>
+Syntax not understood
+374
+<strong>Total Privacy</strong><br>
+Syntax not understood
+375
+All your data is saved only on this device. We can never see it.
+Syntax not understood
+376
+</div>
+Syntax not understood
+377
+</li>
+Syntax not understood
+378
+<li>
+Syntax not understood
+379
+<span class="welcome-icon">👍</span>
+Syntax not understood
+380
+<div>
+Syntax not understood
+381
+<strong>Simple & Focused</strong><br>
+Syntax not understood
+382
+No complicated features. Just easy expense tracking for owner-operators.
+Syntax not understood
+383
+</div>
+Syntax not understood
+384
+</li>
+Syntax not understood
+385
+<li>
+Syntax not understood
+386
+<span class="welcome-icon">🚀</span>
+Syntax not understood
+387
+<div>
+Syntax not understood
+388
+<strong>No Account Needed</strong><br>
+Syntax not understood
+389
+Get started right now without signing up.
+Syntax not understood
+390
+</div>
+Syntax not understood
+391
+</li>
+Syntax not understood
+392
+</ul>
+Syntax not understood
+393
+<button id="closeWelcomeBtn" class="btn" style="margin-top: 30px; padding: 15px 30px; font-size: 1.1rem;">Start Tracking Expenses</button>
+Unknown directive
+394
+</div>
+Syntax not understood
+395
+</div>
+Syntax not understood
+397
+<script src="/script.js"></script>
+Syntax not understood
+399
+</body>
+Syntax not understood
+400
+</html>
+Syntax not understood
+To appear in search results, crawlers need access to your app.
+Additional items to manually check (1)
+Show
+Run these additional validators on your site to check additional SEO best practices.
+Passed audits (7)
+Show
+Not applicable (1)
+Show
+Captured at Jul 31, 2025, 7:24 PM EDT
+Emulated Moto G Power with Lighthouse 12.6.0
+Single page session
+Initial page load
+Slow 4G throttling
+Using Chromium 138.0.0.0 with devtools
+Generated by Lighthouse 12.6.0 | File an issue
