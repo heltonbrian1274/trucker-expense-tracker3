@@ -37,13 +37,11 @@ let isTrialExpired = false;
 // --- DOMContentLoaded & Initialization ---
 // ======================
 document.addEventListener('DOMContentLoaded', function () {
-    // Aggressive Service Worker Unregister
+    // Register Service Worker for PWA functionality
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function (registrations) {
-            for (let registration of registrations) registration.unregister();
-        }).catch(function (err) {
-            console.error('Service worker unregistration failed: ', err);
-        });
+        navigator.serviceWorker.register('./sw.js')
+            .then(registration => console.log('SW registered:', registration))
+            .catch(error => console.log('SW registration failed:', error));
     }
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -159,12 +157,18 @@ async function checkSubscriptionStatusFromServer() {
     }
 
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
         const response = await fetch('/api/check-subscription', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             },
+            signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
 
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -528,14 +532,26 @@ function addExpense(categoryId) {
     const descriptionInput = document.getElementById(`description-${categoryId}`);
     const dateInput = document.getElementById(`date-${categoryId}`);
     const receiptInput = document.getElementById(`receipt-${categoryId}`);
+    
+    // Find the add button and show loading state
+    const addButton = document.querySelector(`[data-category="${categoryId}"] .btn-primary`);
+    const originalText = addButton.textContent;
+    addButton.textContent = 'Adding...';
+    addButton.disabled = true;
 
     const amount = parseFloat(amountInput.value);
     const description = descriptionInput.value.trim();
     const date = dateInput.value;
 
-    if (!amount || amount <= 0) {
-        showNotification('Please enter a valid amount', 'error');
+    if (!amount || amount <= 0 || amount > 99999.99) {
+        showNotification('Please enter a valid amount between $0.01 and $99,999.99', 'error');
         amountInput.focus();
+        return;
+    }
+
+    if (description.length > 200) {
+        showNotification('Description must be 200 characters or less', 'error');
+        descriptionInput.focus();
         return;
     }
 

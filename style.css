@@ -742,11 +742,6 @@
         }
 
         .dark-mode .expense-title {
-            color: var(--text-dark);
-            font-weight: 600;
-        }
-
-        .dark-mode .expense-title {
             color: var(--text-dark) !important;
             font-weight: 600 !important;
         }
@@ -872,7 +867,7 @@
             .container { padding: 10px; }
             .section { margin: 0 10px 25px 10px; padding: 20px; max-width: calc(100% - 20px); }
             .privacy-notice { margin: 25px 10px; padding: 20px; max-width: calc(100% - 20px); }
-            .navigation { left: 10px; right: 10px; max-width: calc(100% - 20px); }
+            .navigation { left: 10px; right: 10px; max-width: calc(100% - 20px); padding: 12px; }
             .header h1 { font-size: 1.8rem; margin-bottom: 8px; }
             .header .subtitle { font-size: 1rem; }
             .header-controls { position: relative; top: 0; right: 0; justify-content: center; margin-bottom: 15px; gap: 15px; }
