@@ -2,6 +2,7 @@
   "name": "trucker-expense-tracker-backend",
   "version": "1.0.0",
   "description": "Backend functions for the Trucker Expense Tracker",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
