@@ -1,4 +1,13 @@
 // ======================
+// --- Polyfills ---
+// ======================
+if (!window.requestIdleCallback) {
+    window.requestIdleCallback = function(callback) {
+        return setTimeout(() => callback({ timeRemaining: () => 16 }), 0);
+    };
+}
+
+// ======================
 // --- Global Variables & Constants ---
 // ======================
 const expenseCategories=[{id:'fuel',name:'Fuel',icon:'⛽'},{id:'maintenance',name:'Maintenance & Repairs',icon:'🔧'},{id:'meals',name:'Meals',icon:'🍽️'},{id:'lodging',name:'Lodging',icon:'🏨'},{id:'tolls',name:'Tolls & Parking',icon:'🛣️'},{id:'permits',name:'Permits & Licenses',icon:'📋'},{id:'insurance',name:'Insurance',icon:'🛡️'},{id:'phone',name:'Phone & Communication',icon:'📱'},{id:'supplies',name:'Supplies & Equipment',icon:'📦'},{id:'training',name:'Training & Education',icon:'📚'},{id:'medical',name:'Medical & DOT Exams',icon:'🏥'},{id:'office',name:'Office Expenses',icon:'🏢'},{id:'bank',name:'Bank & Financial Fees',icon:'🏦'},{id:'legal',name:'Legal & Professional',icon:'⚖️'},{id:'other',name:'Other Business Expenses',icon:'💼'}];
@@ -21,32 +30,39 @@ let isTrialExpired = false;
 // --- DOMContentLoaded & Initialization ---
 // ======================
 document.addEventListener('DOMContentLoaded', function () {
-    // Register Service Worker for PWA functionality
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js')
-            .then(registration => console.log('SW registered:', registration))
-            .catch(error => console.log('SW registration failed:', error));
-    }
+    // Defer non-critical initialization
+    requestIdleCallback(() => {
+        // Register Service Worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => console.log('SW registered:', registration))
+                .catch(error => console.log('SW registration failed:', error));
+        }
+    });
 
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
-
-    // Subscription logic with token and server check
-    if (token) {
-        localStorage.setItem('subscriptionToken', token);
-        verifySubscriptionToken(token);
-    } else {
-        checkSubscriptionStatusFromServer();
-    }
 
     // Reset trial logic (for URL ?reset=trial) 
     if (urlParams.get('reset') === 'trial') {
         localStorage.clear();
         sessionStorage.clear();
         location.reload();
+        return;
     }
 
+    // Critical path initialization
     initializeApp();
+
+    // Defer subscription checks
+    requestIdleCallback(() => {
+        if (token) {
+            localStorage.setItem('subscriptionToken', token);
+            verifySubscriptionToken(token);
+        } else {
+            checkSubscriptionStatusFromServer();
+        }
+    });
 });
 
 // ======================

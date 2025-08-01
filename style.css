@@ -404,6 +404,8 @@
             justify-content: space-between;
             overflow: hidden;
             box-sizing: border-box;
+            contain: layout;
+            will-change: auto;
         }
 
         .summary-card h3 {
@@ -836,6 +838,17 @@
 
         .dark-mode #welcomeModal p {
             color: #9ca3af;
+        }
+
+        #closeWelcomeBtn {
+            background: #1d4ed8 !important;
+            color: white !important;
+            border: none !important;
+            font-weight: 600 !important;
+        }
+
+        #closeWelcomeBtn:hover {
+            background: #1e40af !important;
         }</old_str>
 
         @media (max-width: 768px) {
