@@ -532,14 +532,18 @@
         }
 
         .expense-form {
-            display: none;
+            display: none !important;
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .expense-form.active {
-            display: block;
+            display: block !important;
+        }
+
+        .expense-card.active .expense-form {
+            display: block !important;
         }
 
         .form-group {
@@ -1327,15 +1331,28 @@
         .expense-form .form-group input,
         .expense-form .form-group select,
         .expense-form .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 16px;
+            width: 100% !important;
+            padding: 12px !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 8px !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            font-size: 16px !important;
             transition: all 0.3s ease;
             box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .expense-card.active .expense-form input,
+        .expense-card.active .expense-form select,
+        .expense-card.active .expense-form textarea {
+            width: 100% !important;
+            padding: 12px !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 8px !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            font-size: 16px !important;
         }
 
         .expense-form .form-buttons {

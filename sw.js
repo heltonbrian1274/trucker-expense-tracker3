@@ -1,7 +1,7 @@
 // Service Worker for Trucker Expense Tracker PWA
 // Version 2.1.5 - Fixed Response cloning issue
 
-const CACHE_NAME = 'trucker-expense-tracker-v2.1.6';
+const CACHE_NAME = 'trucker-expense-tracker-v2.1.7';
 const urlsToCache = [
   './manifest.json',
   './icon-72x72.png',
