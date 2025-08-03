@@ -468,9 +468,15 @@
             transform: translateX(2px) !important;
         }
 
-        /* Hide standalone delete buttons, but allow options dropdown delete buttons */
-        .history-item .btn-delete {
+        /* Hide all standalone delete buttons in history items */
+        .history-item .btn-delete,
+        .history-item button.btn-delete {
             display: none !important;
+        }
+        
+        /* Ensure options dropdown delete buttons are visible */
+        .options-dropdown .btn-delete-small {
+            display: flex !important;
         }
 
         .expense-card.expanded {
