@@ -368,94 +368,109 @@
         }
 
         .btn-options {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            background: var(--primary-color) !important;
+            color: white !important;
+            border: none !important;
+            padding: 8px 12px !important;
+            border-radius: 6px !important;
+            cursor: pointer !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            transition: all 0.3s ease !important;
+            display: inline-block !important;
         }
 
         .btn-options:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
+            background: var(--primary-dark) !important;
+            transform: translateY(-1px) !important;
+        }
+
+        .dark-mode .btn-options {
+            background: var(--secondary-color) !important;
+        }
+
+        .dark-mode .btn-options:hover {
+            background: #059669 !important;
         }
 
         .options-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: var(--card-light);
-            border: 2px solid var(--primary-color);
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.25);
-            z-index: 1000;
-            min-width: 140px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            overflow: hidden;
+            position: absolute !important;
+            top: 100% !important;
+            left: 0 !important;
+            background: var(--card-light) !important;
+            border: 2px solid var(--primary-color) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.25) !important;
+            z-index: 1000 !important;
+            min-width: 140px !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transform: translateY(-10px) !important;
+            transition: all 0.3s ease !important;
+            overflow: hidden !important;
         }
 
         .dark-mode .options-dropdown {
-            background: var(--card-dark);
-            border-color: var(--secondary-color);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25);
+            background: var(--card-dark) !important;
+            border-color: var(--secondary-color) !important;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.25) !important;
         }
 
         .options-dropdown.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) !important;
         }
 
         .btn-edit, .btn-delete-small {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 100%;
-            padding: 12px 16px;
-            border: none;
-            background: none;
-            text-align: left;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-light);
-            transition: all 0.3s ease;
-            border-radius: 0;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            width: 100% !important;
+            padding: 12px 16px !important;
+            border: none !important;
+            background: none !important;
+            text-align: left !important;
+            cursor: pointer !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            color: var(--text-light) !important;
+            transition: all 0.3s ease !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
         }
 
         .dark-mode .btn-edit, .dark-mode .btn-delete-small {
-            color: var(--text-dark);
+            color: var(--text-dark) !important;
         }
 
         .btn-edit {
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light) !important;
         }
 
         .dark-mode .btn-edit {
-            border-bottom-color: var(--border-dark);
+            border-bottom-color: var(--border-dark) !important;
         }
 
         .btn-edit:hover {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-            transform: translateX(2px);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)) !important;
+            color: white !important;
+            transform: translateX(2px) !important;
         }
 
         .btn-delete-small {
-            color: var(--error-color);
+            color: var(--error-color) !important;
         }
 
         .btn-delete-small:hover {
-            background: linear-gradient(135deg, var(--error-color), #dc2626);
-            color: white;
-            transform: translateX(2px);
+            background: linear-gradient(135deg, var(--error-color), #dc2626) !important;
+            color: white !important;
+            transform: translateX(2px) !important;
+        }
+
+        /* Hide old delete buttons */
+        .btn-delete {
+            display: none !important;
         }
 
         .expense-card.expanded {
