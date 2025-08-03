@@ -206,6 +206,20 @@
             outline-offset: 2px;
         }
 
+        .expense-card.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .expense-card.active .expense-title {
+            color: white;
+        }
+
+        .expense-card.active .expense-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
         .expense-options {
             position: relative;
             display: inline-block;

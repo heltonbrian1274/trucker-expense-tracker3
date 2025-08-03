@@ -64,6 +64,19 @@ self.addEventListener('message', (event) => {
       })
     );
   }
+  
+  if (event.data && event.data.type === 'CLEAR_ALL_CACHE') {
+    // Clear all caches
+    event.waitUntil(
+      caches.delete(CACHE_NAME).then(() => {
+        return self.clients.matchAll().then((clients) => {
+          clients.forEach((client) => {
+            client.postMessage({ type: 'ALL_CACHE_CLEARED' });
+          });
+        });
+      })
+    );
+  }
 });
 
 // Fetch event - Handle subscription state changes

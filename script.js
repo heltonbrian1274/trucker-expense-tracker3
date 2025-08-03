@@ -173,7 +173,7 @@ async function checkSubscriptionStatusFromServer() {
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-        
+
         const response = await fetch('/api/check-subscription', {
             method: 'GET',
             headers: {
@@ -181,7 +181,7 @@ async function checkSubscriptionStatusFromServer() {
             },
             signal: controller.signal
         });
-        
+
         clearTimeout(timeoutId);
 
         if (!response.ok) {
@@ -493,9 +493,11 @@ function populateExpenseGrid() {
     const grid = document.getElementById('expenseGrid');
     if (!grid) return;
 
+    grid.innerHTML = ''; // Clear existing grid
+
     const today = new Date().toISOString().split('T')[0];
     const fragment = document.createDocumentFragment();
-    
+
     expenseCategories.forEach(category => {
         const card = document.createElement('div');
         card.className = 'expense-card';
@@ -504,7 +506,7 @@ function populateExpenseGrid() {
         card.innerHTML = `
             <div class="expense-icon">${category.icon}</div>
             <div class="expense-name">${category.name}</div>
-            <div class="expense-form" id="form-${category.id}">
+            <div class="expense-form" id="form-${category.id}" style="display: none;">
                 <input type="number" id="amount-${category.id}" placeholder="Amount ($)" step="0.01" min="0" required>
                 <input type="text" id="description-${category.id}" placeholder="Description (optional)">
                 <input type="date" id="date-${category.id}" value="${today}" required>
@@ -517,7 +519,7 @@ function populateExpenseGrid() {
         `;
         fragment.appendChild(card);
     });
-    
+
     grid.appendChild(fragment);
 }
 
@@ -532,15 +534,23 @@ function toggleExpenseCard(categoryId) {
     // Close all other cards
     document.querySelectorAll('.expense-card').forEach(c => {
         c.classList.remove('active');
+        const otherCategoryId = c.dataset.category;
+        const otherForm = document.getElementById(`form-${otherCategoryId}`);
+        if (otherForm) {
+            otherForm.style.display = 'none';
+        }
     });
 
     if (!isActive) {
         card.classList.add('active');
+        form.style.display = 'block';
         // Focus on amount input
         setTimeout(() => {
             const amountInput = document.getElementById(`amount-${categoryId}`);
             if (amountInput) amountInput.focus();
         }, 100);
+    } else {
+        form.style.display = 'none';
     }
 }
 
@@ -549,7 +559,7 @@ function addExpense(categoryId) {
     const descriptionInput = document.getElementById(`description-${categoryId}`);
     const dateInput = document.getElementById(`date-${categoryId}`);
     const receiptInput = document.getElementById(`receipt-${categoryId}`);
-    
+
     // Find the add button and show loading state
     const addButton = document.querySelector(`[data-category="${categoryId}"] .btn-primary`);
     const originalText = addButton.textContent;
@@ -615,6 +625,7 @@ function addExpense(categoryId) {
 
         // Close card
         document.querySelector(`[data-category="${categoryId}"]`).classList.remove('active');
+        document.getElementById(`form-${categoryId}`).style.display = 'none';
 
         // Update displays
         updateSummary();
@@ -623,6 +634,10 @@ function addExpense(categoryId) {
 
         showNotification(`${category.name} expense added successfully!`, 'success');
     }
+
+    // Reset add button
+    addButton.textContent = originalText;
+    addButton.disabled = false;
 }
 
 function updateSummary(){const today=new Date().toISOString().split('T')[0];const todayExpenses=expenses.filter(ex=>ex.date===today);const totalExpenses=expenses.reduce((sum,ex)=>sum+ex.amount,0);const todayTotal=todayExpenses.reduce((sum,ex)=>sum+ex.amount,0);const dailyEl=document.getElementById('dailyTotal');const totalEl=document.getElementById('totalExpenses');if(dailyEl)dailyEl.textContent=`$${todayTotal.toFixed(2)}`;if(totalEl)totalEl.textContent=`$${totalExpenses.toFixed(2)}`;}
@@ -677,7 +692,7 @@ function updateHistory() {
             ${ex.receipt ? `<div class="receipt-preview"><img src="${ex.receipt}" class="receipt-image" alt="Receipt"></div>` : ''}
             <div class="expense-options">
                 <button onclick="toggleExpenseOptions('${ex.id}')" class="btn-options">⋯ Options</button>
-                <div class="options-dropdown" id="options-${ex.id}">
+                <div class="options-dropdown" id="options-${ex.id}" style="display: none;">
                     <button onclick="editExpense('${ex.id}')" class="btn-edit">✏️ Edit</button>
                     <button onclick="deleteExpense('${ex.id}')" class="btn-delete-small">🗑️ Delete</button>
                 </div>
@@ -689,16 +704,20 @@ function updateHistory() {
 function toggleExpenseOptions(expenseId) {
     const dropdown = document.getElementById(`options-${expenseId}`);
     const allDropdowns = document.querySelectorAll('.options-dropdown');
-    
+
     // Close all other dropdowns
     allDropdowns.forEach(dd => {
         if (dd.id !== `options-${expenseId}`) {
-            dd.classList.remove('show');
+            dd.style.display = 'none'; // Hide other dropdowns
         }
     });
-    
+
     // Toggle current dropdown
-    dropdown.classList.toggle('show');
+    if (dropdown.style.display === 'none') {
+        dropdown.style.display = 'block';
+    } else {
+        dropdown.style.display = 'none';
+    }
 }
 
 function editExpense(expenseId) {
@@ -706,7 +725,7 @@ function editExpense(expenseId) {
     if (!expense) return;
 
     // Close options dropdown
-    document.getElementById(`options-${expenseId}`).classList.remove('show');
+    document.getElementById(`options-${expenseId}`).style.display = 'none';
 
     // Create edit modal
     const modal = document.createElement('div');
@@ -749,40 +768,40 @@ function editExpense(expenseId) {
     document.body.appendChild(modal);
     modal.style.display = 'flex';
     setTimeout(() => modal.classList.add('show'), 10);
-    
+
     // Focus on amount input
     document.getElementById('editAmount').focus();
 }
 
 function saveExpenseEdit(event, expenseId) {
     event.preventDefault();
-    
+
     const amount = parseFloat(document.getElementById('editAmount').value);
     const description = document.getElementById('editDescription').value.trim();
     const date = document.getElementById('editDate').value;
     const categoryId = document.getElementById('editCategory').value;
-    
+
     if (!amount || amount <= 0 || amount > 99999.99) {
         showNotification('Please enter a valid amount between $0.01 and $99,999.99', 'error');
         return;
     }
-    
+
     if (description.length > 200) {
         showNotification('Description must be 200 characters or less', 'error');
         return;
     }
-    
+
     if (!date) {
         showNotification('Please select a date', 'error');
         return;
     }
-    
+
     // Find and update the expense
     const expenseIndex = expenses.findIndex(ex => ex.id == expenseId);
     if (expenseIndex === -1) return;
-    
+
     const category = expenseCategories.find(cat => cat.id === categoryId);
-    
+
     expenses[expenseIndex] = {
         ...expenses[expenseIndex],
         amount: amount,
@@ -792,17 +811,17 @@ function saveExpenseEdit(event, expenseId) {
         categoryName: category.name,
         categoryIcon: category.icon
     };
-    
+
     localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
-    
+
     // Update displays
     updateSummary();
     updateInsights();
     updateHistory();
-    
+
     // Close modal
     event.target.closest('.modal').remove();
-    
+
     showNotification('Expense updated successfully!', 'success');
 }
 
@@ -810,9 +829,9 @@ function deleteExpense(expenseId) {
     // Close options dropdown
     const dropdown = document.getElementById(`options-${expenseId}`);
     if (dropdown) {
-        dropdown.classList.remove('show');
+        dropdown.style.display = 'none';
     }
-    
+
     if (confirm('Are you sure you want to delete this expense?')) {
         expenses = expenses.filter(ex => ex.id != expenseId);
         localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
