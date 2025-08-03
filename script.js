@@ -805,6 +805,12 @@ function saveExpenseEdit(event, expenseId) {
 }
 
 function deleteExpense(expenseId) {
+    // Close options dropdown
+    const dropdown = document.getElementById(`options-${expenseId}`);
+    if (dropdown) {
+        dropdown.classList.remove('show');
+    }
+    
     if (confirm('Are you sure you want to delete this expense?')) {
         expenses = expenses.filter(ex => ex.id != expenseId);
         localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
