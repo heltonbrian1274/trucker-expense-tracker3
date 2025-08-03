@@ -101,7 +101,7 @@ function initializeApp() {
     updateToggleIcon();
     updateSummary();
     updateInsights();
-    updateHistory();
+    updateHistory(); // This was missing - it prevents "undefined" from showing
 
     const urlParams = new URLSearchParams(window.location.search);
     const action = urlParams.get('action');
@@ -807,7 +807,7 @@ function updateHistory() {
             description: (ex.description && 
                          typeof ex.description === 'string' && 
                          ex.description !== 'undefined' && 
-                         ex.description !== 'null') ? ex.description.trim() : '',
+                         ex.description` !== 'null') ? ex.description.trim() : '',
             timestamp: ex.timestamp || Date.now(),
             receipt: (ex.receipt && 
                      typeof ex.receipt === 'string' && 

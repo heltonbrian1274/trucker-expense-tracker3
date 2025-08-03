@@ -185,6 +185,11 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 15px;
         }
 
         .dark-mode .expense-card {
@@ -204,23 +209,10 @@
             outline-offset: 2px;
         }
 
-        .expense-card.expanded {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-            border-color: var(--primary-color);
-        }
-
         .expense-card.active {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             color: white;
             border-color: var(--primary-color);
-        }
-
-        .expense-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 10px;
         }
 
         .expense-icon {
@@ -236,28 +228,23 @@
             flex-shrink: 0;
         }
 
-        .expense-card.expanded .expense-icon {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
         .expense-card.active .expense-icon {
             background: rgba(255, 255, 255, 0.2);
         }
 
-        .expense-title {
+        .expense-name {
             font-size: 1.2rem;
             font-weight: 600;
             color: #1e293b;
             text-shadow: none;
         }
 
-        .dark-mode .expense-title {
+        .dark-mode .expense-name {
             color: #f1f5f9;
             text-shadow: none;
         }
 
-        .expense-card.expanded .expense-title,
-        .expense-card.active .expense-title {
+        .expense-card.active .expense-name {
             color: #ffffff !important;
             text-shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
             font-weight: 700 !important;
