@@ -378,7 +378,7 @@
             color: var(--text-dark);
         }
 
-        
+
 
         .edit-expense-modal input, .edit-expense-modal select {
             width: 100%;
@@ -1255,4 +1255,47 @@
         .options-dropdown.show .btn-delete-small,
         .options-dropdown.show .btn-edit {
             display: block;
+        }
+
+/* Override any global delete button hiding rules */
+        .expense-options .options-dropdown .btn-delete-small {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        /* Ensure edit modal is properly styled and visible */
+        .edit-expense-modal {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+        }
+
+        .edit-expense-modal.show {
+            display: flex !important;
+        }
+
+        .edit-expense-modal .modal-content {
+            background: var(--card-light);
+            color: var(--text-light);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .dark-mode .edit-expense-modal .modal-content {
+            background: var(--card-dark);
+            color: var(--text-dark);
+        }
+
+        /* Hide all standalone delete buttons globally (not in dropdowns) */
+        .btn-delete:not(.options-dropdown .btn-delete-small) {
+            display: none !important;
         }

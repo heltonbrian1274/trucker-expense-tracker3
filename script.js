@@ -728,6 +728,7 @@ function editExpense(expenseId) {
     // Create edit modal
     const modal = document.createElement('div');
     modal.className = 'modal edit-expense-modal';
+    modal.style.display = 'none';
     modal.innerHTML = `
         <div class="modal-content">
             <div class="modal-header">
@@ -765,7 +766,12 @@ function editExpense(expenseId) {
 
     document.body.appendChild(modal);
     modal.style.display = 'flex';
-    setTimeout(() => modal.classList.add('show'), 10);
+    modal.classList.add('show');
+    setTimeout(() => {
+        // Focus on amount input after modal is fully rendered
+        const amountInput = document.getElementById('editAmount');
+        if (amountInput) amountInput.focus();
+    }, 100);
 
     // Focus on amount input
     document.getElementById('editAmount').focus();
