@@ -1299,3 +1299,78 @@
         .btn-delete:not(.options-dropdown .btn-delete-small) {
             display: none !important;
         }
+
+        /* Hide all delete buttons in history items (not in dropdowns) */
+        .history-item .btn-delete {
+            display: none !important;
+        }
+
+        /* Ensure expense form styling is preserved */
+        .expense-form.active {
+            display: block !important;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .expense-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .expense-form .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .expense-form .form-group input,
+        .expense-form .form-group select,
+        .expense-form .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .expense-form .form-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .expense-form .btn-primary,
+        .expense-form .btn-secondary {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .expense-form .btn-primary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .expense-form .btn-primary:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .expense-form .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .expense-form .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }

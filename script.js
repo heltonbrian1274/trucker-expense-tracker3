@@ -701,6 +701,13 @@ function updateHistory() {
             </div>
         </li>
     `).join('');
+
+    // Remove any standalone delete buttons that might have been accidentally created
+    setTimeout(() => {
+        document.querySelectorAll('.history-item .btn-delete:not(.options-dropdown .btn-delete-small)').forEach(btn => {
+            btn.remove();
+        });
+    }, 100);
 }
 
 function toggleExpenseOptions(expenseId) {
