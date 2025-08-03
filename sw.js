@@ -1,7 +1,7 @@
 // Service Worker for Trucker Expense Tracker PWA
 // Version 2.1.5 - Fixed Response cloning issue
 
-const CACHE_NAME = 'trucker-expense-tracker-v2.1.5';
+const CACHE_NAME = 'trucker-expense-tracker-v2.1.6';
 const urlsToCache = [
   './manifest.json',
   './icon-72x72.png',
@@ -79,7 +79,7 @@ self.addEventListener('message', (event) => {
   }
 });
 
-// Fetch event - Handle subscription state changes
+// Fetch event - Network first for HTML, cache first for assets
 self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') {
@@ -88,61 +88,54 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
   
-  // CRITICAL: Handle HTML/navigation requests specially
+  // CRITICAL: Handle HTML/navigation requests with network-first strategy
   if (event.request.mode === 'navigate' || 
       url.pathname.endsWith('.html') || 
-      url.pathname === '/') {
+      url.pathname === '/' ||
+      event.request.headers.get('accept')?.includes('text/html')) {
     
-    // For token requests, always fetch from network and don't cache
-    if (url.searchParams.has('token')) {
-      event.respondWith(
-        fetch(event.request).then((networkResponse) => {
-          // Don't cache token responses - return directly
-          return networkResponse;
-        }).catch(() => {
-          throw new Error('Network required for subscription activation');
-        })
-      );
-    } else {
-      // For regular navigation, check localStorage for subscription changes
-      event.respondWith(
-        fetch(event.request).then((networkResponse) => {
-          if (networkResponse.ok) {
-            // FIXED: Clone the response before caching to avoid "Response body is already used" error
-            const responseClone = networkResponse.clone();
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, responseClone);
-            }).catch(err => {
-              console.warn('Cache put failed:', err);
-            });
-          }
-          return networkResponse;
-        }).catch(() => {
-          // Fallback to cache for offline access
-          return caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-              return cachedResponse;
-            }
-            // If no cache available, return a basic offline page
-            return new Response(
-              '<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>Offline</h1><p>Please check your internet connection.</p></body></html>',
-              { headers: { 'Content-Type': 'text/html' } }
-            );
+    // Always try network first for HTML content to get fresh updates
+    event.respondWith(
+      fetch(event.request, { 
+        cache: 'no-store' // Force fresh fetch, bypass HTTP cache
+      }).then((networkResponse) => {
+        if (networkResponse.ok) {
+          // Only cache successful responses, and clone before caching
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseClone);
+          }).catch(err => {
+            console.warn('Cache put failed:', err);
           });
-        })
-      );
-    }
+        }
+        return networkResponse;
+      }).catch(() => {
+        // Only fallback to cache if network fails completely
+        console.log('Network failed, trying cache for:', event.request.url);
+        return caches.match(event.request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // If no cache available, return a basic offline page
+          return new Response(
+            '<!DOCTYPE html><html><head><title>Offline</title><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body style="font-family: sans-serif; text-align: center; padding: 50px;"><h1>Offline</h1><p>Please check your internet connection and try again.</p><button onclick="window.location.reload()">Retry</button></body></html>',
+            { headers: { 'Content-Type': 'text/html' } }
+          );
+        });
+      })
+    );
   } else {
-    // For static assets, use cache first strategy
+    // For static assets (CSS, JS, images), use cache first strategy
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
+        // Return cached version if available
         if (cachedResponse) {
           return cachedResponse;
         }
         
+        // Otherwise fetch from network and cache
         return fetch(event.request).then((networkResponse) => {
           if (networkResponse.ok) {
-            // FIXED: Clone the response before caching
             const responseClone = networkResponse.clone();
             caches.open(CACHE_NAME).then(cache => {
               cache.put(event.request, responseClone);

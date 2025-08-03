@@ -35,7 +35,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // Register Service Worker for PWA functionality
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js')
-                .then(registration => console.log('SW registered:', registration))
+                .then(registration => {
+                    console.log('SW registered:', registration);
+                    // Check for updates every time the page loads
+                    registration.update();
+                })
                 .catch(error => console.log('SW registration failed:', error));
         }
     });
@@ -158,6 +162,21 @@ function initializeApp() {
             validateSubscriptionInBackground().catch(error => console.log('Background validation:', error));
         }, 5 * 60 * 1000); // Every 5 minutes
     }, 10000); // Start after 10 seconds
+
+    // Handle service worker updates
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            // Service worker updated, reload to get fresh content
+            window.location.reload();
+        });
+
+        navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'INDEX_CACHE_CLEARED') {
+                console.log('Cache cleared, reloading...');
+                window.location.reload();
+            }
+        });
+    }
 }
 
 // ======================
