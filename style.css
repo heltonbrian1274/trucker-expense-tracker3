@@ -1233,3 +1233,9 @@
             .expense-card { background: white !important; color: black !important; border: 1px solid #ccc !important; }
             .summary-card, .privacy-notice { background: white !important; color: black !important; border: 1px solid #ccc; }
         }
+
+/* Ensure options dropdown buttons are visible */
+        .options-dropdown .btn-delete-small,
+        .options-dropdown .btn-edit {
+            display: block !important;
+        }
