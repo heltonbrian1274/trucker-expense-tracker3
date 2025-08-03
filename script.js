@@ -94,6 +94,7 @@ function initializeApp() {
     updateToggleIcon();
     updateSummary();
     updateInsights();
+    updateHistory();
 
     const urlParams = new URLSearchParams(window.location.search);
     const action = urlParams.get('action');
@@ -661,6 +662,7 @@ function updateHistory() {
         return;
     }
 
+    // Generate HTML with only options buttons (no standalone delete buttons)
     historyList.innerHTML = filteredExpenses.map(ex => `
         <li class="history-item">
             <div class="history-header">
