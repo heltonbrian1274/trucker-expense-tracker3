@@ -178,8 +178,31 @@ function initializeApp() {
                 console.log('Cache cleared, reloading...');
                 window.location.reload();
             }
+            if (event.data && event.data.type === 'ALL_CACHE_CLEARED') {
+                console.log('All cache cleared, reloading...');
+                window.location.reload();
+            }
         });
     }
+
+    // Make cache clearing function available globally for debugging
+    window.clearAppCache = async function() {
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            console.log('Clearing all app cache...');
+            navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_ALL_CACHE' });
+        } else {
+            console.log('No service worker controller available');
+        }
+    };
+
+    window.clearIndexCache = async function() {
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            console.log('Clearing index cache...');
+            navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_INDEX_CACHE' });
+        } else {
+            console.log('No service worker controller available');
+        }
+    };
 }
 
 // ======================
