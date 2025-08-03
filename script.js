@@ -704,44 +704,41 @@ function editExpense(expenseId) {
     if (!expense) return;
 
     // Close options dropdown
-    const dropdown = document.getElementById(`options-${expenseId}`);
-    if (dropdown) {
-        dropdown.classList.remove('show');
-    }
+    document.getElementById(`options-${expenseId}`).classList.remove('show');
 
-    // Create edit modal with improved styling
+    // Create edit modal
     const modal = document.createElement('div');
     modal.className = 'modal edit-expense-modal';
     modal.innerHTML = `
-        <div class="modal-content" style="background: var(--card-light); border-radius: 15px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid var(--primary-color);">
-                <h3 style="color: var(--primary-color); margin: 0; font-size: 1.3rem;">✏️ Edit Expense</h3>
-                <button onclick="this.closest('.modal').remove()" class="modal-close" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-light); padding: 5px;">×</button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✏️ Edit Expense</h3>
+                <button onclick="this.closest('.modal').remove()" class="modal-close">×</button>
             </div>
             <form id="editExpenseForm" onsubmit="saveExpenseEdit(event, '${expenseId}')">
                 <div class="form-group">
-                    <label for="editAmount" style="color: var(--text-light); font-weight: 600; margin-bottom: 8px; display: block;">Amount ($)</label>
-                    <input type="number" id="editAmount" value="${expense.amount}" step="0.01" min="0" max="99999.99" required style="width: 100%; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; font-size: 16px; background: var(--card-light); color: var(--text-light);">
+                    <label for="editAmount">Amount ($)</label>
+                    <input type="number" id="editAmount" value="${expense.amount}" step="0.01" min="0" max="99999.99" required>
                 </div>
                 <div class="form-group">
-                    <label for="editDescription" style="color: var(--text-light); font-weight: 600; margin-bottom: 8px; display: block;">Description</label>
-                    <input type="text" id="editDescription" value="${expense.description || ''}" maxlength="200" style="width: 100%; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; font-size: 16px; background: var(--card-light); color: var(--text-light);">
+                    <label for="editDescription">Description</label>
+                    <input type="text" id="editDescription" value="${expense.description}" maxlength="200">
                 </div>
                 <div class="form-group">
-                    <label for="editDate" style="color: var(--text-light); font-weight: 600; margin-bottom: 8px; display: block;">Date</label>
-                    <input type="date" id="editDate" value="${expense.date}" required style="width: 100%; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; font-size: 16px; background: var(--card-light); color: var(--text-light);">
+                    <label for="editDate">Date</label>
+                    <input type="date" id="editDate" value="${expense.date}" required>
                 </div>
                 <div class="form-group">
-                    <label for="editCategory" style="color: var(--text-light); font-weight: 600; margin-bottom: 8px; display: block;">Category</label>
-                    <select id="editCategory" required style="width: 100%; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; font-size: 16px; background: var(--card-light); color: var(--text-light);">
+                    <label for="editCategory">Category</label>
+                    <select id="editCategory" required>
                         ${expenseCategories.map(cat => 
                             `<option value="${cat.id}" ${cat.id === expense.categoryId ? 'selected' : ''}>${cat.icon} ${cat.name}</option>`
                         ).join('')}
                     </select>
                 </div>
-                <div class="form-buttons" style="display: flex; gap: 15px; margin-top: 25px; justify-content: center;">
-                    <button type="submit" class="btn" style="background: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; transition: all 0.3s ease;">💾 Save Changes</button>
-                    <button type="button" onclick="this.closest('.modal').remove()" class="btn btn-secondary" style="background: var(--border-light); color: var(--text-light); border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; transition: all 0.3s ease;">Cancel</button>
+                <div class="form-buttons">
+                    <button type="submit" class="btn-primary">💾 Save Changes</button>
+                    <button type="button" onclick="this.closest('.modal').remove()" class="btn-secondary">Cancel</button>
                 </div>
             </form>
         </div>
@@ -752,9 +749,7 @@ function editExpense(expenseId) {
     setTimeout(() => modal.classList.add('show'), 10);
     
     // Focus on amount input
-    setTimeout(() => {
-        document.getElementById('editAmount').focus();
-    }, 100);
+    document.getElementById('editAmount').focus();
 }
 
 function saveExpenseEdit(event, expenseId) {
@@ -816,16 +811,13 @@ function deleteExpense(expenseId) {
         dropdown.classList.remove('show');
     }
     
-    // Simple, clean confirmation dialog
-    const confirmed = confirm('Are you sure you want to delete this expense? This action cannot be undone.');
-    
-    if (confirmed) {
+    if (confirm('Are you sure you want to delete this expense?')) {
         expenses = expenses.filter(ex => ex.id != expenseId);
         localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
         updateSummary();
         updateInsights();
         updateHistory();
-        showNotification('✅ Expense deleted successfully!', 'success');
+        showNotification('Expense deleted successfully!', 'success');
     }
 }
 
