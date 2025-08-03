@@ -1242,8 +1242,25 @@
             .summary-card, .privacy-notice { background: white !important; color: black !important; border: 1px solid #ccc; }
         }
 
-/* Ensure options dropdown buttons are visible */
+/* Comprehensive fix to ensure options dropdown buttons are always visible */
         .options-dropdown .btn-delete-small,
         .options-dropdown .btn-edit {
             display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            left: auto !important;
+            top: auto !important;
+            width: 100% !important;
+            height: auto !important;
+            overflow: visible !important;
+            clip: auto !important;
+            margin: 0 !important;
+        }
+
+        /* Override any global delete button hiding rules */
+        .expense-options .options-dropdown .btn-delete-small {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
