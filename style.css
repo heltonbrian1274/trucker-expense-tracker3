@@ -532,42 +532,34 @@
         }
 
         .expense-form {
-            display: none !important;
+            display: none;
             margin-top: 20px;
             padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .expense-form.active {
-            display: block !important;
+            display: block;
         }
 
         .expense-card.active .expense-form {
-            display: block !important;
+            display: block;
         }
 
-        .form-group {
+        .expense-form .form-group {
             margin-bottom: 15px;
         }
 
-        .form-group label {
+        .expense-form .form-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: 600;
             color: white;
         }
 
-        .section .form-group label {
-            color: var(--text-light);
-        }
-
-        .dark-mode .section .form-group label {
-            color: var(--text-dark);
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .expense-form .form-group input,
+        .expense-form .form-group select,
+        .expense-form .form-group textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -576,14 +568,56 @@
             color: white;
             font-size: 16px;
             transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .expense-form .form-group input::placeholder,
+        .expense-form .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .expense-form .form-group input:focus,
+        .expense-form .form-group select:focus,
+        .expense-form .form-group textarea:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .expense-form .form-group select option {
+            background: #2d3748;
+            color: white;
+            padding: 8px;
+        }
+
+        .section .form-group {
+            margin-bottom: 15px;
+        }
+
+        .section .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .dark-mode .section .form-group label {
+            color: var(--text-dark);
         }
 
         .section .form-group input,
         .section .form-group select,
         .section .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
             background: var(--card-light);
             color: var(--text-light);
-            border: 1px solid var(--border-light);
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
         }
 
         .dark-mode .section .form-group input,
@@ -592,20 +626,6 @@
             background: var(--card-dark);
             color: var(--text-dark);
             border: 1px solid var(--border-dark);
-        }
-
-        .form-group input::placeholder,
-        .form-group textarea::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: 2px solid rgba(255, 255, 255, 0.6);
-            outline-offset: 2px;
-            border-color: rgba(255, 255, 255, 0.6);
-            background: rgba(255, 255, 255, 0.2);
         }
 
         .section .form-group input:focus,
@@ -624,12 +644,6 @@
             outline-offset: 2px;
             border-color: var(--secondary-color);
             background: var(--background-dark);
-        }
-
-        .form-group select option {
-            background: #2d3748;
-            color: white;
-            padding: 8px;
         }
 
         .section .form-group select option {
@@ -1328,32 +1342,7 @@
             color: white;
         }
 
-        .expense-form .form-group input,
-        .expense-form .form-group select,
-        .expense-form .form-group textarea {
-            width: 100% !important;
-            padding: 12px !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            border-radius: 8px !important;
-            background: rgba(255, 255, 255, 0.1) !important;
-            color: white !important;
-            font-size: 16px !important;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-        }
-
-        .expense-card.active .expense-form input,
-        .expense-card.active .expense-form select,
-        .expense-card.active .expense-form textarea {
-            width: 100% !important;
-            padding: 12px !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            border-radius: 8px !important;
-            background: rgba(255, 255, 255, 0.1) !important;
-            color: white !important;
-            font-size: 16px !important;
-        }
+        
 
         .expense-form .form-buttons {
             display: flex;
