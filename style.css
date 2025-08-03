@@ -1,22 +1,20 @@
+
 :root {
             --primary-color: #2563eb;
-            --primary-dark: #1d4ed8;
+            --primary-dark: #1e40af;
             --secondary-color: #10b981;
             --background-light: #f8fafc;
             --background-dark: #0f172a;
+            --text-light: #1e293b;
+            --text-dark: #f1f5f9;
             --card-light: #ffffff;
             --card-dark: #1e293b;
-            --text-light: #334155;
-            --text-dark: #f1f5f9;
-            --text-primary: #334155;
-            --text-primary-dark: #f1f5f9;
             --border-light: #e2e8f0;
             --border-dark: #334155;
-            --bg-light: #f1f5f9;
-            --bg-dark: #334155;
-            --error-color: #ef4444;
             --success-color: #10b981;
             --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --info-color: #3b82f6;
         }
 
         * {
@@ -206,200 +204,238 @@
             outline-offset: 2px;
         }
 
+        .expense-card.expanded {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border-color: var(--primary-color);
+        }
+
         .expense-card.active {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             color: white;
             border-color: var(--primary-color);
         }
 
-        .expense-card.active .expense-title {
+        .expense-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .expense-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
             color: white;
+            flex-shrink: 0;
+        }
+
+        .expense-card.expanded .expense-icon {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .expense-card.active .expense-icon {
             background: rgba(255, 255, 255, 0.2);
         }
 
-        .expense-options {
-            position: relative;
-            display: inline-block;
-            margin-top: 10px;
-        }
-
-        .btn-options {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-options:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-
-        .options-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: white;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-            min-width: 120px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            display: block;
-        }
-
-        .dark-mode .options-dropdown {
-            background: var(--card-dark);
-            border-color: var(--border-dark);
-        }
-
-        .options-dropdown.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .btn-edit, .btn-delete-small {
-            display: block;
-            width: 100%;
-            padding: 10px 15px;
-            border: none;
-            background: none;
-            text-align: left;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            font-size: 14px;
-            border-radius: 0;
-        }
-
-        .btn-edit {
-            border-bottom: 1px solid var(--border-light);
-            color: var(--text-primary);
-        }
-
-        .btn-delete-small {
-            color: #ef4444;
-        }
-
-        .btn-edit:hover {
-            background-color: var(--bg-light);
-        }
-
-        .btn-delete-small:hover {
-            background-color: #fef2f2;
-        }
-
-        .dark-mode .btn-edit {
-            color: var(--text-primary-dark);
-            border-bottom-color: var(--border-dark);
-        }
-
-        .dark-mode .btn-edit:hover {
-            background-color: var(--bg-dark);
-        }
-
-        .dark-mode .btn-delete-small:hover {
-            background-color: rgba(239, 68, 68, 0.1);
-        }
-
-        .options-dropdown button:first-child {
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-        }
-
-        .options-dropdown button:last-child {
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
-        }
-
-        .btn-edit, .btn-delete-small {
-            display: block;
-            width: 100%;
-            padding: 10px 15px;
-            border: none;
-            background: none;
-            text-align: left;
-            cursor: pointer;
-            font-size: 14px;
+        .expense-title {
+            font-size: 1.2rem;
+            font-weight: 600;
             color: var(--text-light);
-            transition: background 0.2s ease;
         }
 
-        .dark-mode .btn-edit, .dark-mode .btn-delete-small {
+        .dark-mode .expense-title {
             color: var(--text-dark);
         }
 
-        .btn-edit:hover {
-            background: #f1f5f9;
+        .expense-card.expanded .expense-title {
+            color: white;
         }
 
-        .btn-delete-small:hover {
-            background: #fef2f2;
-            color: #ef4444;
+        .expense-card.active .expense-title {
+            color: white;
         }
 
-        .dark-mode .btn-edit:hover {
-            background: #475569;
+        .expense-form {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        .dark-mode .btn-delete-small:hover {
-            background: #7f1d1d;
-            color: #fca5a5;
+        .expense-form.active {
+            display: block;
         }
 
-        .edit-expense-modal .modal-content {
-            max-width: 500px;
-            width: 90%;
+        .expense-card.active .expense-form {
+            display: block;
         }
 
-        .edit-expense-modal .form-group {
+        .form-group {
             margin-bottom: 15px;
         }
 
-        .edit-expense-modal label {
+        .form-group label {
             display: block;
             margin-bottom: 5px;
-            font-weight: 500;
+            font-weight: 600;
+            color: white;
+        }
+
+        .section .form-group label {
             color: var(--text-light);
         }
 
-        .dark-mode .edit-expense-modal label {
+        .dark-mode .section .form-group label {
             color: var(--text-dark);
         }
 
-
-
-        .edit-expense-modal input, .edit-expense-modal select {
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .section .form-group input,
+        .section .form-group select,
+        .section .form-group textarea {
+            background: var(--card-light);
+            color: var(--text-light);
             border: 1px solid var(--border-light);
-            border-radius: 6px;
-            font-size: 14px;
-            background: white;
+        }
+
+        .dark-mode .section .form-group input,
+        .dark-mode .section .form-group select,
+        .dark-mode .section .form-group textarea {
+            background: var(--card-dark);
+            color: var(--text-dark);
+            border: 1px solid var(--border-dark);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .section .form-group input:focus,
+        .section .form-group select:focus,
+        .section .form-group textarea:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+            border-color: var(--primary-color);
+            background: var(--background-light);
+        }
+
+        .dark-mode .section .form-group input:focus,
+        .dark-mode .section .form-group select:focus,
+        .dark-mode .section .form-group textarea:focus {
+            outline: 2px solid var(--secondary-color);
+            outline-offset: 2px;
+            border-color: var(--secondary-color);
+            background: var(--background-dark);
+        }
+
+        .form-group select option {
+            background: #2d3748;
+            color: white;
+            padding: 8px;
+        }
+
+        .section .form-group select option {
+            background: var(--card-light);
             color: var(--text-light);
         }
 
-        .dark-mode .edit-expense-modal input, .edit-expense-modal select {
+        .dark-mode .section .form-group select option {
             background: var(--card-dark);
-            border-color: var(--border-dark);
             color: var(--text-dark);
         }
 
-        .edit-expense-modal .edit-expense-modal select {
-            background: var(--card-dark);
-            border-color: var(--border-dark);
-            color: var(--text-dark);
+        .btn {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+        }
+
+        .btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .form-buttons .btn-primary,
+        .form-buttons .btn-secondary {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         .history-item {
@@ -487,215 +523,143 @@
             cursor: pointer;
         }
 
-        .expense-card.expanded {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-            border-color: var(--primary-color);
+        .expense-options {
+            position: relative;
+            display: inline-block;
+            margin-top: 10px;
         }
 
-        .expense-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .expense-icon {
-            width: 50px;
-            height: 50px;
+        .btn-options {
             background: var(--primary-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-            flex-shrink: 0;
-        }
-
-        .expense-card.expanded .expense-icon {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .expense-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--text-light);
-        }
-
-        .dark-mode .expense-title {
-            color: var(--text-dark);
-        }
-
-        .expense-card.expanded .expense-title {
-            color: white;
-        }
-
-        .expense-form {
-            display: none;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .expense-form.active {
-            display: block;
-        }
-
-        .expense-card.active .expense-form {
-            display: block;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .expense-form .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: white;
-        }
-
-        .expense-form input,
-        .expense-form select,
-        .expense-form textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.8);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.95) !important;
-            color: #1f2937 !important;
-            font-size: 16px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-            margin-bottom: 10px;
-        }
-
-        .expense-form input::placeholder,
-        .expense-form textarea::placeholder {
-            color: rgba(31, 41, 55, 0.6);
-            font-weight: 400;
-        }
-
-        .expense-form input:focus,
-        .expense-form select:focus,
-        .expense-form textarea:focus {
-            outline: 3px solid rgba(255, 255, 255, 0.8);
-            outline-offset: 2px;
-            border-color: rgba(255, 255, 255, 1);
-            background: rgba(255, 255, 255, 1) !important;
-            color: #1f2937 !important;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
-        }
-
-        .expense-form .form-group select option {
-            background: white;
-            color: #1f2937;
-            padding: 8px;
-            font-weight: 500;
-        }
-
-        .section .form-group {
-            margin-bottom: 15px;
-        }
-
-        .section .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: var(--text-light);
-        }
-
-        .dark-mode .section .form-group label {
-            color: var(--text-dark);
-        }
-
-        .section .form-group input,
-        .section .form-group select,
-        .section .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            background: var(--card-light);
-            color: var(--text-light);
-            font-size: 16px;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-        }
-
-        .dark-mode .section .form-group input,
-        .dark-mode .section .form-group select,
-        .section .form-group textarea {
-            background: var(--card-dark);
-            color: var(--text-dark);
-            border: 1px solid var(--border-dark);
-        }
-
-        .section .form-group input:focus,
-        .section .form-group select:focus,
-        .section .form-group textarea:focus {
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
-            border-color: var(--primary-color);
-            background: var(--background-light);
-        }
-
-        .dark-mode .section .form-group input:focus,
-        .dark-mode .section .form-group select:focus,
-        .dark-mode .section .form-group textarea:focus {
-            outline: 2px solid var(--secondary-color);
-            outline-offset: 2px;
-            border-color: var(--secondary-color);
-            background: var(--background-dark);
-        }
-
-        .section .form-group select option {
-            background: var(--card-light);
-            color: var(--text-light);
-        }
-
-        .dark-mode .section .form-group select option {
-            background: var(--card-dark);
-            color: var(--text-dark);
-        }
-
-        .btn {
-            background: var(--secondary-color);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 14px;
             transition: all 0.3s ease;
-            touch-action: manipulation;
         }
 
-        .btn:hover {
-            background: #059669;
+        .btn-options:hover {
+            background: var(--primary-dark);
             transform: translateY(-1px);
         }
 
-        .btn:focus {
-            outline: 2px solid rgba(255, 255, 255, 0.6);
-            outline-offset: 2px;
+        .options-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            min-width: 120px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            display: block;
         }
 
-        .btn:active {
+        .dark-mode .options-dropdown {
+            background: var(--card-dark);
+            border-color: var(--border-dark);
+        }
+
+        .options-dropdown.show {
+            opacity: 1;
+            visibility: visible;
             transform: translateY(0);
         }
 
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+        .btn-edit, .btn-delete-small {
+            display: block;
+            width: 100%;
+            padding: 10px 15px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 14px;
+            border-radius: 0;
         }
 
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.3);
+        .btn-edit {
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-light);
+        }
+
+        .btn-delete-small {
+            color: #ef4444;
+        }
+
+        .btn-edit:hover {
+            background-color: var(--background-light);
+        }
+
+        .btn-delete-small:hover {
+            background-color: #fef2f2;
+        }
+
+        .dark-mode .btn-edit {
+            color: var(--text-dark);
+            border-bottom-color: var(--border-dark);
+        }
+
+        .dark-mode .btn-edit:hover {
+            background-color: var(--background-dark);
+        }
+
+        .dark-mode .btn-delete-small:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .options-dropdown button:first-child {
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .options-dropdown button:last-child {
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        .edit-expense-modal .modal-content {
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .edit-expense-modal .form-group {
+            margin-bottom: 15px;
+        }
+
+        .edit-expense-modal label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .dark-mode .edit-expense-modal label {
+            color: var(--text-dark);
+        }
+
+        .edit-expense-modal input, .edit-expense-modal select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            color: var(--text-light);
+        }
+
+        .dark-mode .edit-expense-modal input, .dark-mode .edit-expense-modal select {
+            background: var(--card-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
         }
 
         .summary-card {
@@ -942,6 +906,12 @@
             justify-content: center;
         }
 
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .modal-content {
             background: var(--card-light);
             margin: 20px;
@@ -974,6 +944,19 @@
 
         .dark-mode .modal-close {
             color: var(--text-dark);
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .dark-mode .modal-header h3 {
+            color: var(--secondary-color);
         }
 
         .faq-item {
@@ -1021,6 +1004,9 @@
 
         #historyList, #categoryList, #monthlyBreakdown {
             min-height: 150px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
 
         .expense-subtitle {
@@ -1275,13 +1261,23 @@
             .summary-card, .privacy-notice { background: white !important; color: black !important; border: 1px solid #ccc; }
         }
 
-/* Ensure dropdown buttons are properly visible when dropdown is shown */
+        /* Hide all standalone delete buttons globally (not in dropdowns) */
+        .btn-delete:not(.options-dropdown .btn-delete-small) {
+            display: none !important;
+        }
+
+        /* Hide all delete buttons in history items (not in dropdowns) */
+        .history-item .btn-delete {
+            display: none !important;
+        }
+
+        /* Ensure dropdown buttons are properly visible when dropdown is shown */
         .options-dropdown.show .btn-delete-small,
         .options-dropdown.show .btn-edit {
             display: block;
         }
 
-/* Override any global delete button hiding rules */
+        /* Override any global delete button hiding rules */
         .expense-options .options-dropdown .btn-delete-small {
             display: block !important;
             visibility: visible !important;
@@ -1317,70 +1313,4 @@
         .dark-mode .edit-expense-modal .modal-content {
             background: var(--card-dark);
             color: var(--text-dark);
-        }
-
-        /* Hide all standalone delete buttons globally (not in dropdowns) */
-        .btn-delete:not(.options-dropdown .btn-delete-small) {
-            display: none !important;
-        }
-
-        /* Hide all delete buttons in history items (not in dropdowns) */
-        .history-item .btn-delete {
-            display: none !important;
-        }
-
-        /* Ensure expense form styling is preserved */
-        .expense-form.active {
-            display: block !important;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .expense-form .form-group {
-            margin-bottom: 15px;
-        }
-
-        .expense-form .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: white;
-        }
-
-        .expense-form .form-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .expense-form .btn-primary,
-        .expense-form .btn-secondary {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .expense-form .btn-primary {
-            background: var(--secondary-color);
-            color: white;
-        }
-
-        .expense-form .btn-primary:hover {
-            background: #059669;
-            transform: translateY(-1px);
-        }
-
-        .expense-form .btn-secondary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-
-        .expense-form .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.3);
         }
