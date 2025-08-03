@@ -256,6 +256,7 @@
             visibility: hidden;
             transform: translateY(-10px);
             transition: all 0.3s ease;
+            display: block;
         }
 
         .dark-mode .options-dropdown {
@@ -377,13 +378,7 @@
             color: var(--text-dark);
         }
 
-        /* Ensure options dropdown buttons are always visible */
-        .options-dropdown .btn-delete-small,
-        .options-dropdown .btn-edit {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
+        
 
         .edit-expense-modal input, .edit-expense-modal select {
             width: 100%;
@@ -1256,25 +1251,8 @@
             .summary-card, .privacy-notice { background: white !important; color: black !important; border: 1px solid #ccc; }
         }
 
-/* Comprehensive fix to ensure options dropdown buttons are always visible */
-        .options-dropdown .btn-delete-small,
-        .options-dropdown .btn-edit {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            position: relative !important;
-            left: auto !important;
-            top: auto !important;
-            width: 100% !important;
-            height: auto !important;
-            overflow: visible !important;
-            clip: auto !important;
-            margin: 0 !important;
-        }
-
-        /* Override any global delete button hiding rules */
-        .expense-options .options-dropdown .btn-delete-small {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
+/* Ensure dropdown buttons are properly visible when dropdown is shown */
+        .options-dropdown.show .btn-delete-small,
+        .options-dropdown.show .btn-edit {
+            display: block;
         }

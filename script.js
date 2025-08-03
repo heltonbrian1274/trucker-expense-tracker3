@@ -504,8 +504,10 @@ function populateExpenseGrid() {
         card.dataset.category = category.id;
         card.onclick = () => toggleExpenseCard(category.id);
         card.innerHTML = `
-            <div class="expense-icon">${category.icon}</div>
-            <div class="expense-name">${category.name}</div>
+            <div class="expense-header">
+                <div class="expense-icon">${category.icon}</div>
+                <div class="expense-title">${category.name}</div>
+            </div>
             <div class="expense-form" id="form-${category.id}" style="display: none;">
                 <input type="number" id="amount-${category.id}" placeholder="Amount ($)" step="0.01" min="0" required>
                 <input type="text" id="description-${category.id}" placeholder="Description (optional)">
@@ -692,7 +694,7 @@ function updateHistory() {
             ${ex.receipt ? `<div class="receipt-preview"><img src="${ex.receipt}" class="receipt-image" alt="Receipt"></div>` : ''}
             <div class="expense-options">
                 <button onclick="toggleExpenseOptions('${ex.id}')" class="btn-options">⋯ Options</button>
-                <div class="options-dropdown" id="options-${ex.id}" style="display: none;">
+                <div class="options-dropdown" id="options-${ex.id}">
                     <button onclick="editExpense('${ex.id}')" class="btn-edit">✏️ Edit</button>
                     <button onclick="deleteExpense('${ex.id}')" class="btn-delete-small">🗑️ Delete</button>
                 </div>
@@ -708,16 +710,12 @@ function toggleExpenseOptions(expenseId) {
     // Close all other dropdowns
     allDropdowns.forEach(dd => {
         if (dd.id !== `options-${expenseId}`) {
-            dd.style.display = 'none'; // Hide other dropdowns
+            dd.classList.remove('show');
         }
     });
 
     // Toggle current dropdown
-    if (dropdown.style.display === 'none') {
-        dropdown.style.display = 'block';
-    } else {
-        dropdown.style.display = 'none';
-    }
+    dropdown.classList.toggle('show');
 }
 
 function editExpense(expenseId) {
@@ -725,7 +723,7 @@ function editExpense(expenseId) {
     if (!expense) return;
 
     // Close options dropdown
-    document.getElementById(`options-${expenseId}`).style.display = 'none';
+    document.getElementById(`options-${expenseId}`).classList.remove('show');
 
     // Create edit modal
     const modal = document.createElement('div');
@@ -829,7 +827,7 @@ function deleteExpense(expenseId) {
     // Close options dropdown
     const dropdown = document.getElementById(`options-${expenseId}`);
     if (dropdown) {
-        dropdown.style.display = 'none';
+        dropdown.classList.remove('show');
     }
 
     if (confirm('Are you sure you want to delete this expense?')) {
