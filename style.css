@@ -363,6 +363,14 @@
             color: var(--text-dark);
         }
 
+        /* Ensure options dropdown buttons are always visible */
+        .options-dropdown .btn-delete-small,
+        .options-dropdown .btn-edit {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
         .edit-expense-modal input, .edit-expense-modal select {
             width: 100%;
             padding: 10px;
