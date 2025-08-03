@@ -468,8 +468,8 @@
             transform: translateX(2px) !important;
         }
 
-        /* Remove any old delete button styles */
-        .btn-delete {
+        /* Hide standalone delete buttons, but allow options dropdown delete buttons */
+        .history-item .btn-delete {
             display: none !important;
         }
 
