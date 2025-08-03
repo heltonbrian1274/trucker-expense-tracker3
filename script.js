@@ -767,33 +767,29 @@ function updateHistory() {
 
     if (!historyList) return;
 
-    // Clean up any existing expenses with undefined values
-    expenses = expenses.map(ex => {
-        // Handle missing category info
-        if (!ex.categoryName || ex.categoryName === 'undefined' || ex.categoryName === null) {
-            if (ex.categoryId) {
-                const category = expenseCategories.find(cat => cat.id === ex.categoryId);
-                if (category) {
-                    ex.categoryName = category.name;
-                    ex.categoryIcon = category.icon;
-                }
-            }
+    // Aggressively clean up expenses data
+    expenses = expenses.filter(ex => ex && typeof ex === 'object').map(ex => {
+        // Find the category for this expense
+        let categoryData = expenseCategories.find(cat => cat.id === ex.categoryId);
+        if (!categoryData) {
+            categoryData = expenseCategories.find(cat => cat.name === ex.categoryName);
+        }
+        if (!categoryData) {
+            categoryData = { id: 'other', name: 'Other Business Expenses', icon: '💼' };
         }
 
-        // Ensure all fields have valid values - create a completely clean object
-        const cleanExpense = {
+        // Create completely clean expense object
+        return {
             id: ex.id || Date.now() + Math.random(),
-            categoryId: ex.categoryId || 'other',
-            categoryName: (ex.categoryName && ex.categoryName !== 'undefined' && ex.categoryName !== null) ? ex.categoryName : (ex.category || 'Other Business Expenses'),
-            categoryIcon: (ex.categoryIcon && ex.categoryIcon !== 'undefined' && ex.categoryIcon !== null) ? ex.categoryIcon : '💼',
-            amount: (typeof ex.amount === 'number' && !isNaN(ex.amount)) ? ex.amount : 0,
-            date: (ex.date && ex.date !== 'undefined' && ex.date !== null) ? ex.date : new Date().toISOString().split('T')[0],
-            description: (ex.description && ex.description !== 'undefined' && ex.description !== null) ? ex.description : '',
+            categoryId: categoryData.id,
+            categoryName: categoryData.name,
+            categoryIcon: categoryData.icon,
+            amount: (typeof ex.amount === 'number' && !isNaN(ex.amount) && ex.amount >= 0) ? ex.amount : 0,
+            date: (ex.date && typeof ex.date === 'string' && ex.date !== 'undefined' && ex.date !== 'null') ? ex.date : new Date().toISOString().split('T')[0],
+            description: (ex.description && typeof ex.description === 'string' && ex.description !== 'undefined' && ex.description !== 'null') ? ex.description : '',
             timestamp: ex.timestamp || Date.now(),
-            receipt: (ex.receipt && ex.receipt !== 'undefined' && ex.receipt !== null) ? ex.receipt : null
+            receipt: (ex.receipt && typeof ex.receipt === 'string' && ex.receipt !== 'undefined' && ex.receipt !== 'null' && ex.receipt.startsWith('data:')) ? ex.receipt : null
         };
-
-        return cleanExpense;
     });
 
     // Save cleaned data
@@ -824,19 +820,27 @@ function updateHistory() {
         return;
     }
 
-    // Generate HTML with proper data validation to prevent undefined values
-    historyList.innerHTML = filteredExpenses.map(ex => `
+    // Generate HTML with strict validation to prevent any undefined values
+    historyList.innerHTML = filteredExpenses.map(ex => {
+        const safeIcon = ex.categoryIcon && ex.categoryIcon !== 'undefined' ? ex.categoryIcon : '💼';
+        const safeName = ex.categoryName && ex.categoryName !== 'undefined' ? ex.categoryName : 'Unknown Category';
+        const safeDate = ex.date && ex.date !== 'undefined' ? new Date(ex.date).toLocaleDateString() : 'No date';
+        const safeAmount = (typeof ex.amount === 'number' && !isNaN(ex.amount)) ? ex.amount.toFixed(2) : '0.00';
+        const safeDescription = ex.description && ex.description !== 'undefined' && ex.description.trim() ? ex.description.trim() : '';
+        const safeReceipt = ex.receipt && ex.receipt !== 'undefined' && ex.receipt.startsWith('data:') ? ex.receipt : null;
+        
+        return `
         <li class="history-item">
             <div class="history-header">
-                <span class="history-icon">${ex.categoryIcon || '💼'}</span>
+                <span class="history-icon">${safeIcon}</span>
                 <div class="history-info">
-                    <div class="history-category">${ex.categoryName || ex.category || 'Unknown Category'}</div>
-                    <div class="history-date">${ex.date ? new Date(ex.date).toLocaleDateString() : 'No date'}</div>
+                    <div class="history-category">${safeName}</div>
+                    <div class="history-date">${safeDate}</div>
                 </div>
-                <div class="history-amount">$${(ex.amount || 0).toFixed(2)}</div>
+                <div class="history-amount">$${safeAmount}</div>
             </div>
-            ${ex.description ? `<div class="history-description">${ex.description}</div>` : ''}
-            ${ex.receipt ? `<div class="receipt-preview"><img src="${ex.receipt}" class="receipt-image" alt="Receipt"></div>` : ''}
+            ${safeDescription ? `<div class="history-description">${safeDescription}</div>` : ''}
+            ${safeReceipt ? `<div class="receipt-preview"><img src="${safeReceipt}" class="receipt-image" alt="Receipt"></div>` : ''}
             <div class="expense-options">
                 <button onclick="toggleExpenseOptions('${ex.id}')" class="btn-options">⋯ Options</button>
                 <div class="options-dropdown" id="options-${ex.id}">
@@ -845,7 +849,8 @@ function updateHistory() {
                 </div>
             </div>
         </li>
-    `).join('');
+        `;
+    }).join('');
 
     // Remove any standalone delete buttons that might have been accidentally created
     setTimeout(() => {

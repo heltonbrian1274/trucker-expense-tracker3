@@ -247,11 +247,11 @@
         .expense-title {
             font-size: 1.2rem;
             font-weight: 600;
-            color: var(--text-light);
+            color: #1e293b;
         }
 
         .dark-mode .expense-title {
-            color: var(--text-dark);
+            color: #f1f5f9;
         }
 
         .expense-card.expanded .expense-title {
@@ -286,6 +286,10 @@
             margin-bottom: 5px;
             font-weight: 600;
             color: white;
+        }
+
+        .expense-card .form-group label {
+            color: white !important;
         }
 
         .section .form-group label {
