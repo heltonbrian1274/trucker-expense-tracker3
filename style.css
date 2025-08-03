@@ -260,6 +260,59 @@
             background: none;
             text-align: left;
             cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 14px;
+            border-radius: 0;
+        }
+
+        .btn-edit {
+            border-bottom: 1px solid var(--border-light);
+            color: var(--text-primary);
+        }
+
+        .btn-delete-small {
+            color: #ef4444;
+        }
+
+        .btn-edit:hover {
+            background-color: var(--bg-light);
+        }
+
+        .btn-delete-small:hover {
+            background-color: #fef2f2;
+        }
+
+        .dark-mode .btn-edit {
+            color: var(--text-primary-dark);
+            border-bottom-color: var(--border-dark);
+        }
+
+        .dark-mode .btn-edit:hover {
+            background-color: var(--bg-dark);
+        }
+
+        .dark-mode .btn-delete-small:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .options-dropdown button:first-child {
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .options-dropdown button:last-child {
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        .btn-edit, .btn-delete-small {
+            display: block;
+            width: 100%;
+            padding: 10px 15px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
             font-size: 14px;
             color: var(--text-light);
             transition: background 0.2s ease;
