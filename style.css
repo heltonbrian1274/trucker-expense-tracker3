@@ -468,8 +468,8 @@
             transform: translateX(2px) !important;
         }
 
-        /* Hide old delete buttons only in expense cards, not in history */
-        .expense-card .btn-delete {
+        /* Remove any old delete button styles */
+        .btn-delete {
             display: none !important;
         }
 
