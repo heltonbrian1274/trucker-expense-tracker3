@@ -88,6 +88,9 @@ function initializeApp() {
     // Initialize the Already Subscribed feature
     initializeAlreadySubscribedFeature();
 
+    // Clean up any corrupted data on startup
+    cleanupCorruptedData();
+
     // Initialize enhanced validation system
     initializeEnhancedValidation();
 
@@ -506,6 +509,74 @@ function updateTrialCountdownWithAlreadySubscribed() {
 }
 
 // ======================
+// --- Data Cleanup Functions ---
+// ======================
+function cleanupCorruptedData() {
+    try {
+        let expenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
+        let hasChanges = false;
+        
+        expenses = expenses.map(ex => {
+            const originalEx = { ...ex };
+            
+            // Fix undefined/null values
+            if (!ex.categoryName || ex.categoryName === 'undefined' || ex.categoryName === null) {
+                if (ex.categoryId) {
+                    const category = expenseCategories.find(cat => cat.id === ex.categoryId);
+                    if (category) {
+                        ex.categoryName = category.name;
+                        ex.categoryIcon = category.icon;
+                        hasChanges = true;
+                    }
+                }
+                if (!ex.categoryName || ex.categoryName === 'undefined') {
+                    ex.categoryName = 'Other Business Expenses';
+                    ex.categoryIcon = '💼';
+                    hasChanges = true;
+                }
+            }
+            
+            // Ensure all required fields exist
+            if (!ex.categoryIcon || ex.categoryIcon === 'undefined') {
+                ex.categoryIcon = '💼';
+                hasChanges = true;
+            }
+            
+            if (typeof ex.amount !== 'number' || isNaN(ex.amount)) {
+                ex.amount = 0;
+                hasChanges = true;
+            }
+            
+            if (!ex.date || ex.date === 'undefined') {
+                ex.date = new Date().toISOString().split('T')[0];
+                hasChanges = true;
+            }
+            
+            if (ex.description === 'undefined' || ex.description === null) {
+                ex.description = '';
+                hasChanges = true;
+            }
+            
+            return ex;
+        });
+        
+        if (hasChanges) {
+            localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
+            console.log('Data cleanup completed - fixed corrupted entries');
+        }
+        
+        // Update global expenses variable
+        window.expenses = expenses;
+        
+    } catch (error) {
+        console.error('Error during data cleanup:', error);
+        // Reset to empty array if data is completely corrupted
+        localStorage.setItem('truckerExpenses', '[]');
+        window.expenses = [];
+    }
+}
+
+// ======================
 // --- Expense Management ---
 // ======================
 function populateExpenseGrid() {
@@ -675,22 +746,34 @@ function updateHistory() {
 
     // Clean up any existing expenses with undefined values
     expenses = expenses.map(ex => {
-        if (!ex.categoryName && ex.categoryId) {
-            const category = expenseCategories.find(cat => cat.id === ex.categoryId);
-            if (category) {
-                ex.categoryName = category.name;
-                ex.categoryIcon = category.icon;
+        // Handle missing category info
+        if (!ex.categoryName || ex.categoryName === 'undefined') {
+            if (ex.categoryId) {
+                const category = expenseCategories.find(cat => cat.id === ex.categoryId);
+                if (category) {
+                    ex.categoryName = category.name;
+                    ex.categoryIcon = category.icon;
+                }
             }
         }
-        return {
-            ...ex,
-            categoryName: ex.categoryName || ex.category || 'Unknown Category',
-            categoryIcon: ex.categoryIcon || '💼',
-            amount: ex.amount || 0,
+        
+        // Ensure all fields have valid values
+        const cleanExpense = {
+            id: ex.id || Date.now() + Math.random(),
+            categoryId: ex.categoryId || 'other',
+            categoryName: (ex.categoryName && ex.categoryName !== 'undefined') ? ex.categoryName : (ex.category || 'Other Business Expenses'),
+            categoryIcon: (ex.categoryIcon && ex.categoryIcon !== 'undefined') ? ex.categoryIcon : '💼',
+            amount: (typeof ex.amount === 'number' && !isNaN(ex.amount)) ? ex.amount : 0,
             date: ex.date || new Date().toISOString().split('T')[0],
-            description: ex.description || ''
+            description: (ex.description && ex.description !== 'undefined') ? ex.description : '',
+            timestamp: ex.timestamp || Date.now(),
+            receipt: ex.receipt || null
         };
+        
+        return cleanExpense;
     });
+    
+    // Save cleaned data
     localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
 
     let filteredExpenses = expenses.filter(ex => {

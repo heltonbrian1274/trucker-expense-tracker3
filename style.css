@@ -562,11 +562,12 @@
         .expense-form textarea {
             width: 100%;
             padding: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.8);
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1) !important;
-            color: white !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            color: #1f2937 !important;
             font-size: 16px;
+            font-weight: 500;
             transition: all 0.3s ease;
             box-sizing: border-box;
             margin-bottom: 10px;
@@ -574,23 +575,26 @@
 
         .expense-form input::placeholder,
         .expense-form textarea::placeholder {
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(31, 41, 55, 0.6);
+            font-weight: 400;
         }
 
         .expense-form input:focus,
         .expense-form select:focus,
         .expense-form textarea:focus {
-            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline: 3px solid rgba(255, 255, 255, 0.8);
             outline-offset: 2px;
-            border-color: rgba(255, 255, 255, 0.6);
-            background: rgba(255, 255, 255, 0.2) !important;
-            color: white !important;
+            border-color: rgba(255, 255, 255, 1);
+            background: rgba(255, 255, 255, 1) !important;
+            color: #1f2937 !important;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
         }
 
         .expense-form .form-group select option {
-            background: #2d3748;
-            color: white;
+            background: white;
+            color: #1f2937;
             padding: 8px;
+            font-weight: 500;
         }
 
         .section .form-group {
