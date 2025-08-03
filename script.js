@@ -673,6 +673,26 @@ function updateHistory() {
 
     if (!historyList) return;
 
+    // Clean up any existing expenses with undefined values
+    expenses = expenses.map(ex => {
+        if (!ex.categoryName && ex.categoryId) {
+            const category = expenseCategories.find(cat => cat.id === ex.categoryId);
+            if (category) {
+                ex.categoryName = category.name;
+                ex.categoryIcon = category.icon;
+            }
+        }
+        return {
+            ...ex,
+            categoryName: ex.categoryName || ex.category || 'Unknown Category',
+            categoryIcon: ex.categoryIcon || '💼',
+            amount: ex.amount || 0,
+            date: ex.date || new Date().toISOString().split('T')[0],
+            description: ex.description || ''
+        };
+    });
+    localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
+
     let filteredExpenses = expenses.filter(ex => {
         const matchesSearch = !searchTerm || 
             ex.categoryName.toLowerCase().includes(searchTerm) ||
@@ -698,16 +718,16 @@ function updateHistory() {
         return;
     }
 
-    // Generate HTML with only options buttons (no standalone delete buttons)
+    // Generate HTML with proper data validation to prevent undefined values
     historyList.innerHTML = filteredExpenses.map(ex => `
         <li class="history-item">
             <div class="history-header">
-                <span class="history-icon">${ex.categoryIcon}</span>
+                <span class="history-icon">${ex.categoryIcon || '💼'}</span>
                 <div class="history-info">
-                    <div class="history-category">${ex.categoryName}</div>
-                    <div class="history-date">${new Date(ex.date).toLocaleDateString()}</div>
+                    <div class="history-category">${ex.categoryName || ex.category || 'Unknown Category'}</div>
+                    <div class="history-date">${ex.date ? new Date(ex.date).toLocaleDateString() : 'No date'}</div>
                 </div>
-                <div class="history-amount">$${ex.amount.toFixed(2)}</div>
+                <div class="history-amount">$${(ex.amount || 0).toFixed(2)}</div>
             </div>
             ${ex.description ? `<div class="history-description">${ex.description}</div>` : ''}
             ${ex.receipt ? `<div class="receipt-preview"><img src="${ex.receipt}" class="receipt-image" alt="Receipt"></div>` : ''}
