@@ -50,7 +50,7 @@ self.addEventListener('message', (event) => {
           self.registration.scope,
           self.registration.scope + 'index.html'
         ];
-        
+
         return Promise.all(
           indexUrls.map(url => cache.delete(url))
         ).then(() => {
@@ -64,7 +64,7 @@ self.addEventListener('message', (event) => {
       })
     );
   }
-  
+
   if (event.data && event.data.type === 'CLEAR_ALL_CACHE') {
     // Clear all caches
     event.waitUntil(
@@ -87,13 +87,13 @@ self.addEventListener('fetch', (event) => {
   }
 
   const url = new URL(event.request.url);
-  
+
   // CRITICAL: Handle HTML/navigation requests with network-first strategy
   if (event.request.mode === 'navigate' || 
       url.pathname.endsWith('.html') || 
       url.pathname === '/' ||
       event.request.headers.get('accept')?.includes('text/html')) {
-    
+
     // Always try network first for HTML content to get fresh updates
     event.respondWith(
       fetch(event.request, { 
@@ -132,7 +132,7 @@ self.addEventListener('fetch', (event) => {
         if (cachedResponse) {
           return cachedResponse;
         }
-        
+
         // Otherwise fetch from network and cache
         return fetch(event.request).then((networkResponse) => {
           if (networkResponse.ok) {
@@ -149,4 +149,3 @@ self.addEventListener('fetch', (event) => {
     );
   }
 });
-
