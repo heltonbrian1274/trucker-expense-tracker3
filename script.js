@@ -767,34 +767,59 @@ function updateHistory() {
 
     if (!historyList) return;
 
-    // Clean and validate expenses data more thoroughly
+    // Comprehensive data validation and cleaning
     expenses = expenses.filter(ex => {
-        return ex && typeof ex === 'object' && ex.id && (ex.amount || ex.amount === 0);
+        return ex && 
+               typeof ex === 'object' && 
+               ex.id && 
+               (typeof ex.amount === 'number' || !isNaN(parseFloat(ex.amount)));
     }).map(ex => {
-        // Find the category for this expense
-        let categoryData = expenseCategories.find(cat => cat.id === ex.categoryId);
-        if (!categoryData && ex.categoryName && ex.categoryName !== 'undefined') {
+        // Find the category for this expense with multiple fallback strategies
+        let categoryData = null;
+        
+        // Try to find by categoryId first
+        if (ex.categoryId && ex.categoryId !== 'undefined' && ex.categoryId !== 'null') {
+            categoryData = expenseCategories.find(cat => cat.id === ex.categoryId);
+        }
+        
+        // Fallback: try to find by categoryName
+        if (!categoryData && ex.categoryName && ex.categoryName !== 'undefined' && ex.categoryName !== 'null') {
             categoryData = expenseCategories.find(cat => cat.name === ex.categoryName);
         }
+        
+        // Final fallback: use default category
         if (!categoryData) {
             categoryData = { id: 'other', name: 'Other Business Expenses', icon: '💼' };
         }
 
-        // Ensure all fields are valid strings/numbers, never undefined
-        return {
+        // Ensure all fields are properly validated and never undefined/null
+        const cleanExpense = {
             id: ex.id,
             categoryId: categoryData.id,
             categoryName: categoryData.name,
             categoryIcon: categoryData.icon,
-            amount: (typeof ex.amount === 'number' && !isNaN(ex.amount)) ? ex.amount : 0,
-            date: (ex.date && ex.date !== 'undefined' && ex.date !== 'null' && ex.date.length > 0) ? ex.date : new Date().toISOString().split('T')[0],
-            description: (ex.description && ex.description !== 'undefined' && ex.description !== 'null') ? ex.description : '',
+            amount: parseFloat(ex.amount) || 0,
+            date: (ex.date && 
+                   typeof ex.date === 'string' && 
+                   ex.date !== 'undefined' && 
+                   ex.date !== 'null' && 
+                   ex.date.trim().length > 0) ? ex.date : new Date().toISOString().split('T')[0],
+            description: (ex.description && 
+                         typeof ex.description === 'string' && 
+                         ex.description !== 'undefined' && 
+                         ex.description !== 'null') ? ex.description.trim() : '',
             timestamp: ex.timestamp || Date.now(),
-            receipt: (ex.receipt && ex.receipt !== 'undefined' && ex.receipt !== 'null' && ex.receipt.startsWith && ex.receipt.startsWith('data:')) ? ex.receipt : null
+            receipt: (ex.receipt && 
+                     typeof ex.receipt === 'string' && 
+                     ex.receipt !== 'undefined' && 
+                     ex.receipt !== 'null' && 
+                     ex.receipt.startsWith('data:')) ? ex.receipt : null
         };
+        
+        return cleanExpense;
     });
 
-    // Save cleaned data
+    // Save cleaned data back to localStorage
     localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
 
     let filteredExpenses = expenses.filter(ex => {
@@ -822,14 +847,44 @@ function updateHistory() {
         return;
     }
 
-    // Generate HTML with bulletproof validation
+    // Generate HTML with comprehensive validation to prevent any undefined values
     historyList.innerHTML = filteredExpenses.map(ex => {
-        const safeIcon = (ex.categoryIcon && typeof ex.categoryIcon === 'string' && ex.categoryIcon !== 'undefined') ? ex.categoryIcon : '💼';
-        const safeName = (ex.categoryName && typeof ex.categoryName === 'string' && ex.categoryName !== 'undefined') ? ex.categoryName : 'Other Business Expenses';
-        const safeDate = (ex.date && typeof ex.date === 'string' && ex.date !== 'undefined') ? new Date(ex.date).toLocaleDateString() : new Date().toLocaleDateString();
-        const safeAmount = (typeof ex.amount === 'number' && !isNaN(ex.amount)) ? ex.amount.toFixed(2) : '0.00';
-        const safeDescription = (ex.description && typeof ex.description === 'string' && ex.description !== 'undefined' && ex.description.trim()) ? ex.description.trim() : '';
-        const safeReceipt = (ex.receipt && typeof ex.receipt === 'string' && ex.receipt !== 'undefined' && ex.receipt.startsWith && ex.receipt.startsWith('data:')) ? ex.receipt : null;
+        // Triple-check all values to ensure no undefined strings appear
+        const safeIcon = (ex.categoryIcon && 
+                         typeof ex.categoryIcon === 'string' && 
+                         ex.categoryIcon.trim() !== '' && 
+                         ex.categoryIcon !== 'undefined' && 
+                         ex.categoryIcon !== 'null') ? ex.categoryIcon : '💼';
+                         
+        const safeName = (ex.categoryName && 
+                         typeof ex.categoryName === 'string' && 
+                         ex.categoryName.trim() !== '' && 
+                         ex.categoryName !== 'undefined' && 
+                         ex.categoryName !== 'null') ? ex.categoryName : 'Other Business Expenses';
+                         
+        const safeDate = (ex.date && 
+                         typeof ex.date === 'string' && 
+                         ex.date !== 'undefined' && 
+                         ex.date !== 'null' && 
+                         ex.date.trim() !== '') ? 
+                         new Date(ex.date).toLocaleDateString() : 
+                         new Date().toLocaleDateString();
+                         
+        const safeAmount = (typeof ex.amount === 'number' && !isNaN(ex.amount)) ? 
+                          ex.amount.toFixed(2) : '0.00';
+                          
+        const safeDescription = (ex.description && 
+                               typeof ex.description === 'string' && 
+                               ex.description !== 'undefined' && 
+                               ex.description !== 'null' && 
+                               ex.description.trim() !== '') ? 
+                               ex.description.trim() : '';
+                               
+        const safeReceipt = (ex.receipt && 
+                           typeof ex.receipt === 'string' && 
+                           ex.receipt !== 'undefined' && 
+                           ex.receipt !== 'null' && 
+                           ex.receipt.startsWith('data:')) ? ex.receipt : null;
         
         return `
         <li class="history-item">
