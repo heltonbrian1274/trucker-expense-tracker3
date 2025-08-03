@@ -135,6 +135,19 @@ function initializeApp() {
 
         if (e.key === 'Escape') {
             closeAllModals();
+            // Close all options dropdowns
+            document.querySelectorAll('.options-dropdown').forEach(dropdown => {
+                dropdown.classList.remove('show');
+            });
+        }
+    });
+
+    // Close options dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.expense-options')) {
+            document.querySelectorAll('.options-dropdown').forEach(dropdown => {
+                dropdown.classList.remove('show');
+            });
         }
     });
 
@@ -660,9 +673,135 @@ function updateHistory() {
             </div>
             ${ex.description ? `<div class="history-description">${ex.description}</div>` : ''}
             ${ex.receipt ? `<div class="receipt-preview"><img src="${ex.receipt}" class="receipt-image" alt="Receipt"></div>` : ''}
-            <button onclick="deleteExpense('${ex.id}')" class="btn-delete">Delete</button>
+            <div class="expense-options">
+                <button onclick="toggleExpenseOptions('${ex.id}')" class="btn-options">⋯ Options</button>
+                <div class="options-dropdown" id="options-${ex.id}">
+                    <button onclick="editExpense('${ex.id}')" class="btn-edit">✏️ Edit</button>
+                    <button onclick="deleteExpense('${ex.id}')" class="btn-delete-small">🗑️ Delete</button>
+                </div>
+            </div>
         </li>
     `).join('');
+}
+
+function toggleExpenseOptions(expenseId) {
+    const dropdown = document.getElementById(`options-${expenseId}`);
+    const allDropdowns = document.querySelectorAll('.options-dropdown');
+    
+    // Close all other dropdowns
+    allDropdowns.forEach(dd => {
+        if (dd.id !== `options-${expenseId}`) {
+            dd.classList.remove('show');
+        }
+    });
+    
+    // Toggle current dropdown
+    dropdown.classList.toggle('show');
+}
+
+function editExpense(expenseId) {
+    const expense = expenses.find(ex => ex.id == expenseId);
+    if (!expense) return;
+
+    // Close options dropdown
+    document.getElementById(`options-${expenseId}`).classList.remove('show');
+
+    // Create edit modal
+    const modal = document.createElement('div');
+    modal.className = 'modal edit-expense-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✏️ Edit Expense</h3>
+                <button onclick="this.closest('.modal').remove()" class="modal-close">×</button>
+            </div>
+            <form id="editExpenseForm" onsubmit="saveExpenseEdit(event, '${expenseId}')">
+                <div class="form-group">
+                    <label for="editAmount">Amount ($)</label>
+                    <input type="number" id="editAmount" value="${expense.amount}" step="0.01" min="0" max="99999.99" required>
+                </div>
+                <div class="form-group">
+                    <label for="editDescription">Description</label>
+                    <input type="text" id="editDescription" value="${expense.description}" maxlength="200">
+                </div>
+                <div class="form-group">
+                    <label for="editDate">Date</label>
+                    <input type="date" id="editDate" value="${expense.date}" required>
+                </div>
+                <div class="form-group">
+                    <label for="editCategory">Category</label>
+                    <select id="editCategory" required>
+                        ${expenseCategories.map(cat => 
+                            `<option value="${cat.id}" ${cat.id === expense.categoryId ? 'selected' : ''}>${cat.icon} ${cat.name}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="btn-primary">💾 Save Changes</button>
+                    <button type="button" onclick="this.closest('.modal').remove()" class="btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('show'), 10);
+    
+    // Focus on amount input
+    document.getElementById('editAmount').focus();
+}
+
+function saveExpenseEdit(event, expenseId) {
+    event.preventDefault();
+    
+    const amount = parseFloat(document.getElementById('editAmount').value);
+    const description = document.getElementById('editDescription').value.trim();
+    const date = document.getElementById('editDate').value;
+    const categoryId = document.getElementById('editCategory').value;
+    
+    if (!amount || amount <= 0 || amount > 99999.99) {
+        showNotification('Please enter a valid amount between $0.01 and $99,999.99', 'error');
+        return;
+    }
+    
+    if (description.length > 200) {
+        showNotification('Description must be 200 characters or less', 'error');
+        return;
+    }
+    
+    if (!date) {
+        showNotification('Please select a date', 'error');
+        return;
+    }
+    
+    // Find and update the expense
+    const expenseIndex = expenses.findIndex(ex => ex.id == expenseId);
+    if (expenseIndex === -1) return;
+    
+    const category = expenseCategories.find(cat => cat.id === categoryId);
+    
+    expenses[expenseIndex] = {
+        ...expenses[expenseIndex],
+        amount: amount,
+        description: description,
+        date: date,
+        categoryId: categoryId,
+        categoryName: category.name,
+        categoryIcon: category.icon
+    };
+    
+    localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
+    
+    // Update displays
+    updateSummary();
+    updateInsights();
+    updateHistory();
+    
+    // Close modal
+    event.target.closest('.modal').remove();
+    
+    showNotification('Expense updated successfully!', 'success');
 }
 
 function deleteExpense(expenseId) {
