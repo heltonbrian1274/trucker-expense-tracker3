@@ -863,7 +863,7 @@
 
         #closeWelcomeBtn:hover {
             background: #1e40af !important;
-        }</old_str>
+        }
 
         @media (max-width: 768px) {
             .container { padding: 10px; }
