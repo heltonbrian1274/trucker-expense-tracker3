@@ -488,13 +488,23 @@ function populateExpenseGrid() {
         card.dataset.category = category.id;
         card.onclick = () => toggleExpenseCard(category.id);
         card.innerHTML = `
-            <div class="expense-icon">${category.icon}</div>
-            <div class="expense-name">${category.name}</div>
+            <div class="expense-header">
+                <div class="expense-icon">${category.icon}</div>
+                <div class="expense-title">${category.name}</div>
+            </div>
             <div class="expense-form" id="form-${category.id}">
-                <input type="number" id="amount-${category.id}" placeholder="Amount ($)" step="0.01" min="0" required>
-                <input type="text" id="description-${category.id}" placeholder="Description (optional)">
-                <input type="date" id="date-${category.id}" value="${today}" required>
-                <input type="file" id="receipt-${category.id}" accept="image/*" class="receipt-input">
+                <div class="form-group">
+                    <input type="number" id="amount-${category.id}" placeholder="Amount ($)" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" id="description-${category.id}" placeholder="Description (optional)">
+                </div>
+                <div class="form-group">
+                    <input type="date" id="date-${category.id}" value="${today}" required>
+                </div>
+                <div class="form-group">
+                    <input type="file" id="receipt-${category.id}" accept="image/*" class="receipt-input">
+                </div>
                 <div class="form-buttons">
                     <button type="button" onclick="addExpense('${category.id}')" class="btn-primary">Add Expense</button>
                     <button type="button" onclick="toggleExpenseCard('${category.id}')" class="btn-secondary">Cancel</button>
@@ -518,10 +528,15 @@ function toggleExpenseCard(categoryId) {
     // Close all other cards
     document.querySelectorAll('.expense-card').forEach(c => {
         c.classList.remove('active');
+        const otherForm = c.querySelector('.expense-form');
+        if (otherForm) {
+            otherForm.classList.remove('active');
+        }
     });
 
     if (!isActive) {
         card.classList.add('active');
+        form.classList.add('active');
         // Focus on amount input
         setTimeout(() => {
             const amountInput = document.getElementById(`amount-${categoryId}`);
@@ -600,7 +615,10 @@ function addExpense(categoryId) {
         dateInput.value = new Date().toISOString().split('T')[0];
 
         // Close card
-        document.querySelector(`[data-category="${categoryId}"]`).classList.remove('active');
+        const card = document.querySelector(`[data-category="${categoryId}"]`);
+        const form = document.getElementById(`form-${categoryId}`);
+        if (card) card.classList.remove('active');
+        if (form) form.classList.remove('active');
 
         // Update displays
         updateSummary();
