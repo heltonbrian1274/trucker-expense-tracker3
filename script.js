@@ -523,20 +523,15 @@ function toggleExpenseCard(categoryId) {
 
     if (!card || !form) return;
 
-    const isActive = card.classList.contains('active');
+    const isExpanded = card.classList.contains('expanded');
 
     // Close all other cards
     document.querySelectorAll('.expense-card').forEach(c => {
-        c.classList.remove('active');
-        const otherForm = c.querySelector('.expense-form');
-        if (otherForm) {
-            otherForm.classList.remove('active');
-        }
+        c.classList.remove('expanded');
     });
 
-    if (!isActive) {
-        card.classList.add('active');
-        form.classList.add('active');
+    if (!isExpanded) {
+        card.classList.add('expanded');
         // Focus on amount input
         setTimeout(() => {
             const amountInput = document.getElementById(`amount-${categoryId}`);
@@ -616,9 +611,7 @@ function addExpense(categoryId) {
 
         // Close card
         const card = document.querySelector(`[data-category="${categoryId}"]`);
-        const form = document.getElementById(`form-${categoryId}`);
-        if (card) card.classList.remove('active');
-        if (form) form.classList.remove('active');
+        if (card) card.classList.remove('expanded');
 
         // Update displays
         updateSummary();

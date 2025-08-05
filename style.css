@@ -247,17 +247,17 @@
             color: white;
         }
 
-        .expense-card.active {
+        .expense-card.expanded {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             color: white;
             border-color: var(--primary-color);
         }
 
-        .expense-card.active .expense-icon {
+        .expense-card.expanded .expense-icon {
             background: rgba(255, 255, 255, 0.2);
         }
 
-        .expense-card.active .expense-title {
+        .expense-card.expanded .expense-title {
             color: white;
         }
 
@@ -268,7 +268,7 @@
             border-top: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        .expense-form.active {
+        .expense-card.expanded .expense-form {
             display: block;
         }
 
