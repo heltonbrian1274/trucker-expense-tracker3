@@ -1,4 +1,3 @@
-
 :root {
             --primary-color: #2563eb;
             --primary-dark: #1e40af;
@@ -185,11 +184,6 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 15px;
         }
 
         .dark-mode .expense-card {
@@ -209,10 +203,17 @@
             outline-offset: 2px;
         }
 
-        .expense-card.active {
+        .expense-card.expanded {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             color: white;
             border-color: var(--primary-color);
+        }
+
+        .expense-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
         }
 
         .expense-icon {
@@ -228,26 +229,22 @@
             flex-shrink: 0;
         }
 
-        .expense-card.active .expense-icon {
+        .expense-card.expanded .expense-icon {
             background: rgba(255, 255, 255, 0.2);
         }
 
-        .expense-name {
+        .expense-title {
             font-size: 1.2rem;
             font-weight: 600;
-            color: #1e293b;
-            text-shadow: none;
+            color: var(--text-light);
         }
 
-        .dark-mode .expense-name {
-            color: #f1f5f9;
-            text-shadow: none;
+        .dark-mode .expense-title {
+            color: var(--text-dark);
         }
 
-        .expense-card.active .expense-name {
-            color: #ffffff !important;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8) !important;
-            font-weight: 700 !important;
+        .expense-card.expanded .expense-title {
+            color: white;
         }
 
         .expense-form {
@@ -261,10 +258,6 @@
             display: block;
         }
 
-        .expense-card.active .expense-form {
-            display: block;
-        }
-
         .form-group {
             margin-bottom: 15px;
         }
@@ -273,15 +266,7 @@
             display: block;
             margin-bottom: 5px;
             font-weight: 600;
-            color: var(--text-light);
-        }
-
-        .expense-card .form-group label,
-        .expense-card.active .form-group label,
-        .expense-card.expanded .form-group label {
-            color: #ffffff !important;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8) !important;
-            font-weight: 700 !important;
+            color: white;
         }
 
         .section .form-group label {
@@ -297,14 +282,12 @@
         .form-group textarea {
             width: 100%;
             padding: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #1e293b;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
             font-size: 16px;
-            font-weight: 500;
             transition: all 0.3s ease;
-            box-sizing: border-box;
         }
 
         .section .form-group input,
@@ -325,18 +308,16 @@
 
         .form-group input::placeholder,
         .form-group textarea::placeholder {
-            color: #6b7280;
-            font-weight: 400;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
-            outline: 2px solid #2563eb;
+            outline: 2px solid rgba(255, 255, 255, 0.6);
             outline-offset: 2px;
-            border-color: #2563eb;
-            background: white;
-            color: #1e293b;
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .section .form-group input:focus,
@@ -400,16 +381,6 @@
             transform: translateY(0);
         }
 
-        .btn-primary {
-            background: var(--secondary-color);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #059669;
-            transform: translateY(-1px);
-        }
-
         .btn-secondary {
             background: rgba(255, 255, 255, 0.2);
             color: white;
@@ -417,248 +388,6 @@
 
         .btn-secondary:hover {
             background: rgba(255, 255, 255, 0.3);
-        }
-
-        .form-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .form-buttons .btn-primary,
-        .form-buttons .btn-secondary {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .history-item {
-            background: var(--card-light);
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .dark-mode .history-item {
-            background: var(--card-dark);
-            border-color: var(--border-dark);
-        }
-
-        .history-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .history-icon {
-            font-size: 24px;
-            margin-right: 15px;
-        }
-
-        .history-info {
-            flex: 1;
-        }
-
-        .history-category {
-            font-weight: 600;
-            color: var(--text-light);
-            margin-bottom: 5px;
-        }
-
-        .dark-mode .history-category {
-            color: var(--text-dark);
-        }
-
-        .history-date {
-            font-size: 14px;
-            color: var(--text-light);
-            opacity: 0.7;
-        }
-
-        .dark-mode .history-date {
-            color: var(--text-dark);
-        }
-
-        .history-amount {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .dark-mode .history-amount {
-            color: var(--secondary-color);
-        }
-
-        .history-description {
-            color: var(--text-light);
-            margin-top: 10px;
-            padding: 10px;
-            background: var(--background-light);
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .dark-mode .history-description {
-            color: var(--text-dark);
-            background: var(--background-dark);
-        }
-
-        .receipt-preview {
-            margin-top: 10px;
-        }
-
-        .receipt-image {
-            max-width: 200px;
-            max-height: 150px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .expense-options {
-            position: relative;
-            display: inline-block;
-            margin-top: 10px;
-        }
-
-        .btn-options {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-options:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-        }
-
-        .options-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: white;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-            min-width: 120px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            display: block;
-        }
-
-        .dark-mode .options-dropdown {
-            background: var(--card-dark);
-            border-color: var(--border-dark);
-        }
-
-        .options-dropdown.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .btn-edit, .btn-delete-small {
-            display: block;
-            width: 100%;
-            padding: 10px 15px;
-            border: none;
-            background: none;
-            text-align: left;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            font-size: 14px;
-            border-radius: 0;
-        }
-
-        .btn-edit {
-            border-bottom: 1px solid var(--border-light);
-            color: var(--text-light);
-        }
-
-        .btn-delete-small {
-            color: #ef4444;
-        }
-
-        .btn-edit:hover {
-            background-color: var(--background-light);
-        }
-
-        .btn-delete-small:hover {
-            background-color: #fef2f2;
-        }
-
-        .dark-mode .btn-edit {
-            color: var(--text-dark);
-            border-bottom-color: var(--border-dark);
-        }
-
-        .dark-mode .btn-edit:hover {
-            background-color: var(--background-dark);
-        }
-
-        .dark-mode .btn-delete-small:hover {
-            background-color: rgba(239, 68, 68, 0.1);
-        }
-
-        .options-dropdown button:first-child {
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-        }
-
-        .options-dropdown button:last-child {
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
-        }
-
-        .edit-expense-modal .modal-content {
-            max-width: 500px;
-            width: 90%;
-        }
-
-        .edit-expense-modal .form-group {
-            margin-bottom: 15px;
-        }
-
-        .edit-expense-modal label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: var(--text-light);
-        }
-
-        .dark-mode .edit-expense-modal label {
-            color: var(--text-dark);
-        }
-
-        .edit-expense-modal input, .edit-expense-modal select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-light);
-            border-radius: 6px;
-            font-size: 14px;
-            background: white;
-            color: var(--text-light);
-        }
-
-        .dark-mode .edit-expense-modal input, .dark-mode .edit-expense-modal select {
-            background: var(--card-dark);
-            border-color: var(--border-dark);
-            color: var(--text-dark);
         }
 
         .summary-card {
@@ -905,12 +634,6 @@
             justify-content: center;
         }
 
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
         .modal-content {
             background: var(--card-light);
             margin: 20px;
@@ -943,19 +666,6 @@
 
         .dark-mode .modal-close {
             color: var(--text-dark);
-        }
-
-        .modal-header {
-            margin-bottom: 20px;
-        }
-
-        .modal-header h3 {
-            color: var(--primary-color);
-            margin: 0;
-        }
-
-        .dark-mode .modal-header h3 {
-            color: var(--secondary-color);
         }
 
         .faq-item {
@@ -1003,9 +713,6 @@
 
         #historyList, #categoryList, #monthlyBreakdown {
             min-height: 150px;
-            list-style: none;
-            padding: 0;
-            margin: 0;
         }
 
         .expense-subtitle {
@@ -1142,7 +849,7 @@
 
         #closeWelcomeBtn:hover {
             background: #1e40af !important;
-        }
+        }</old_str>
 
         @media (max-width: 768px) {
             .container { padding: 10px; }
@@ -1258,58 +965,4 @@
             .section { background: white !important; box-shadow: none !important; border: 1px solid #ccc; page-break-inside: avoid; }
             .expense-card { background: white !important; color: black !important; border: 1px solid #ccc !important; }
             .summary-card, .privacy-notice { background: white !important; color: black !important; border: 1px solid #ccc; }
-        }
-
-        /* Hide all standalone delete buttons globally (not in dropdowns) */
-        .btn-delete:not(.options-dropdown .btn-delete-small) {
-            display: none !important;
-        }
-
-        /* Hide all delete buttons in history items (not in dropdowns) */
-        .history-item .btn-delete {
-            display: none !important;
-        }
-
-        /* Ensure dropdown buttons are properly visible when dropdown is shown */
-        .options-dropdown.show .btn-delete-small,
-        .options-dropdown.show .btn-edit {
-            display: block;
-        }
-
-        /* Override any global delete button hiding rules */
-        .expense-options .options-dropdown .btn-delete-small {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-
-        /* Ensure edit modal is properly styled and visible */
-        .edit-expense-modal {
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-        }
-
-        .edit-expense-modal.show {
-            display: flex !important;
-        }
-
-        .edit-expense-modal .modal-content {
-            background: var(--card-light);
-            color: var(--text-light);
-            max-width: 500px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            position: relative;
-        }
-
-        .dark-mode .edit-expense-modal .modal-content {
-            background: var(--card-dark);
-            color: var(--text-dark);
         }
