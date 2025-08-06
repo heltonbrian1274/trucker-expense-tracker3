@@ -817,19 +817,17 @@ function updateHistory() {
 
     historyList.innerHTML = filteredExpenses.map(ex => `
         <li class="history-item">
-            <div class="history-card">
-                <div class="history-header">
-                    <span class="history-icon">${ex.categoryIcon}</span>
-                    <div class="history-info">
-                        <div class="history-category">${ex.categoryName}</div>
-                        <div class="history-date">${new Date(ex.date).toLocaleDateString()}</div>
-                    </div>
-                    <div class="history-amount">$${ex.amount.toFixed(2)}</div>
+            <div class="expense-card" style="cursor: default; margin-bottom: 15px;">
+                <div class="expense-header">
+                    <div class="expense-icon">${ex.categoryIcon}</div>
+                    <div class="expense-title">${ex.categoryName}</div>
+                    <div class="expense-amount">$${ex.amount.toFixed(2)}</div>
                 </div>
-                ${ex.description ? `<div class="history-description">${ex.description}</div>` : ''}
-                ${ex.location ? `<div class="history-location"><strong>Location:</strong> ${ex.location}</div>` : ''}
-                ${ex.receipt ? `<div class="receipt-preview"><img src="${ex.receipt}" class="receipt-image" alt="Receipt" style="max-width: 200px; max-height: 150px; border-radius: 6px;"></div>` : ''}
-                <button onclick="deleteExpense('${ex.id}')" class="btn-delete">Delete</button>
+                <div class="expense-subtitle">${new Date(ex.date).toLocaleDateString()}</div>
+                ${ex.description ? `<div class="expense-description"><strong>Description:</strong> ${ex.description}</div>` : ''}
+                ${ex.location ? `<div class="expense-description"><strong>Location:</strong> ${ex.location}</div>` : ''}
+                ${ex.receipt ? `<div class="receipt-preview" style="margin-top: 15px; text-align: center;"><img src="${ex.receipt}" class="receipt-image" alt="Receipt" style="max-width: 200px; max-height: 150px; border-radius: 6px; border: 1px solid var(--border-light);"></div>` : ''}
+                <button onclick="deleteExpense('${ex.id}')" class="btn-delete" style="margin-top: 15px;">Delete</button>
             </div>
         </li>
     `).join('');
