@@ -155,18 +155,27 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // Critical path initialization
-    initializeApp();
+    // If there's a token, handle subscription immediately before app initialization
+    if (token) {
+        safeLocalStorageSet('subscriptionToken', token);
+        safeLocalStorageSet('isSubscribed', 'true');
+        safeLocalStorageSet('hasSeenWelcome', 'true');
+        isSubscribed = true;
+        
+        // Critical path initialization
+        initializeApp();
+        
+        // Verify token immediately
+        verifySubscriptionToken(token);
+    } else {
+        // Critical path initialization
+        initializeApp();
 
-    // Defer subscription checks
-    requestIdleCallback(() => {
-        if (token) {
-            safeLocalStorageSet('subscriptionToken', token);
-            verifySubscriptionToken(token);
-        } else {
+        // Defer subscription checks
+        requestIdleCallback(() => {
             checkSubscriptionStatusFromServer();
-        }
-    });
+        });
+    }
 });
 
 // ======================
@@ -365,8 +374,15 @@ async function verifySubscriptionToken(token) {
         safeLocalStorageSet('hasSeenWelcome', 'true');
         isSubscribed = true;
 
-        // Close any open modals immediately
+        // Close any open modals immediately (including welcome modal if it appeared)
         closeAllModals();
+
+        // Force hide welcome modal specifically for subscription flow
+        const welcomeModal = document.getElementById('welcomeModal');
+        if (welcomeModal) {
+            welcomeModal.style.display = 'none';
+            welcomeModal.classList.remove('show', 'active');
+        }
 
         const response = await fetch('/api/verify-token', {
             method: 'POST',
@@ -384,23 +400,25 @@ async function verifySubscriptionToken(token) {
         if (data.success) {
             showNotification('🎉 Pro subscription activated successfully!', 'success');
 
+            // Update UI immediately
+            updateTrialCountdownWithAlreadySubscribed();
+
             // iOS-specific handling
             if (isIOSDevice()) {
-                // Force UI update after a longer delay
+                // Force a page refresh on iOS for complete state sync
                 setTimeout(() => {
-                    updateTrialCountdownWithAlreadySubscribed();
-
-                    // Force a page refresh on iOS for complete state sync
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
-                }, 500);
+                    window.location.reload();
+                }, 1000);
             } else {
-                updateTrialCountdownWithAlreadySubscribed();
+                // Force refresh after a short delay to ensure UI updates
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
             }
         } else {
             // Revert subscription status if verification failed
             safeLocalStorageSet('isSubscribed', 'false');
+            safeLocalStorageSet('hasSeenWelcome', 'false');
             isSubscribed = false;
             showNotification(data.message || 'Failed to activate subscription', 'error');
         }
@@ -408,6 +426,7 @@ async function verifySubscriptionToken(token) {
         console.error('Token verification failed:', error);
         // Revert subscription status if verification failed
         safeLocalStorageSet('isSubscribed', 'false');
+        safeLocalStorageSet('hasSeenWelcome', 'false');
         isSubscribed = false;
         showNotification('Failed to verify subscription token', 'error');
     }
