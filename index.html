@@ -214,7 +214,7 @@
             <p>You pay a small fee for this software so that we don't have to make money from your data. Everything you enter is stored locally and securely on your device. We have no access to it.</p>
         </div>
     </div>
-    
+
     <div id="faqModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeFAQ()">&times;</button>
@@ -404,7 +404,8 @@
             <form id="alreadySubscribedForm">
                 <div class="form-group">
                     <label for="subscriberEmail">Email Address:</label>
-                    <input type="email" id="subscriberEmail" required placeholder="your@email.com">
+                    <input type="email" id="subscriberEmail" name="subscriberEmail" required placeholder="Enter your subscription email"
+                           style="width: 100%; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; font-size: 16px;">
                 </div>
                 <button type="submit" class="btn">Verify Subscription</button>
             </form>
@@ -418,7 +419,7 @@
             </div>
         </div>
     </div>
-    
+
  <script src="/script.js"></script>
 
 </body>

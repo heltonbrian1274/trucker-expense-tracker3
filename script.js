@@ -323,7 +323,12 @@ async function handleAlreadySubscribedSubmit(e) {
 
     const emailInput = document.getElementById('subscriberEmail');
     const submitBtn = e.target.querySelector('button[type="submit"]');
-    const email = emailInput.value.trim();
+    const email = emailInput ? emailInput.value.trim() : '';
+
+    if (!emailInput) {
+        showNotification('Email input field not found', 'error');
+        return;
+    }
 
     if (!email) {
         showNotification('Please enter your email address', 'error');
