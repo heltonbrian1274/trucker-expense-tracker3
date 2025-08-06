@@ -334,13 +334,13 @@ function manageAlreadySubscribedButton() {
     const subscriptionStatus = localStorage.getItem('isSubscribed') === 'true';
     isSubscribed = subscriptionStatus;
 
-    // Find ALL buttons with class or id related to "already subscribed"
-    const allAlreadySubscribedButtons = document.querySelectorAll('#alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"]');
-
     if (subscriptionStatus) {
-        // Hide ALL already subscribed buttons if user is subscribed
-        allAlreadySubscribedButtons.forEach(button => {
-            button.style.display = 'none';
+        // Remove ALL already subscribed buttons if user is subscribed
+        const allButtons = document.querySelectorAll('#alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"]');
+        allButtons.forEach(button => {
+            if (button.parentNode) {
+                button.parentNode.removeChild(button);
+            }
         });
 
         // Also hide trial section and upgrade buttons
@@ -356,18 +356,28 @@ function manageAlreadySubscribedButton() {
 
         console.log('🔒 Already Subscribed buttons hidden - user is subscribed');
     } else {
-        // Show buttons if user is not subscribed, but ensure only one is visible
-        let buttonShown = false;
-        allAlreadySubscribedButtons.forEach((button, index) => {
-            if (!buttonShown && index === 0) {
-                // Only show the first button found
-                button.style.display = 'inline-block';
-                buttonShown = true;
-            } else {
-                // Hide any duplicate buttons
-                button.style.display = 'none';
+        // Ensure only ONE button exists for non-subscribed users
+        const existingButton = document.getElementById('alreadySubscribedBtn');
+        
+        if (!existingButton) {
+            // Create the button only if it doesn't exist
+            const actionButtons = document.querySelector('.action-buttons');
+            if (actionButtons) {
+                const button = document.createElement('button');
+                button.id = 'alreadySubscribedBtn';
+                button.className = 'action-btn';
+                button.style.background = '#10b981';
+                button.innerHTML = '✅ Already Subscribed?';
+                
+                // Insert before subscribe button or append at end
+                const subscribeBtn = actionButtons.querySelector('.subscribe-btn');
+                if (subscribeBtn) {
+                    actionButtons.insertBefore(button, subscribeBtn);
+                } else {
+                    actionButtons.appendChild(button);
+                }
             }
-        });
+        }
         console.log('👀 Already Subscribed button shown - user not subscribed');
     }
 }
