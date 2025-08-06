@@ -253,7 +253,30 @@ async function validateSubscriptionInBackground() {
 // ======================
 // --- Already Subscribed Feature ---
 // ======================
+
+// Clean up any duplicate buttons that might exist
+function cleanupDuplicateButtons() {
+    const allButtons = document.querySelectorAll('#alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"]');
+    
+    // Keep track of which button to preserve (the first one found)
+    let primaryButton = null;
+    
+    allButtons.forEach((button, index) => {
+        if (index === 0) {
+            primaryButton = button;
+        } else {
+            // Remove duplicate buttons
+            if (button.parentNode) {
+                button.parentNode.removeChild(button);
+                console.log('🧹 Removed duplicate Already Subscribed button');
+            }
+        }
+    });
+}
 function initializeAlreadySubscribedFeature() {
+    // Clean up any duplicate buttons first
+    cleanupDuplicateButtons();
+    
     const alreadySubscribedModal = document.getElementById('alreadySubscribedModal');
     const closeAlreadySubscribedBtn = document.getElementById('closeAlreadySubscribedBtn');
     const alreadySubscribedForm = document.getElementById('alreadySubscribedForm');
@@ -281,15 +304,23 @@ function initializeAlreadySubscribedFeature() {
         });
     }
 
-    // Set up button click handlers using event delegation
+    // Set up button click handlers using event delegation for any already subscribed button
     document.addEventListener('click', (e) => {
-        // Target the button with id 'alreadySubscribedBtn'
-        if (e.target.id === 'alreadySubscribedBtn') {
+        // Target any button related to "already subscribed" functionality
+        if (e.target.id === 'alreadySubscribedBtn' || 
+            e.target.id === 'alreadySubscribedActionBtn' || 
+            e.target.classList.contains('already-subscribed-btn') ||
+            e.target.getAttribute('data-action') === 'already-subscribed') {
             e.preventDefault();
-            alreadySubscribedModal.style.display = 'flex';
-            setTimeout(() => {
-                alreadySubscribedModal.classList.add('show');
-            }, 10);
+            e.stopPropagation(); // Prevent event bubbling
+            
+            // Only open modal if user is not subscribed
+            if (!isSubscribed) {
+                alreadySubscribedModal.style.display = 'flex';
+                setTimeout(() => {
+                    alreadySubscribedModal.classList.add('show');
+                }, 10);
+            }
         }
     });
 
@@ -303,18 +334,14 @@ function manageAlreadySubscribedButton() {
     const subscriptionStatus = localStorage.getItem('isSubscribed') === 'true';
     isSubscribed = subscriptionStatus;
 
-    // Handle both the HTML button and any dynamically created button
-    const htmlButton = document.getElementById('alreadySubscribedBtn');
-    const dynamicButton = document.getElementById('alreadySubscribedActionBtn');
+    // Find ALL buttons with class or id related to "already subscribed"
+    const allAlreadySubscribedButtons = document.querySelectorAll('#alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"]');
 
     if (subscriptionStatus) {
-        // Hide both buttons if user is already subscribed
-        if (htmlButton) {
-            htmlButton.style.display = 'none';
-        }
-        if (dynamicButton) {
-            dynamicButton.style.display = 'none';
-        }
+        // Hide ALL already subscribed buttons if user is subscribed
+        allAlreadySubscribedButtons.forEach(button => {
+            button.style.display = 'none';
+        });
 
         // Also hide trial section and upgrade buttons
         const trialSection = document.getElementById('trialSection');
@@ -329,14 +356,19 @@ function manageAlreadySubscribedButton() {
 
         console.log('🔒 Already Subscribed buttons hidden - user is subscribed');
     } else {
-        // Show buttons if user is not subscribed
-        if (htmlButton) {
-            htmlButton.style.display = 'inline-block';
-        }
-        if (dynamicButton) {
-            dynamicButton.style.display = 'inline-block';
-        }
-        console.log('👀 Already Subscribed buttons shown - user not subscribed');
+        // Show buttons if user is not subscribed, but ensure only one is visible
+        let buttonShown = false;
+        allAlreadySubscribedButtons.forEach((button, index) => {
+            if (!buttonShown && index === 0) {
+                // Only show the first button found
+                button.style.display = 'inline-block';
+                buttonShown = true;
+            } else {
+                // Hide any duplicate buttons
+                button.style.display = 'none';
+            }
+        });
+        console.log('👀 Already Subscribed button shown - user not subscribed');
     }
 }
 
