@@ -371,6 +371,30 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
+        .dark-mode .form-group input[type="date"] {
+            color-scheme: dark;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .dark-mode .expense-card.expanded .form-group input[type="date"] {
+            color-scheme: dark;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .dark-mode .form-group input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        .dark-mode .form-group input[type="date"]:focus {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+
         .section .form-group input:focus,
         .section .form-group select:focus,
         .section .form-group textarea:focus {
