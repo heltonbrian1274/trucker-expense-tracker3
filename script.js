@@ -948,6 +948,220 @@ function closeAllModals() {
     });
 }
 
+// ======================
+// --- Action Button Functions ---
+// ======================
+function exportToPDF() {
+    showNotification('PDF export feature coming soon!', 'info');
+}
+
+function exportHistoryToPDF() {
+    showNotification('History PDF export feature coming soon!', 'info');
+}
+
+function exportInsightsToPDF() {
+    showNotification('Insights PDF export feature coming soon!', 'info');
+}
+
+function printSection() {
+    window.print();
+}
+
+function printHistory() {
+    window.print();
+}
+
+function printInsights() {
+    window.print();
+}
+
+function exportToCSV() {
+    if (expenses.length === 0) {
+        showNotification('No expenses to export', 'warning');
+        return;
+    }
+    
+    const csvContent = "data:text/csv;charset=utf-8," 
+        + "Date,Category,Amount,Description,Location\n"
+        + expenses.map(ex => 
+            `${ex.date},${ex.categoryName},$${ex.amount.toFixed(2)},"${ex.description}","${ex.location}"`
+        ).join("\n");
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "trucker_expenses.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showNotification('CSV exported successfully!', 'success');
+}
+
+function exportHistoryToCSV() {
+    exportToCSV();
+}
+
+function exportInsightsToCSV() {
+    exportToCSV();
+}
+
+function showFeedback() {
+    const modal = document.getElementById('feedbackModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+}
+
+function closeFeedback() {
+    const modal = document.getElementById('feedbackModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+}
+
+function showFAQ() {
+    const modal = document.getElementById('faqModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+        
+        // Update trial start date display
+        const trialStartDisplay = document.getElementById('trial-start-date-display');
+        if (trialStartDisplay && trialStartDate) {
+            const startDate = new Date(parseInt(trialStartDate));
+            trialStartDisplay.textContent = startDate.toLocaleDateString();
+        }
+    }
+}
+
+function closeFAQ() {
+    const modal = document.getElementById('faqModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+}
+
+function toggleFAQ(element) {
+    const answer = element.nextElementSibling;
+    const isActive = answer.classList.contains('active');
+    
+    // Close all other FAQ items
+    document.querySelectorAll('.faq-answer').forEach(ans => ans.classList.remove('active'));
+    document.querySelectorAll('.faq-question span').forEach(span => span.textContent = '+');
+    
+    if (!isActive) {
+        answer.classList.add('active');
+        element.querySelector('span').textContent = '-';
+    }
+}
+
+function submitFeedback(event) {
+    event.preventDefault();
+    
+    const feedbackType = document.getElementById('feedbackType').value;
+    const feedbackMessage = document.getElementById('feedbackMessage').value;
+    const feedbackEmail = document.getElementById('feedbackEmail').value;
+    
+    // Create mailto link
+    const subject = `Trucker Expense Tracker - ${feedbackType.charAt(0).toUpperCase() + feedbackType.slice(1)}`;
+    const body = `Feedback Type: ${feedbackType}\n\nMessage:\n${feedbackMessage}\n\n${feedbackEmail ? `From: ${feedbackEmail}` : ''}`;
+    const mailtoLink = `mailto:support@truckerexpensetracker.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    window.open(mailtoLink);
+    
+    // Show success message
+    document.getElementById('feedbackForm').style.display = 'none';
+    document.getElementById('feedbackSuccess').style.display = 'block';
+}
+
+function resetFeedbackForm() {
+    document.getElementById('feedbackForm').style.display = 'block';
+    document.getElementById('feedbackSuccess').style.display = 'none';
+    document.getElementById('feedbackForm').reset();
+}
+
+function updateEmailDisplay() {
+    const feedbackType = document.getElementById('feedbackType').value;
+    const emailDisplay = document.getElementById('emailDisplay');
+    
+    const emails = {
+        'bug': '📧 Will be sent to: bugs@truckerexpensetracker.com',
+        'feature': '📧 Will be sent to: features@truckerexpensetracker.com',
+        'improvement': '📧 Will be sent to: improvements@truckerexpensetracker.com',
+        'general': '📧 Will be sent to: support@truckerexpensetracker.com'
+    };
+    
+    emailDisplay.textContent = emails[feedbackType] || '';
+}
+
+function checkForUpdates() {
+    showNotification('You are running the latest version!', 'success');
+}
+
+function backupData() {
+    if (expenses.length === 0) {
+        showNotification('No data to backup', 'warning');
+        return;
+    }
+    
+    const backup = {
+        expenses: expenses,
+        exportDate: new Date().toISOString(),
+        version: '2.1.5'
+    };
+    
+    const dataStr = JSON.stringify(backup, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = `trucker_expenses_backup_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showNotification('Data backed up successfully!', 'success');
+}
+
+function restoreData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+    
+    input.onchange = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const backup = JSON.parse(e.target.result);
+                
+                if (backup.expenses && Array.isArray(backup.expenses)) {
+                    if (confirm(`This will replace your current ${expenses.length} expenses with ${backup.expenses.length} expenses from the backup. Continue?`)) {
+                        expenses = backup.expenses;
+                        localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
+                        updateSummary();
+                        updateInsights();
+                        updateHistory();
+                        showNotification('Data restored successfully!', 'success');
+                    }
+                } else {
+                    showNotification('Invalid backup file format', 'error');
+                }
+            } catch (error) {
+                showNotification('Failed to restore data: Invalid file', 'error');
+            }
+        };
+        reader.readAsText(file);
+    };
+    
+    input.click();
+}
+
 // CSS animations
 const style = document.createElement('style');
 style.textContent = `

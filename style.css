@@ -812,11 +812,56 @@
             overflow-y: auto;
             position: relative;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            color: var(--text-light);
+            border: 2px solid var(--border-light);
         }
 
         .dark-mode .modal-content {
             background: var(--card-dark);
             color: var(--text-dark);
+            border-color: var(--border-dark);
+        }
+
+        .modal-content .form-group input {
+            background: var(--background-light) !important;
+            color: var(--text-light) !important;
+            border: 2px solid var(--border-light) !important;
+            padding: 12px !important;
+            border-radius: 8px !important;
+        }
+
+        .dark-mode .modal-content .form-group input {
+            background: var(--background-dark) !important;
+            color: var(--text-dark) !important;
+            border: 2px solid var(--border-dark) !important;
+        }
+
+        .modal-content .form-group input:focus {
+            outline: 2px solid var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            background: white !important;
+        }
+
+        .dark-mode .modal-content .form-group input:focus {
+            background: var(--card-dark) !important;
+            border-color: var(--secondary-color) !important;
+            outline-color: var(--secondary-color) !important;
+        }
+
+        .modal-content .btn {
+            background: var(--primary-color) !important;
+            color: white !important;
+            border: none !important;
+            padding: 12px 24px !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .modal-content .btn:hover {
+            background: var(--primary-dark) !important;
+            transform: translateY(-1px) !important;
         }
 
         .modal-close {
