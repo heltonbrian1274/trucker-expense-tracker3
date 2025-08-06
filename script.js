@@ -187,13 +187,13 @@ function initializeApp() {
 
     // Get subscription status using multiple checks for reliability
     const userIsSubscribed = safeLocalStorageGet('isSubscribed') === 'true' || isSubscribed;
-    
+
     // For iOS: Additional check to prevent modal during token processing
     const isIOSWithTokenProcessing = isIOSDevice() && (hasToken || urlParams.toString().includes('token'));
 
     // Initialize core components first (always needed regardless of subscription status)
     populateExpenseGrid();
-    
+
     // Initialize welcome modal close button with multiple fallbacks
     const closeWelcomeBtn = document.getElementById('closeWelcomeBtn');
     if (closeWelcomeBtn) {
@@ -236,9 +236,9 @@ function initializeApp() {
     // 2. User has already seen welcome
     // 3. There's a token being processed (especially important for iOS)
     // 4. iOS device with any subscription-related URL params
-    if (userIsSubscribed || 
-        localStorage.getItem('hasSeenWelcome') || 
-        hasToken || 
+    if (userIsSubscribed ||
+        localStorage.getItem('hasSeenWelcome') ||
+        hasToken ||
         isIOSWithTokenProcessing) {
         console.log('🚫 Welcome modal blocked - user subscribed or token processing');
         return; // Early return is now safe since core components are already initialized
@@ -597,6 +597,9 @@ async function handleAlreadySubscribedSubmit(e) {
             // Clear form
             emailInput.value = '';
 
+            // Update UI immediately
+            updateTrialCountdownWithAlreadySubscribed();
+
             // iOS-specific handling
             if (isIOSDevice()) {
                 // Clear service worker cache for iOS with force option
@@ -616,13 +619,10 @@ async function handleAlreadySubscribedSubmit(e) {
                     window.location.href = window.location.protocol + '//' + window.location.host + window.location.pathname + '?ios_refresh=' + Date.now() + '&t=' + Math.random();
                 }, 1000);
             } else {
-                // Update UI using the centralized function
-                updateTrialCountdownWithAlreadySubscribed();
-
                 // Force refresh after a short delay to ensure UI updates
                 setTimeout(() => {
                     window.location.reload();
-                }, 2000);
+                }, 1500);
             }
 
         } else {
