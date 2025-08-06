@@ -69,6 +69,9 @@ document.addEventListener('DOMContentLoaded', function () {
 // --- App Initialization Logic ---
 // ======================
 function initializeApp() {
+    // Sync global subscription status with localStorage
+    isSubscribed = localStorage.getItem('isSubscribed') === 'true';
+    
     if (isDarkMode) {
         document.body.classList.add('dark-mode');
         document.querySelector('.dark-mode-toggle').textContent = '☀️';
@@ -297,17 +300,20 @@ function initializeAlreadySubscribedFeature() {
 // Function to manage the Already Subscribed button visibility
 function manageAlreadySubscribedButton() {
     const existingButton = document.getElementById('alreadySubscribedBtn');
+    
+    if (!existingButton) return;
 
-    if (isSubscribed || localStorage.getItem('isSubscribed') === 'true') {
+    // Check both global variable and localStorage for subscription status
+    const subscriptionStatus = localStorage.getItem('isSubscribed') === 'true';
+    
+    if (subscriptionStatus || isSubscribed) {
         // Hide the button if user is already subscribed
-        if (existingButton) {
-            existingButton.style.display = 'none';
-        }
+        existingButton.style.display = 'none';
+        console.log('🔒 Already Subscribed button hidden - user is subscribed');
     } else {
         // Show the button if user is not subscribed
-        if (existingButton) {
-            existingButton.style.display = 'inline-block';
-        }
+        existingButton.style.display = 'inline-block';
+        console.log('👀 Already Subscribed button shown - user not subscribed');
     }
 }
 
@@ -367,7 +373,16 @@ async function handleAlreadySubscribedSubmit(e) {
 
             // Show success message
             showNotification('🎉 Pro subscription activated successfully!', 'success');
+            
+            // Force UI update
             updateTrialCountdownWithAlreadySubscribed();
+            manageAlreadySubscribedButton();
+            
+            // Hide trial section immediately
+            const trialSection = document.getElementById('trialSection');
+            const upgradeButtons = document.querySelectorAll('.upgrade-btn');
+            if (trialSection) trialSection.style.display = 'none';
+            upgradeButtons.forEach(btn => btn.style.display = 'none');
 
             // Clear form
             emailInput.value = '';
@@ -429,10 +444,14 @@ function updateTrialCountdownWithAlreadySubscribed() {
     // Always manage button visibility first
     manageAlreadySubscribedButton();
 
-    if (isSubscribed) {
+    // Check both global variable and localStorage
+    const subscriptionStatus = localStorage.getItem('isSubscribed') === 'true';
+    
+    if (subscriptionStatus || isSubscribed) {
         // Hide trial section and upgrade buttons for subscribers
         if (trialSection) trialSection.style.display = 'none';
         upgradeButtons.forEach(btn => btn.style.display = 'none');
+        console.log('✅ Trial section hidden - user is subscribed');
         return;
     }
 
