@@ -565,14 +565,10 @@
             margin: 25px 0;
             text-align: left;
             min-height: 140px;
-            height: 140px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            overflow: hidden;
             box-sizing: border-box;
-            contain: layout;
-            will-change: auto;
         }
 
         .summary-card h3 {
