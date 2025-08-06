@@ -280,7 +280,8 @@ function initializeAlreadySubscribedFeature() {
 
     // Set up button click handlers using event delegation
     document.addEventListener('click', (e) => {
-        if (e.target.id === 'alreadySubscribedBtn' || e.target.closest('#alreadySubscribedBtn')) {
+        // Target the button with id 'alreadySubscribedBtn'
+        if (e.target.id === 'alreadySubscribedBtn') {
             e.preventDefault();
             alreadySubscribedModal.style.display = 'flex';
             setTimeout(() => {
@@ -289,14 +290,27 @@ function initializeAlreadySubscribedFeature() {
         }
     });
 
-    // Ensure we remove any duplicate buttons on initialization
-    const existingButtons = document.querySelectorAll('[id*="alreadySubscribed"]');
-    existingButtons.forEach((btn, index) => {
-        if (index > 0) { // Keep only the first one
-            btn.remove();
-        }
-    });
+    // Initialize the visibility management for the button
+    manageAlreadySubscribedButton();
 }
+
+// Function to manage the Already Subscribed button visibility
+function manageAlreadySubscribedButton() {
+    const existingButton = document.getElementById('alreadySubscribedBtn');
+
+    if (localStorage.getItem('isSubscribed') === 'true') {
+        // Hide the button if user is already subscribed
+        if (existingButton) {
+            existingButton.style.display = 'none';
+        }
+    } else {
+        // Show the button if user is not subscribed
+        if (existingButton) {
+            existingButton.style.display = 'inline-block';
+        }
+    }
+}
+
 
 async function handleAlreadySubscribedSubmit(e) {
     e.preventDefault();
@@ -416,16 +430,16 @@ function updateTrialCountdownWithAlreadySubscribed() {
         // Hide trial section and upgrade buttons for subscribers
         if (trialSection) trialSection.style.display = 'none';
         upgradeButtons.forEach(btn => btn.style.display = 'none');
-        // Remove any existing already subscribed buttons
-        document.querySelectorAll('[id*="alreadySubscribed"]').forEach(btn => {
-            if (btn.id.includes('alreadySubscribed')) btn.style.display = 'none';
-        });
+        // Manage the visibility of the "Already Subscribed" button
+        manageAlreadySubscribedButton();
         return;
     }
 
     // Show elements for trial users
     if (trialSection) trialSection.style.display = 'block';
     upgradeButtons.forEach(btn => btn.style.display = 'inline-block');
+    // Ensure the "Already Subscribed" button is visible if not subscribed
+    manageAlreadySubscribedButton();
 
     const trialStart = parseInt(trialStartDate);
     const trialDuration = 3 * 24 * 60 * 60 * 1000; // 3 days
@@ -976,12 +990,12 @@ function exportToPDF() {
         }
     `;
     document.head.appendChild(printStyles);
-    
+
     // Close any expanded forms
     document.querySelectorAll('.expense-card.expanded').forEach(card => {
         card.classList.remove('expanded');
     });
-    
+
     setTimeout(() => {
         window.print();
         // Remove print styles after printing
@@ -1007,7 +1021,7 @@ function exportHistoryToPDF() {
             }
         `;
         document.head.appendChild(printStyles);
-        
+
         setTimeout(() => {
             window.print();
             setTimeout(() => {
@@ -1032,7 +1046,7 @@ function exportInsightsToPDF() {
             }
         `;
         document.head.appendChild(printStyles);
-        
+
         setTimeout(() => {
             window.print();
             setTimeout(() => {
@@ -1059,13 +1073,13 @@ function exportToCSV() {
         showNotification('No expenses to export', 'warning');
         return;
     }
-    
+
     const csvContent = "data:text/csv;charset=utf-8," 
         + "Date,Category,Amount,Description,Location\n"
         + expenses.map(ex => 
-            `${ex.date},${ex.categoryName},$${ex.amount.toFixed(2)},"${ex.description}","${ex.location}"`
+            `${ex.date},${ex.categoryName},${ex.amount.toFixed(2)},"${ex.description.replace(/"/g, '""')}","${ex.location.replace(/"/g, '""')}"`
         ).join("\n");
-    
+
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -1105,7 +1119,7 @@ function showFAQ() {
     if (modal) {
         modal.style.display = 'flex';
         setTimeout(() => modal.classList.add('show'), 10);
-        
+
         // Update trial start date display
         const trialStartDisplay = document.getElementById('trial-start-date-display');
         if (trialStartDisplay && trialStartDate) {
@@ -1126,11 +1140,11 @@ function closeFAQ() {
 function toggleFAQ(element) {
     const answer = element.nextElementSibling;
     const isActive = answer.classList.contains('active');
-    
+
     // Close all other FAQ items
     document.querySelectorAll('.faq-answer').forEach(ans => ans.classList.remove('active'));
     document.querySelectorAll('.faq-question span').forEach(span => span.textContent = '+');
-    
+
     if (!isActive) {
         answer.classList.add('active');
         element.querySelector('span').textContent = '-';
@@ -1139,21 +1153,21 @@ function toggleFAQ(element) {
 
 function submitFeedback(event) {
     event.preventDefault();
-    
+
     const feedbackType = document.getElementById('feedbackType').value;
     const feedbackMessage = document.getElementById('feedbackMessage').value;
     const feedbackEmail = document.getElementById('feedbackEmail').value;
-    
+
     // Determine email address based on feedback type
     const emailAddress = feedbackType === 'feature' ? 'features@truckerexpensetracker.com' : 'support@truckerexpensetracker.com';
-    
+
     // Create mailto link
     const subject = `Trucker Expense Tracker - ${feedbackType.charAt(0).toUpperCase() + feedbackType.slice(1)}`;
     const body = `Feedback Type: ${feedbackType}\n\nMessage:\n${feedbackMessage}\n\n${feedbackEmail ? `From: ${feedbackEmail}` : ''}`;
     const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    
+
     window.open(mailtoLink);
-    
+
     // Show success message
     document.getElementById('feedbackForm').style.display = 'none';
     document.getElementById('feedbackSuccess').style.display = 'block';
@@ -1168,14 +1182,14 @@ function resetFeedbackForm() {
 function updateEmailDisplay() {
     const feedbackType = document.getElementById('feedbackType').value;
     const emailDisplay = document.getElementById('emailDisplay');
-    
+
     const emails = {
         'bug': '📧 Will be sent to: support@truckerexpensetracker.com',
         'feature': '📧 Will be sent to: features@truckerexpensetracker.com',
         'improvement': '📧 Will be sent to: support@truckerexpensetracker.com',
         'general': '📧 Will be sent to: support@truckerexpensetracker.com'
     };
-    
+
     emailDisplay.textContent = emails[feedbackType] || '';
 }
 
@@ -1188,23 +1202,23 @@ function backupData() {
         showNotification('No data to backup', 'warning');
         return;
     }
-    
+
     const backup = {
         expenses: expenses,
         exportDate: new Date().toISOString(),
         version: '2.1.5'
     };
-    
+
     const dataStr = JSON.stringify(backup, null, 2);
     const dataBlob = new Blob([dataStr], {type: 'application/json'});
-    
+
     const link = document.createElement('a');
     link.href = URL.createObjectURL(dataBlob);
     link.download = `trucker_expenses_backup_${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+
     showNotification('Data backed up successfully!', 'success');
 }
 
@@ -1212,16 +1226,16 @@ function restoreData() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'application/json';
-    
+
     input.onchange = function(event) {
         const file = event.target.files[0];
         if (!file) return;
-        
+
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
                 const backup = JSON.parse(e.target.result);
-                
+
                 if (backup.expenses && Array.isArray(backup.expenses)) {
                     if (confirm(`This will replace your current ${expenses.length} expenses with ${backup.expenses.length} expenses from the backup. Continue?`)) {
                         expenses = backup.expenses;
@@ -1240,7 +1254,7 @@ function restoreData() {
         };
         reader.readAsText(file);
     };
-    
+
     input.click();
 }
 
