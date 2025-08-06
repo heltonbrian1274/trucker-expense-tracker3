@@ -185,12 +185,15 @@ function initializeApp() {
     const urlParams = new URLSearchParams(window.location.search);
     const hasToken = urlParams.get('token');
     
+    // Get subscription status using the safe method
+    const userIsSubscribed = safeLocalStorageGet('isSubscribed') === 'true';
+    
     // Only show welcome modal if user is not subscribed and hasn't seen it before
-    // Also don't show on iOS if there's a token parameter (subscription verification in progress)
+    // Also don't show if there's a token parameter (subscription verification in progress)
     if (currentExpenses.length === 0 && 
         !localStorage.getItem('hasSeenWelcome') && 
-        !isSubscribed && 
-        !(isIOSDevice() && hasToken)) {
+        !userIsSubscribed && 
+        !hasToken) {
         showWelcomeModal();
     }
 
