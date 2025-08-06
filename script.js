@@ -185,15 +185,27 @@ function initializeApp() {
     const urlParams = new URLSearchParams(window.location.search);
     const hasToken = urlParams.get('token');
 
-    // Get subscription status using the safe method
-    const userIsSubscribed = safeLocalStorageGet('isSubscribed') === 'true';
+    // Get subscription status using multiple checks for reliability
+    const userIsSubscribed = safeLocalStorageGet('isSubscribed') === 'true' || isSubscribed;
+    
+    // For iOS: Additional check to prevent modal during token processing
+    const isIOSWithTokenProcessing = isIOSDevice() && (hasToken || urlParams.toString().includes('token'));
 
-    // Only show welcome modal if user is not subscribed and hasn't seen it before
-    // Also don't show if there's a token parameter (subscription verification in progress)
-    if (currentExpenses.length === 0 &&
-        !localStorage.getItem('hasSeenWelcome') &&
-        !userIsSubscribed &&
-        !hasToken) {
+    // Never show welcome modal if:
+    // 1. User is subscribed (any method)
+    // 2. User has already seen welcome
+    // 3. There's a token being processed (especially important for iOS)
+    // 4. iOS device with any subscription-related URL params
+    if (userIsSubscribed || 
+        localStorage.getItem('hasSeenWelcome') || 
+        hasToken || 
+        isIOSWithTokenProcessing) {
+        console.log('🚫 Welcome modal blocked - user subscribed or token processing');
+        return;
+    }
+
+    // Only show for truly new, non-subscribed users with no expenses
+    if (currentExpenses.length === 0) {
         showWelcomeModal();
     }
 
@@ -346,8 +358,9 @@ async function checkSubscriptionStatusFromServer() {
 
 async function verifySubscriptionToken(token) {
     try {
-        // Immediately set subscription status to prevent welcome modal
+        // Immediately set subscription status and welcome flag to prevent modal
         safeLocalStorageSet('isSubscribed', 'true');
+        safeLocalStorageSet('hasSeenWelcome', 'true');
         isSubscribed = true;
 
         // Close any open modals immediately
@@ -1220,18 +1233,26 @@ function showNotification(message, type = 'info') {
 }
 
 function showWelcomeModal() {
-    // Multiple checks to prevent showing for subscribed users
+    // Comprehensive checks to prevent showing for subscribed users
     const isUserSubscribed = safeLocalStorageGet('isSubscribed') === 'true' || isSubscribed;
+    const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
+    const hasTokenInUrl = window.location.search.includes('token');
+    const hasSubscriptionToken = localStorage.getItem('subscriptionToken');
 
-    if (isUserSubscribed) {
-        console.log('🚫 Welcome modal blocked - user is subscribed');
+    // Block modal for any subscription-related scenario
+    if (isUserSubscribed || hasSeenWelcome || hasTokenInUrl || hasSubscriptionToken) {
+        console.log('🚫 Welcome modal blocked - user is subscribed, has seen welcome, or has tokens');
         return;
     }
 
-    // Additional iOS-specific check
-    if (isIOSDevice() && window.location.search.includes('token=')) {
-        console.log('🚫 Welcome modal blocked - iOS token verification in progress');
-        return;
+    // Additional iOS-specific protection
+    if (isIOSDevice()) {
+        // Check for any subscription-related URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('token') || urlParams.has('ios_refresh') || urlParams.has('v')) {
+            console.log('🚫 Welcome modal blocked - iOS with subscription-related URL params');
+            return;
+        }
     }
 
     const modal = document.getElementById('welcomeModal');
@@ -1239,7 +1260,7 @@ function showWelcomeModal() {
         modal.style.display = 'flex';
         modal.classList.add('active');
         setTimeout(() => modal.classList.add('show'), 10);
-        console.log('✅ Welcome modal displayed');
+        console.log('✅ Welcome modal displayed for new user');
     } else {
         console.error('❌ Welcome modal element not found');
     }
