@@ -952,15 +952,86 @@ function closeAllModals() {
 // --- Action Button Functions ---
 // ======================
 function exportToPDF() {
-    showNotification('PDF export feature coming soon!', 'info');
+    // Add print-specific styles temporarily
+    const printStyles = document.createElement('style');
+    printStyles.innerHTML = `
+        @media print {
+            .expense-form { display: none !important; }
+            .expense-card.expanded { background: white !important; color: black !important; }
+            .expense-card.expanded .expense-form { display: none !important; }
+            .action-buttons { display: none !important; }
+            .navigation { display: none !important; }
+            .header-controls { display: none !important; }
+            .privacy-notice { display: none !important; }
+            body { background: white !important; }
+            .section { box-shadow: none !important; border: 1px solid #ccc !important; }
+        }
+    `;
+    document.head.appendChild(printStyles);
+    
+    // Close any expanded forms
+    document.querySelectorAll('.expense-card.expanded').forEach(card => {
+        card.classList.remove('expanded');
+    });
+    
+    setTimeout(() => {
+        window.print();
+        // Remove print styles after printing
+        setTimeout(() => {
+            document.head.removeChild(printStyles);
+        }, 1000);
+    }, 100);
 }
 
 function exportHistoryToPDF() {
-    showNotification('History PDF export feature coming soon!', 'info');
+    showSection('history');
+    setTimeout(() => {
+        const printStyles = document.createElement('style');
+        printStyles.innerHTML = `
+            @media print {
+                .action-buttons { display: none !important; }
+                .navigation { display: none !important; }
+                .header-controls { display: none !important; }
+                .privacy-notice { display: none !important; }
+                body { background: white !important; }
+                .section { box-shadow: none !important; border: 1px solid #ccc !important; }
+                .btn-delete { display: none !important; }
+            }
+        `;
+        document.head.appendChild(printStyles);
+        
+        setTimeout(() => {
+            window.print();
+            setTimeout(() => {
+                document.head.removeChild(printStyles);
+            }, 1000);
+        }, 100);
+    }, 200);
 }
 
 function exportInsightsToPDF() {
-    showNotification('Insights PDF export feature coming soon!', 'info');
+    showSection('insights');
+    setTimeout(() => {
+        const printStyles = document.createElement('style');
+        printStyles.innerHTML = `
+            @media print {
+                .action-buttons { display: none !important; }
+                .navigation { display: none !important; }
+                .header-controls { display: none !important; }
+                .privacy-notice { display: none !important; }
+                body { background: white !important; }
+                .section { box-shadow: none !important; border: 1px solid #ccc !important; }
+            }
+        `;
+        document.head.appendChild(printStyles);
+        
+        setTimeout(() => {
+            window.print();
+            setTimeout(() => {
+                document.head.removeChild(printStyles);
+            }, 1000);
+        }, 100);
+    }, 200);
 }
 
 function printSection() {
