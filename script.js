@@ -486,7 +486,11 @@ function populateExpenseGrid() {
         const card = document.createElement('div');
         card.className = 'expense-card';
         card.dataset.category = category.id;
-        card.onclick = () => toggleExpenseCard(category.id);
+        card.onclick = (e) => {
+            // Don't toggle if clicking inside the form
+            if (e.target.closest('.expense-form')) return;
+            toggleExpenseCard(category.id);
+        };
         card.innerHTML = `
             <div class="expense-header">
                 <div class="expense-icon">${category.icon}</div>
@@ -532,11 +536,11 @@ function toggleExpenseCard(categoryId) {
 
     if (!isExpanded) {
         card.classList.add('expanded');
-        // Focus on amount input
+        // Focus on amount input after a short delay
         setTimeout(() => {
             const amountInput = document.getElementById(`amount-${categoryId}`);
             if (amountInput) amountInput.focus();
-        }, 100);
+        }, 150);
     }
 }
 
