@@ -12,30 +12,108 @@ if (!window.requestIdleCallback) {
 // ======================
 const expenseCategories=[{id:'fuel',name:'Fuel',icon:'⛽'},{id:'maintenance',name:'Maintenance & Repairs',icon:'🔧'},{id:'meals',name:'Meals',icon:'🍽️'},{id:'lodging',name:'Lodging',icon:'🏨'},{id:'tolls',name:'Tolls & Parking',icon:'🛣️'},{id:'permits',name:'Permits & Licenses',icon:'📋'},{id:'insurance',name:'Insurance',icon:'🛡️'},{id:'phone',name:'Phone & Communication',icon:'📱'},{id:'supplies',name:'Supplies & Equipment',icon:'📦'},{id:'training',name:'Training & Education',icon:'📚'},{id:'medical',name:'Medical & DOT Exams',icon:'🏥'},{id:'office',name:'Office Expenses',icon:'🏢'},{id:'bank',name:'Bank & Financial Fees',icon:'🏦'},{id:'legal',name:'Legal & Professional',icon:'⚖️'},{id:'other',name:'Other Business Expenses',icon:'💼'}];
 
-// State Variables
-let expenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
-let isDarkMode = localStorage.getItem('darkMode') === 'true';
+// State Variables - iOS-safe initialization
+let expenses = [];
+let isDarkMode = false;
 let currentSection = 'today';
-let isSubscribed = localStorage.getItem('isSubscribed') === 'true';
-
-// Trial initialization
-let trialStartDate = localStorage.getItem('trialStartDate');
-if (!trialStartDate) {
-    trialStartDate = Date.now().toString();
-    localStorage.setItem('trialStartDate', trialStartDate);
-}
+let isSubscribed = false;
+let trialStartDate = null;
 let isTrialExpired = false;
+
+// Initialize state with iOS-safe localStorage access
+try {
+    const expensesData = safeLocalStorageGet('truckerExpenses');
+    expenses = expensesData ? JSON.parse(expensesData) : [];
+    
+    isDarkMode = safeLocalStorageGet('darkMode') === 'true';
+    isSubscribed = safeLocalStorageGet('isSubscribed') === 'true';
+    
+    trialStartDate = safeLocalStorageGet('trialStartDate');
+    if (!trialStartDate) {
+        trialStartDate = Date.now().toString();
+        safeLocalStorageSet('trialStartDate', trialStartDate);
+    }
+} catch (error) {
+    console.warn('State initialization error:', error);
+    // Use defaults if localStorage fails
+    expenses = [];
+    isDarkMode = false;
+    isSubscribed = false;
+    trialStartDate = Date.now().toString();
+}
+
+// ======================
+// --- iOS/Safari Compatibility Helpers ---
+// ======================
+function isIOSDevice() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+function isSafari() {
+    return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+}
+
+// iOS-safe localStorage operations
+function safeLocalStorageSet(key, value) {
+    try {
+        localStorage.setItem(key, value);
+        return true;
+    } catch (e) {
+        console.warn('localStorage.setItem failed:', e);
+        // Fallback to sessionStorage for iOS private browsing
+        try {
+            sessionStorage.setItem(key, value);
+            return true;
+        } catch (e2) {
+            console.warn('sessionStorage.setItem also failed:', e2);
+            return false;
+        }
+    }
+}
+
+function safeLocalStorageGet(key) {
+    try {
+        return localStorage.getItem(key) || sessionStorage.getItem(key);
+    } catch (e) {
+        console.warn('localStorage/sessionStorage access failed:', e);
+        return null;
+    }
+}
 
 // ======================
 // --- DOMContentLoaded & Initialization ---
 // ======================
 document.addEventListener('DOMContentLoaded', function () {
+    // iOS-specific handling
+    if (isIOSDevice()) {
+        // Prevent zoom on input focus
+        document.addEventListener('touchstart', function() {}, {passive: true});
+        
+        // Add iOS-specific meta tags if not present
+        if (!document.querySelector('meta[name="apple-mobile-web-app-capable"]')) {
+            const metaCapable = document.createElement('meta');
+            metaCapable.name = 'apple-mobile-web-app-capable';
+            metaCapable.content = 'yes';
+            document.head.appendChild(metaCapable);
+        }
+    }
+
     // Defer non-critical initialization
     requestIdleCallback(() => {
         // Register Service Worker for PWA functionality
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js')
-                .then(registration => console.log('SW registered:', registration))
+            navigator.serviceWorker.register('./sw.js', {
+                updateViaCache: 'none' // iOS Safari compatibility
+            })
+                .then(registration => {
+                    console.log('SW registered:', registration);
+                    
+                    // iOS-specific: Force service worker activation
+                    if (isIOSDevice() && registration.waiting) {
+                        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                    }
+                })
                 .catch(error => console.log('SW registration failed:', error));
 
             // Listen for service worker messages
@@ -60,8 +138,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Reset trial logic (for URL ?reset=trial) 
     if (urlParams.get('reset') === 'trial') {
-        localStorage.clear();
-        sessionStorage.clear();
+        try {
+            localStorage.clear();
+            sessionStorage.clear();
+        } catch (e) {
+            console.warn('Storage clear failed:', e);
+        }
         location.reload();
         return;
     }
@@ -72,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Defer subscription checks
     requestIdleCallback(() => {
         if (token) {
-            localStorage.setItem('subscriptionToken', token);
+            safeLocalStorageSet('subscriptionToken', token);
             verifySubscriptionToken(token);
         } else {
             checkSubscriptionStatusFromServer();
@@ -84,8 +166,8 @@ document.addEventListener('DOMContentLoaded', function () {
 // --- App Initialization Logic ---
 // ======================
 function initializeApp() {
-    // Sync global subscription status with localStorage
-    isSubscribed = localStorage.getItem('isSubscribed') === 'true';
+    // Sync global subscription status with iOS-safe localStorage
+    isSubscribed = safeLocalStorageGet('isSubscribed') === 'true';
 
     if (isDarkMode) {
         document.body.classList.add('dark-mode');
@@ -230,10 +312,24 @@ async function verifySubscriptionToken(token) {
 
         const data = await response.json();
         if (data.success) {
-            localStorage.setItem('isSubscribed', 'true');
+            safeLocalStorageSet('isSubscribed', 'true');
             isSubscribed = true;
             showNotification('🎉 Pro subscription activated successfully!', 'success');
-            updateTrialCountdownWithAlreadySubscribed();
+            
+            // iOS-specific: Force UI update after a longer delay
+            if (isIOSDevice()) {
+                setTimeout(() => {
+                    updateTrialCountdownWithAlreadySubscribed();
+                    manageSubscriptionButtons();
+                    
+                    // Force a page refresh on iOS for complete state sync
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                }, 500);
+            } else {
+                updateTrialCountdownWithAlreadySubscribed();
+            }
         } else {
             showNotification(data.message || 'Failed to activate subscription', 'error');
         }
@@ -405,9 +501,9 @@ async function handleAlreadySubscribedSubmit(e) {
         }
 
         if (response.ok && data.success) {
-            // Store the token and activate subscription
-            localStorage.setItem('subscriptionToken', data.token);
-            localStorage.setItem('isSubscribed', 'true');
+            // Store the token and activate subscription with iOS-safe methods
+            safeLocalStorageSet('subscriptionToken', data.token);
+            safeLocalStorageSet('isSubscribed', 'true');
             isSubscribed = true;
 
             console.log('✅ Subscription activated successfully');
@@ -427,13 +523,26 @@ async function handleAlreadySubscribedSubmit(e) {
             // Clear form
             emailInput.value = '';
 
-            // Update UI using the centralized function
-            updateTrialCountdownWithAlreadySubscribed();
+            // iOS-specific handling
+            if (isIOSDevice()) {
+                // Clear service worker cache for iOS
+                if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_ALL_CACHE' });
+                }
+                
+                // Force immediate reload on iOS
+                setTimeout(() => {
+                    window.location.href = window.location.href + '?ios_refresh=' + Date.now();
+                }, 1000);
+            } else {
+                // Update UI using the centralized function
+                updateTrialCountdownWithAlreadySubscribed();
 
-            // Force refresh after a short delay to ensure UI updates
-            setTimeout(() => {
-                window.location.reload();
-            }, 2000);
+                // Force refresh after a short delay to ensure UI updates
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            }
 
         } else {
             const errorMessage = data?.message || 'Failed to verify subscription';
@@ -498,8 +607,8 @@ function initializeEnhancedValidation() {
 // --- Trial Management ---
 // ======================
 function updateTrialCountdownWithAlreadySubscribed() {
-    // Sync the global variable with localStorage
-    const subscriptionStatus = localStorage.getItem('isSubscribed') === 'true';
+    // Sync the global variable with iOS-safe localStorage
+    const subscriptionStatus = safeLocalStorageGet('isSubscribed') === 'true';
     isSubscribed = subscriptionStatus;
 
     const trialSection = document.getElementById('trialSection');
