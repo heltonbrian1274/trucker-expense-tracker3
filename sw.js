@@ -1,7 +1,7 @@
 // Service Worker for Trucker Expense Tracker PWA
 // Version 2.1.5 - Fixed Response cloning issue
 
-const CACHE_NAME = 'trucker-expense-tracker-v2.1.5';
+const CACHE_NAME = 'trucker-expense-tracker-v2.1.6-ios-fix';
 const urlsToCache = [
   './manifest.json',
   './icon-72x72.png',
@@ -47,16 +47,23 @@ self.addEventListener('message', (event) => {
   // iOS-specific: Force complete cache invalidation
   if (event.data && event.data.type === 'FORCE_IOS_CACHE_CLEAR') {
     event.waitUntil(
+      // Force immediate cache deletion
       caches.keys().then(cacheNames => {
+        console.log('SW: Deleting all caches:', cacheNames);
         return Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
       }).then(() => {
         // Force service worker to claim all clients immediately
         return self.clients.claim();
       }).then(() => {
+        // Skip waiting and activate immediately
+        return self.skipWaiting();
+      }).then(() => {
         // Notify all clients to reload completely
         return self.clients.matchAll({ includeUncontrolled: true }).then(clients => {
           clients.forEach(client => {
             client.postMessage({ type: 'FORCE_HARD_REFRESH' });
+            // Also send legacy message
+            client.postMessage({ type: 'CACHE_CLEARED' });
           });
         });
       })

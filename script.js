@@ -1486,9 +1486,13 @@ function restoreData() {
 // Function to clear service worker cache
 function clearServiceWorkerCache() {
     if (isIOSDevice()) {
-        // iOS-specific aggressive cache clearing
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({ type: 'FORCE_IOS_CACHE_CLEAR' });
+        // iOS-specific aggressive cache clearing with immediate unregistration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                registrations.forEach(registration => registration.unregister());
+            });
+            
+            navigator.serviceWorker.controller?.postMessage({ type: 'FORCE_IOS_CACHE_CLEAR' });
         }
         
         // Clear browser caches directly
@@ -1497,10 +1501,9 @@ function clearServiceWorkerCache() {
                 return Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
             }).then(() => {
                 console.log('iOS: All caches cleared');
-                // Force a hard reload with cache busting on iOS
-                setTimeout(() => {
-                    window.location.href = window.location.protocol + '//' + window.location.host + window.location.pathname + '?ios_cache_clear=' + Date.now();
-                }, 500);
+                // Force immediate hard reload with multiple cache busting params
+                const cacheBuster = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                window.location.href = window.location.protocol + '//' + window.location.host + window.location.pathname + '?v=' + cacheBuster + '&ios_refresh=1&t=' + Date.now();
             });
         }
     } else {
