@@ -24,10 +24,10 @@ let isTrialExpired = false;
 try {
     const expensesData = safeLocalStorageGet('truckerExpenses');
     expenses = expensesData ? JSON.parse(expensesData) : [];
-    
+
     isDarkMode = safeLocalStorageGet('darkMode') === 'true';
     isSubscribed = safeLocalStorageGet('isSubscribed') === 'true';
-    
+
     trialStartDate = safeLocalStorageGet('trialStartDate');
     if (!trialStartDate) {
         trialStartDate = Date.now().toString();
@@ -46,7 +46,7 @@ try {
 // --- iOS/Safari Compatibility Helpers ---
 // ======================
 function isIOSDevice() {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (isIOSDevice()) {
         // Prevent zoom on input focus
         document.addEventListener('touchstart', function() {}, {passive: true});
-        
+
         // Add iOS-specific meta tags if not present
         if (!document.querySelector('meta[name="apple-mobile-web-app-capable"]')) {
             const metaCapable = document.createElement('meta');
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
                 .then(registration => {
                     console.log('SW registered:', registration);
-                    
+
                     // iOS-specific: Force service worker activation
                     if (isIOSDevice() && registration.waiting) {
                         registration.waiting.postMessage({ type: 'SKIP_WAITING' });
@@ -125,9 +125,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         window.location.reload(true);
                         return;
                     }
-                    
-                    if (event.data && (event.data.type === 'ALL_CACHE_CLEARED' || 
-                                               event.data.type === 'FORCE_REFRESH_UI' || 
+
+                    if (event.data && (event.data.type === 'ALL_CACHE_CLEARED' ||
+                                               event.data.type === 'FORCE_REFRESH_UI' ||
                                                event.data.type === 'CACHE_CLEARED')) {
                         console.log('Service worker cache cleared, updating UI');
                         setTimeout(() => {
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
 
-    // Reset trial logic (for URL ?reset=trial) 
+    // Reset trial logic (for URL ?reset=trial)
     if (urlParams.get('reset') === 'trial') {
         try {
             localStorage.clear();
@@ -184,20 +184,32 @@ function initializeApp() {
     const currentExpenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
     const urlParams = new URLSearchParams(window.location.search);
     const hasToken = urlParams.get('token');
-    
+
     // Get subscription status using the safe method
     const userIsSubscribed = safeLocalStorageGet('isSubscribed') === 'true';
-    
+
     // Only show welcome modal if user is not subscribed and hasn't seen it before
     // Also don't show if there's a token parameter (subscription verification in progress)
-    if (currentExpenses.length === 0 && 
-        !localStorage.getItem('hasSeenWelcome') && 
-        !userIsSubscribed && 
+    if (currentExpenses.length === 0 &&
+        !localStorage.getItem('hasSeenWelcome') &&
+        !userIsSubscribed &&
         !hasToken) {
         showWelcomeModal();
     }
 
-    document.getElementById('closeWelcomeBtn').addEventListener('click', closeWelcomeModal);
+    // Initialize welcome modal close button with multiple fallbacks
+    const closeWelcomeBtn = document.getElementById('closeWelcomeBtn');
+    if (closeWelcomeBtn) {
+        closeWelcomeBtn.addEventListener('click', closeWelcomeModal);
+
+        // iOS-specific: Add touch event as fallback
+        if (isIOSDevice()) {
+            closeWelcomeBtn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                closeWelcomeModal();
+            });
+        }
+    }
 
     // Initialize the Already Subscribed feature
     initializeAlreadySubscribedFeature();
@@ -275,7 +287,7 @@ function initializeApp() {
         document.addEventListener('touchstart', function(e) {
             touchStartTime = Date.now();
         });
-        
+
         document.addEventListener('touchend', function(e) {
             const touchDuration = Date.now() - touchStartTime;
             // If user holds touch for 3+ seconds on modal background, force close all modals
@@ -338,10 +350,10 @@ async function verifySubscriptionToken(token) {
         // Immediately set subscription status to prevent welcome modal
         safeLocalStorageSet('isSubscribed', 'true');
         isSubscribed = true;
-        
+
         // Close any open modals immediately
         closeAllModals();
-        
+
         const response = await fetch('/api/verify-token', {
             method: 'POST',
             headers: {
@@ -357,12 +369,13 @@ async function verifySubscriptionToken(token) {
         const data = await response.json();
         if (data.success) {
             showNotification('🎉 Pro subscription activated successfully!', 'success');
-            
-            // iOS-specific: Force UI update after a longer delay
+
+            // iOS-specific handling
             if (isIOSDevice()) {
+                // Force UI update after a longer delay
                 setTimeout(() => {
                     updateTrialCountdownWithAlreadySubscribed();
-                    
+
                     // Force a page refresh on iOS for complete state sync
                     setTimeout(() => {
                         window.location.reload();
@@ -455,8 +468,8 @@ function initializeAlreadySubscribedFeature() {
     // Set up button click handlers using event delegation for any already subscribed button
     document.addEventListener('click', (e) => {
         // Target any button related to "already subscribed" functionality
-        if (e.target.id === 'alreadySubscribedBtn' || 
-            e.target.id === 'alreadySubscribedActionBtn' || 
+        if (e.target.id === 'alreadySubscribedBtn' ||
+            e.target.id === 'alreadySubscribedActionBtn' ||
             e.target.classList.contains('already-subscribed-btn') ||
             e.target.getAttribute('data-action') === 'already-subscribed') {
             e.preventDefault();
@@ -576,14 +589,14 @@ async function handleAlreadySubscribedSubmit(e) {
                 if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
                     navigator.serviceWorker.controller.postMessage({ type: 'FORCE_IOS_CACHE_CLEAR' });
                 }
-                
+
                 // Clear browser caches directly
                 if ('caches' in window) {
                     caches.keys().then(cacheNames => {
                         cacheNames.forEach(cacheName => caches.delete(cacheName));
                     });
                 }
-                
+
                 // Force immediate hard reload on iOS with cache busting
                 setTimeout(() => {
                     window.location.href = window.location.protocol + '//' + window.location.host + window.location.pathname + '?ios_refresh=' + Date.now() + '&t=' + Math.random();
@@ -649,7 +662,7 @@ function initializeEnhancedValidation() {
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden && isSubscribed) {
             setTimeout(() => {
-                validateSubscriptionInBackground().catch(error => 
+                validateSubscriptionInBackground().catch(error =>
                     console.log('Focus validation error:', error)
                 );
             }, 2000);
@@ -683,9 +696,9 @@ function updateTrialCountdownWithAlreadySubscribed() {
             // Also hide parent container if it only contains subscription-related buttons
             const parent = btn.parentElement;
             if (parent && parent.classList.contains('action-buttons')) {
-                const visibleButtons = Array.from(parent.children).filter(child => 
-                    child.style.display !== 'none' && 
-                    !child.classList.contains('subscribe-btn') && 
+                const visibleButtons = Array.from(parent.children).filter(child =>
+                    child.style.display !== 'none' &&
+                    !child.classList.contains('subscribe-btn') &&
                     !child.classList.contains('upgrade-btn')
                 );
                 // If only subscription buttons remain, we should keep other action buttons visible
@@ -1210,34 +1223,65 @@ function showNotification(message, type = 'info') {
 function showWelcomeModal() {
     // Multiple checks to prevent showing for subscribed users
     const isUserSubscribed = safeLocalStorageGet('isSubscribed') === 'true' || isSubscribed;
-    
+
     if (isUserSubscribed) {
         console.log('🚫 Welcome modal blocked - user is subscribed');
         return;
     }
-    
+
     // Additional iOS-specific check
     if (isIOSDevice() && window.location.search.includes('token=')) {
         console.log('🚫 Welcome modal blocked - iOS token verification in progress');
         return;
     }
-    
+
     const modal = document.getElementById('welcomeModal');
     if (modal) {
         modal.style.display = 'flex';
         modal.classList.add('active');
         setTimeout(() => modal.classList.add('show'), 10);
+        console.log('✅ Welcome modal displayed');
+    } else {
+        console.error('❌ Welcome modal element not found');
     }
 }
 
 function closeWelcomeModal() {
+    console.log('🔥 closeWelcomeModal called');
+
     const modal = document.getElementById('welcomeModal');
     if (modal) {
-        modal.classList.remove('show', 'active');
-        setTimeout(() => {
+        // Set the flag immediately to prevent re-showing
+        safeLocalStorageSet('hasSeenWelcome', 'true');
+        console.log('✅ hasSeenWelcome flag set');
+
+        // iOS-specific: Force immediate hide without animation if needed
+        if (isIOSDevice()) {
             modal.style.display = 'none';
-            localStorage.setItem('hasSeenWelcome', 'true');
-        }, 300);
+            modal.classList.remove('show', 'active');
+            modal.style.opacity = '0';
+            modal.style.pointerEvents = 'none';
+            console.log('📱 iOS modal force closed');
+        } else {
+            modal.classList.remove('show', 'active');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+
+        // Force focus to main content after modal closes
+        setTimeout(() => {
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.focus();
+            }
+            // Remove any body scroll locks
+            document.body.style.overflow = 'auto';
+        }, 350);
+
+        console.log('✅ Welcome modal closed successfully');
+    } else {
+        console.error('❌ Welcome modal element not found');
     }
 }
 
@@ -1245,15 +1289,15 @@ function closeAllModals() {
     document.querySelectorAll('.modal').forEach(modal => {
         modal.classList.remove('show', 'active');
         modal.style.display = 'none';
-        
-        // iOS-specific: Force remove any remaining modal states
+
+        // iOS-specific: Remove any remaining modal states
         if (isIOSDevice()) {
             modal.style.opacity = '0';
             modal.style.pointerEvents = 'none';
             modal.style.zIndex = '-1';
         }
     });
-    
+
     // iOS-specific: Remove any modal overlay effects
     if (isIOSDevice()) {
         document.body.style.overflow = 'auto';
@@ -1365,9 +1409,9 @@ function exportToCSV() {
         return;
     }
 
-    const csvContent = "data:text/csv;charset=utf-8," 
+    const csvContent = "data:text/csv;charset=utf-8,"
         + "Date,Category,Amount,Description,Location\n"
-        + expenses.map(ex => 
+        + expenses.map(ex =>
             `${ex.date},${ex.categoryName},${ex.amount.toFixed(2)},"${ex.description.replace(/"/g, '""')}","${ex.location.replace(/"/g, '""')}"`
         ).join("\n");
 
@@ -1557,10 +1601,10 @@ function clearServiceWorkerCache() {
             navigator.serviceWorker.getRegistrations().then(registrations => {
                 registrations.forEach(registration => registration.unregister());
             });
-            
+
             navigator.serviceWorker.controller?.postMessage({ type: 'FORCE_IOS_CACHE_CLEAR' });
         }
-        
+
         // Clear browser caches directly
         if ('caches' in window) {
             caches.keys().then(cacheNames => {
@@ -1584,7 +1628,7 @@ function clearServiceWorkerCache() {
             caches.keys().then(cacheNames => {
                 cacheNames.forEach(cacheName => caches.delete(cacheName));
                 console.log('Browser caches cleared directly');
-                
+
                 setTimeout(() => {
                     updateTrialCountdownWithAlreadySubscribed();
                     manageSubscriptionButtons();
@@ -1602,11 +1646,11 @@ function manageSubscriptionButtons() {
         return;
     }
     buttonManagementInProgress = true;
-    
+
     try {
         const isUserSubscribed = localStorage.getItem('isSubscribed') === 'true';
         const buttonsToRemove = document.querySelectorAll('.subscribe-btn, .upgrade-btn, #alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"]');
-        
+
         if (isUserSubscribed) {
             // Remove all subscription buttons for subscribed users
             let removedCount = 0;
@@ -1622,7 +1666,7 @@ function manageSubscriptionButtons() {
         } else {
             // Remove duplicates and ensure only one "Already Subscribed" button exists
             let alreadySubscribedButton = null;
-            
+
             buttonsToRemove.forEach((button, index) => {
                 if (button.id === 'alreadySubscribedBtn' || button.classList.contains('already-subscribed-btn')) {
                     if (!alreadySubscribedButton) {
@@ -1632,7 +1676,7 @@ function manageSubscriptionButtons() {
                     }
                 }
             });
-            
+
             // Create button if none exists
             if (!alreadySubscribedButton) {
                 const actionButtons = document.querySelector('.action-buttons');
@@ -1642,7 +1686,7 @@ function manageSubscriptionButtons() {
                     button.className = 'action-btn';
                     button.style.background = '#10b981';
                     button.innerHTML = '✅ Already Subscribed?';
-                    
+
                     const subscribeBtn = actionButtons.querySelector('.subscribe-btn');
                     if (subscribeBtn) {
                         actionButtons.insertBefore(button, subscribeBtn);
