@@ -121,6 +121,7 @@
                     <button class="action-btn" style="background: #8b5cf6;" onclick="backupData()">💾 Backup Data</button>
                     <button class="action-btn" style="background: #06b6d4;" onclick="restoreData()">📥 Restore Data</button>
                     <button class="action-btn subscribe-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')">💳 Subscribe - $14.99/mo</button>
+                    <button class="action-btn" style="background: #10b981;" id="alreadySubscribedBtn">✅ Already Subscribed?</button>
                 </div>
             </section>
 
@@ -391,6 +392,30 @@
                 </li>
             </ul>
             <button id="closeWelcomeBtn" class="btn" style="margin-top: 30px; padding: 15px 30px; font-size: 1.1rem;">Start Tracking Expenses</button>
+        </div>
+    </div>
+
+    <!-- Already Subscribed Modal -->
+    <div id="alreadySubscribedModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeAlreadySubscribedBtn">&times;</button>
+            <h2>✅ Already Subscribed?</h2>
+            <p>Enter the email address you used to purchase your subscription. We'll verify your account and activate your Pro features.</p>
+            <form id="alreadySubscribedForm">
+                <div class="form-group">
+                    <label for="subscriberEmail">Email Address:</label>
+                    <input type="email" id="subscriberEmail" required placeholder="your@email.com">
+                </div>
+                <button type="submit" class="btn">Verify Subscription</button>
+            </form>
+            <div id="subscriptionVerificationSuccess" style="display: none; text-align: center; padding: 30px;">
+                <div style="font-size: 4rem; margin-bottom: 20px; color: var(--success-color);">✅</div>
+                <div id="verificationSuccessMessage">
+                    <h3 style="color: var(--success-color); margin-bottom: 15px;">Subscription Verified!</h3>
+                    <p style="color: #666;">Your Pro subscription has been activated successfully.</p>
+                </div>
+                <button onclick="location.reload()" class="btn" style="margin-top: 20px;">Continue to App</button>
+            </div>
         </div>
     </div>
     
