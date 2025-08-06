@@ -159,7 +159,7 @@ async function checkSubscriptionStatusFromServer() {
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-        
+
         const response = await fetch('/api/check-subscription', {
             method: 'GET',
             headers: {
@@ -167,7 +167,7 @@ async function checkSubscriptionStatusFromServer() {
             },
             signal: controller.signal
         });
-        
+
         clearTimeout(timeoutId);
 
         if (!response.ok) {
@@ -481,7 +481,7 @@ function populateExpenseGrid() {
 
     const today = new Date().toISOString().split('T')[0];
     const fragment = document.createDocumentFragment();
-    
+
     expenseCategories.forEach(category => {
         const card = document.createElement('div');
         card.className = 'expense-card';
@@ -496,28 +496,28 @@ function populateExpenseGrid() {
                 <div class="expense-icon">${category.icon}</div>
                 <div class="expense-title">${category.name}</div>
             </div>
-            <div class="expense-form" id="form-${category.id}">
+            <div class="expense-form" id="form-${categoryId}">
                 <div class="form-group">
-                    <input type="number" id="amount-${category.id}" placeholder="Amount ($)" step="0.01" min="0" required>
+                    <input type="number" id="amount-${categoryId}" placeholder="Amount ($)" step="0.01" min="0" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" id="description-${category.id}" placeholder="Description (optional)">
+                    <input type="text" id="description-${categoryId}" placeholder="Description (optional)">
                 </div>
                 <div class="form-group">
-                    <input type="date" id="date-${category.id}" value="${today}" required>
+                    <input type="text" id="location-${categoryId}" placeholder="Location (City, State)">
                 </div>
                 <div class="form-group">
-                    <input type="file" id="receipt-${category.id}" accept="image/*" class="receipt-input">
+                    <input type="file" id="receipt-${categoryId}" accept="image/*" class="receipt-input">
                 </div>
                 <div class="form-buttons">
-                    <button type="button" onclick="addExpense('${category.id}')" class="btn-primary">Add Expense</button>
-                    <button type="button" onclick="toggleExpenseCard('${category.id}')" class="btn-secondary">Cancel</button>
+                    <button type="button" onclick="addExpense('${categoryId}')" class="btn-primary">Add Expense</button>
+                    <button type="button" onclick="toggleExpenseCard('${categoryId}')" class="btn-secondary">Cancel</button>
                 </div>
             </div>
         `;
         fragment.appendChild(card);
     });
-    
+
     grid.appendChild(fragment);
 }
 
@@ -547,9 +547,9 @@ function toggleExpenseCard(categoryId) {
 function addExpense(categoryId) {
     const amountInput = document.getElementById(`amount-${categoryId}`);
     const descriptionInput = document.getElementById(`description-${categoryId}`);
-    const dateInput = document.getElementById(`date-${categoryId}`);
+    const locationInput = document.getElementById(`location-${categoryId}`);
     const receiptInput = document.getElementById(`receipt-${categoryId}`);
-    
+
     // Find the add button and show loading state
     const addButton = document.querySelector(`[data-category="${categoryId}"] .btn-primary`);
     const originalText = addButton.textContent;
@@ -558,7 +558,7 @@ function addExpense(categoryId) {
 
     const amount = parseFloat(amountInput.value);
     const description = descriptionInput.value.trim();
-    const date = dateInput.value;
+    const location = locationInput.value.trim();
 
     if (!amount || amount <= 0 || amount > 99999.99) {
         showNotification('Please enter a valid amount between $0.01 and $99,999.99', 'error');
@@ -572,9 +572,9 @@ function addExpense(categoryId) {
         return;
     }
 
-    if (!date) {
-        showNotification('Please select a date', 'error');
-        dateInput.focus();
+    if (location.length > 100) {
+        showNotification('Location must be 100 characters or less', 'error');
+        locationInput.focus();
         return;
     }
 
@@ -586,7 +586,8 @@ function addExpense(categoryId) {
         categoryIcon: category.icon,
         amount: amount,
         description: description || '',
-        date: date,
+        location: location || '',
+        date: new Date().toISOString().split('T')[0], // Keep today's date implicitly
         timestamp: Date.now()
     };
 
@@ -610,8 +611,8 @@ function addExpense(categoryId) {
         // Reset form
         amountInput.value = '';
         descriptionInput.value = '';
+        locationInput.value = '';
         receiptInput.value = '';
-        dateInput.value = new Date().toISOString().split('T')[0];
 
         // Close card
         const card = document.querySelector(`[data-category="${categoryId}"]`);
@@ -632,34 +633,34 @@ function updateInsights() {
     const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
     const uniqueDays = [...new Set(expenses.map(ex => new Date(ex.date).toDateString()))].length;
     const averageDaily = uniqueDays > 0 ? totalExpenses / uniqueDays : 0;
-    
+
     // Calculate category totals
     const categoryTotals = {};
     expenses.forEach(ex => {
         categoryTotals[ex.categoryName] = (categoryTotals[ex.categoryName] || 0) + ex.amount;
     });
-    
+
     const topCategory = Object.keys(categoryTotals).reduce((a, b) => categoryTotals[a] > categoryTotals[b] ? a : b, 'None');
-    
+
     const now = new Date();
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
     const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const lastMonth = lastMonthDate.getMonth();
     const lastMonthYear = lastMonthDate.getFullYear();
-    
+
     const currentMonthExpenses = expenses.filter(ex => {
         const d = new Date(ex.date);
         return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
     }).reduce((sum, ex) => sum + ex.amount, 0);
-    
+
     const lastMonthExpenses = expenses.filter(ex => {
         const d = new Date(ex.date);
         return d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear;
     }).reduce((sum, ex) => sum + ex.amount, 0);
-    
+
     const monthlyChange = lastMonthExpenses > 0 ? ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses * 100).toFixed(1) : (currentMonthExpenses > 0 ? '∞' : '0');
-    
+
     // Update DOM elements
     const elements = {
         'insightsTotalExpenses': `$${totalExpenses.toFixed(2)}`,
@@ -668,12 +669,12 @@ function updateInsights() {
         'currentMonthTotal': `$${currentMonthExpenses.toFixed(2)}`,
         'lastMonthTotal': `$${lastMonthExpenses.toFixed(2)}`
     };
-    
+
     Object.entries(elements).forEach(([id, value]) => {
         const element = document.getElementById(id);
         if (element) element.textContent = value;
     });
-    
+
     const changeElement = document.getElementById('monthlyChange');
     if (changeElement) {
         if (monthlyChange === '∞') {
@@ -688,7 +689,7 @@ function updateInsights() {
             changeElement.style.color = changeValue > 0 ? '#ef4444' : '#10b981';
         }
     }
-    
+
     // Update category and monthly breakdowns
     updateCategoryBreakdown(categoryTotals);
     updateMonthlyBreakdown();
@@ -696,25 +697,25 @@ function updateInsights() {
 
 function updateCategoryBreakdown(categoryTotals) {
     const categoryList = document.getElementById('categoryList');
-    
+
     if (!categoryList) return;
-    
+
     if (Object.keys(categoryTotals).length === 0) {
         categoryList.innerHTML = '<p class="no-data-message">No expense data available for analysis.</p>';
         return;
     }
-    
+
     const sortedCategories = Object.entries(categoryTotals)
         .sort(([,a], [,b]) => b - a)
         .slice(0, 10);
-    
+
     const totalAmount = Object.values(categoryTotals).reduce((sum, amount) => sum + amount, 0);
-    
+
     const content = sortedCategories.map(([categoryName, amount]) => {
         const percentage = totalAmount > 0 ? ((amount / totalAmount) * 100).toFixed(1) : '0';
         const categoryData = expenseCategories.find(cat => cat.name === categoryName);
         const icon = categoryData ? categoryData.icon : '💼';
-        
+
         return `
             <li class="category-breakdown-item">
                 <div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light); align-items: center;">
@@ -729,40 +730,40 @@ function updateCategoryBreakdown(categoryTotals) {
                 </div>
             </li>`;
     }).join('');
-    
+
     categoryList.innerHTML = content;
 }
 
 function updateMonthlyBreakdown() {
     const monthlyBreakdown = document.getElementById('monthlyBreakdown');
-    
+
     if (!monthlyBreakdown) return;
-    
+
     if (expenses.length === 0) {
         monthlyBreakdown.innerHTML = '<p class="no-data-message">No expense data available for monthly analysis.</p>';
         return;
     }
-    
+
     const monthlyTotals = {};
     expenses.forEach(ex => {
         const date = new Date(ex.date);
         const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         const monthName = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-        
+
         if (!monthlyTotals[monthKey]) {
             monthlyTotals[monthKey] = { name: monthName, total: 0, count: 0 };
         }
         monthlyTotals[monthKey].total += ex.amount;
         monthlyTotals[monthKey].count += 1;
     });
-    
+
     const sortedMonths = Object.entries(monthlyTotals)
         .sort(([a], [b]) => b.localeCompare(a))
         .slice(0, 6);
-    
+
     const content = sortedMonths.map(([monthKey, data]) => {
         const average = data.count > 0 ? data.total / data.count : 0;
-        
+
         return `
             <li class="monthly-breakdown-item">
                 <div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light); align-items: center;">
@@ -774,7 +775,7 @@ function updateMonthlyBreakdown() {
                 </div>
             </li>`;
     }).join('');
-    
+
     monthlyBreakdown.innerHTML = content;
 }
 
@@ -786,7 +787,7 @@ function updateHistory() {
 
     let filteredExpenses = [...expenses];
     const now = new Date();
-    
+
     switch (filter) {
         case 'today':
             filteredExpenses = expenses.filter(ex => new Date(ex.date).toDateString() === now.toDateString());
@@ -826,6 +827,7 @@ function updateHistory() {
                     <div class="history-amount">$${ex.amount.toFixed(2)}</div>
                 </div>
                 ${ex.description ? `<div class="history-description">${ex.description}</div>` : ''}
+                ${ex.location ? `<div class="history-location"><strong>Location:</strong> ${ex.location}</div>` : ''}
                 ${ex.receipt ? `<div class="receipt-preview"><img src="${ex.receipt}" class="receipt-image" alt="Receipt" style="max-width: 200px; max-height: 150px; border-radius: 6px;"></div>` : ''}
                 <button onclick="deleteExpense('${ex.id}')" class="btn-delete">Delete</button>
             </div>
