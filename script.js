@@ -926,6 +926,7 @@ function showWelcomeModal() {
     const modal = document.getElementById('welcomeModal');
     if (modal) {
         modal.style.display = 'flex';
+        modal.classList.add('active');
         setTimeout(() => modal.classList.add('show'), 10);
     }
 }
@@ -933,7 +934,7 @@ function showWelcomeModal() {
 function closeWelcomeModal() {
     const modal = document.getElementById('welcomeModal');
     if (modal) {
-        modal.classList.remove('show');
+        modal.classList.remove('show', 'active');
         setTimeout(() => {
             modal.style.display = 'none';
             localStorage.setItem('hasSeenWelcome', 'true');
