@@ -93,6 +93,14 @@ function initializeApp() {
     // Use the enhanced trial countdown function
     updateTrialCountdownWithAlreadySubscribed();
 
+    // Force immediate UI update for subscribed users
+    if (localStorage.getItem('isSubscribed') === 'true') {
+        setTimeout(() => {
+            manageAlreadySubscribedButton();
+            updateTrialCountdownWithAlreadySubscribed();
+        }, 100);
+    }
+
     populateExpenseGrid();
     updateToggleIcon();
     updateSummary();
@@ -335,26 +343,28 @@ function manageAlreadySubscribedButton() {
     isSubscribed = subscriptionStatus;
 
     if (subscriptionStatus) {
-        // Remove ALL already subscribed buttons if user is subscribed
-        const allButtons = document.querySelectorAll('#alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"]');
+        // Remove ALL subscription-related buttons if user is subscribed
+        const allButtons = document.querySelectorAll('#alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"], .subscribe-btn, .upgrade-btn');
         allButtons.forEach(button => {
             if (button.parentNode) {
                 button.parentNode.removeChild(button);
             }
         });
 
-        // Also hide trial section and upgrade buttons
+        // Also hide trial section
         const trialSection = document.getElementById('trialSection');
-        const upgradeButtons = document.querySelectorAll('.upgrade-btn, .subscribe-btn');
-
         if (trialSection) {
             trialSection.style.display = 'none';
         }
-        upgradeButtons.forEach(btn => {
-            btn.style.display = 'none';
-        });
 
-        console.log('🔒 Already Subscribed buttons hidden - user is subscribed');
+        // Update trial countdown to show active subscription
+        const trialCountdown = document.getElementById('trialCountdown');
+        if (trialCountdown) {
+            trialCountdown.style.background = 'linear-gradient(135deg, #047857, #059669)';
+            trialCountdown.innerHTML = '<span style="color: white; font-weight: bold;">✅ Pro Subscription Active</span>';
+        }
+
+        console.log('🔒 All subscription buttons removed - user is subscribed');
     } else {
         // Ensure only ONE button exists for non-subscribed users
         const existingButton = document.getElementById('alreadySubscribedBtn');
@@ -560,8 +570,23 @@ function updateTrialCountdownWithAlreadySubscribed() {
             trialCountdown.style.background = 'linear-gradient(135deg, #047857, #059669)';
             trialCountdown.innerHTML = '<span style="color: white; font-weight: bold;">✅ Pro Subscription Active</span>';
         }
-        upgradeButtons.forEach(btn => btn.style.display = 'none');
-        console.log('✅ Trial section hidden - user is subscribed');
+        
+        // Hide ALL subscribe and upgrade buttons
+        upgradeButtons.forEach(btn => {
+            btn.style.display = 'none';
+            // Also hide parent container if it only contains subscription-related buttons
+            const parent = btn.parentElement;
+            if (parent && parent.classList.contains('action-buttons')) {
+                const visibleButtons = Array.from(parent.children).filter(child => 
+                    child.style.display !== 'none' && 
+                    !child.classList.contains('subscribe-btn') && 
+                    !child.classList.contains('upgrade-btn')
+                );
+                // If only subscription buttons remain, we should keep other action buttons visible
+            }
+        });
+        
+        console.log('✅ Trial section and subscribe buttons hidden - user is subscribed');
 
         // Always manage button visibility after UI updates
         manageAlreadySubscribedButton();
