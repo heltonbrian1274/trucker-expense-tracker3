@@ -298,7 +298,7 @@ function initializeAlreadySubscribedFeature() {
 function manageAlreadySubscribedButton() {
     const existingButton = document.getElementById('alreadySubscribedBtn');
 
-    if (localStorage.getItem('isSubscribed') === 'true') {
+    if (isSubscribed || localStorage.getItem('isSubscribed') === 'true') {
         // Hide the button if user is already subscribed
         if (existingButton) {
             existingButton.style.display = 'none';
@@ -426,20 +426,19 @@ function updateTrialCountdownWithAlreadySubscribed() {
     const trialSection = document.getElementById('trialSection');
     const upgradeButtons = document.querySelectorAll('.upgrade-btn');
 
+    // Always manage button visibility first
+    manageAlreadySubscribedButton();
+
     if (isSubscribed) {
         // Hide trial section and upgrade buttons for subscribers
         if (trialSection) trialSection.style.display = 'none';
         upgradeButtons.forEach(btn => btn.style.display = 'none');
-        // Manage the visibility of the "Already Subscribed" button
-        manageAlreadySubscribedButton();
         return;
     }
 
     // Show elements for trial users
     if (trialSection) trialSection.style.display = 'block';
     upgradeButtons.forEach(btn => btn.style.display = 'inline-block');
-    // Ensure the "Already Subscribed" button is visible if not subscribed
-    manageAlreadySubscribedButton();
 
     const trialStart = parseInt(trialStartDate);
     const trialDuration = 3 * 24 * 60 * 60 * 1000; // 3 days
