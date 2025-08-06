@@ -387,8 +387,13 @@ async function handleAlreadySubscribedSubmit(e) {
     e.preventDefault();
 
     const emailInput = document.getElementById('subscriberEmail');
-    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const submitBtn = document.querySelector('#alreadySubscribedForm button[type="submit"]');
     const email = emailInput ? emailInput.value.trim() : '';
+
+    console.log('🔍 Form submission started');
+    console.log('📧 Email input found:', !!emailInput);
+    console.log('🔘 Submit button found:', !!submitBtn);
+    console.log('📝 Email value:', email);
 
     if (!emailInput) {
         showNotification('Email input field not found', 'error');
@@ -397,6 +402,15 @@ async function handleAlreadySubscribedSubmit(e) {
 
     if (!email) {
         showNotification('Please enter your email address', 'error');
+        emailInput.focus();
+        return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showNotification('Please enter a valid email address', 'error');
+        emailInput.focus();
         return;
     }
 
@@ -405,70 +419,100 @@ async function handleAlreadySubscribedSubmit(e) {
     submitBtn.textContent = 'Verifying...';
     submitBtn.disabled = true;
     submitBtn.style.background = '#6b7280';
+    submitBtn.style.cursor = 'not-allowed';
 
     try {
         console.log('🔍 Submitting verification request for:', email);
+        
+        // Add timeout to the fetch request
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
         const response = await fetch('/api/verify-and-activate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ email })
+            body: JSON.stringify({ email }),
+            signal: controller.signal
         });
+
+        clearTimeout(timeoutId);
 
         console.log('📡 Response status:', response.status);
         console.log('📡 Response ok:', response.ok);
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.log('❌ Error response text:', errorText);
-            throw new Error(`HTTP error! status: ${response.status}`);
+        let data;
+        try {
+            data = await response.json();
+            console.log('✅ Response data:', data);
+        } catch (parseError) {
+            console.log('❌ Failed to parse JSON response');
+            throw new Error('Invalid response from server');
         }
 
-        const data = await response.json();
-        console.log('✅ Response data:', data);
-
-        if (data.success) {
+        if (response.ok && data.success) {
             // Store the token and activate subscription
             localStorage.setItem('subscriptionToken', data.token);
             localStorage.setItem('isSubscribed', 'true');
             isSubscribed = true;
 
+            console.log('✅ Subscription activated successfully');
+
             // Close modal
-            document.getElementById('alreadySubscribedModal').classList.remove('show');
-            setTimeout(() => {
-                document.getElementById('alreadySubscribedModal').style.display = 'none';
-            }, 300);
+            const modal = document.getElementById('alreadySubscribedModal');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
 
             // Show success message
             showNotification('🎉 Pro subscription activated successfully!', 'success');
 
+            // Clear form
+            emailInput.value = '';
+
             // Update UI using the centralized function
             updateTrialCountdownWithAlreadySubscribed();
 
-            // Clear form
-            emailInput.value = '';
+            // Force refresh after a short delay to ensure UI updates
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+
         } else {
-            showNotification(data.message || 'Failed to verify subscription', 'error');
+            const errorMessage = data?.message || 'Failed to verify subscription';
+            console.log('❌ Verification failed:', errorMessage);
+            showNotification(errorMessage, 'error');
         }
 
     } catch (error) {
         console.log('💥 Verification request failed:', error);
 
-        // More specific error messages
-        if (error.name === 'TypeError' && error.message.includes('fetch')) {
-            showNotification('Network error: Unable to connect to server. Check your connection.', 'error');
+        let errorMessage = 'Failed to verify subscription. Please try again.';
+
+        if (error.name === 'AbortError') {
+            errorMessage = 'Request timed out. Please check your connection and try again.';
+        } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            errorMessage = 'Network error: Unable to connect to server. Check your connection.';
         } else if (error.name === 'SyntaxError') {
-            showNotification('Server response error: Invalid data received.', 'error');
-        } else {
-            showNotification(`Failed to verify subscription: ${error.message || 'Unknown error'}. Please try again.`, 'error');
+            errorMessage = 'Server response error: Invalid data received.';
+        } else if (error.message) {
+            errorMessage = `Error: ${error.message}`;
         }
+
+        showNotification(errorMessage, 'error');
+
     } finally {
         // Reset button state
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-        submitBtn.style.background = '';
+        if (submitBtn) {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+            submitBtn.style.background = '';
+            submitBtn.style.cursor = '';
+        }
     }
 }
 

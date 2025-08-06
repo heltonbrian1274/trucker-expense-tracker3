@@ -11,12 +11,17 @@ export default async function handler(req, res) {
   if (handlePreflight(req, res)) return;
   if (validateMethod(req, res, ['POST'])) return;
 
+  console.log('🔍 API: Verify and activate request received');
+  console.log('📋 Request body:', req.body);
+
   try {
     const { email } = req.body;
+    console.log('📧 Processing email:', email);
 
     // Validate email input
     const emailValidation = validateEmail(email);
     if (!emailValidation.valid) {
+      console.log('❌ Email validation failed:', emailValidation.message);
       return res.status(400).json({
         success: false,
         message: emailValidation.message
@@ -89,7 +94,13 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('💥 Direct verification error:', error);
-    const errorResponse = handleStripeError(error);
-    return res.status(errorResponse.status).json(errorResponse.response);
+    console.error('💥 Error stack:', error.stack);
+    
+    // Return a proper error response
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error. Please try again later.',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 }
