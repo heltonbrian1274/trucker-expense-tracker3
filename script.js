@@ -496,22 +496,22 @@ function populateExpenseGrid() {
                 <div class="expense-icon">${category.icon}</div>
                 <div class="expense-title">${category.name}</div>
             </div>
-            <div class="expense-form" id="form-${categoryId}">
+            <div class="expense-form" id="form-${category.id}">
                 <div class="form-group">
-                    <input type="number" id="amount-${categoryId}" placeholder="Amount ($)" step="0.01" min="0" required>
+                    <input type="number" id="amount-${category.id}" placeholder="Amount ($)" step="0.01" min="0" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" id="description-${categoryId}" placeholder="Description (optional)">
+                    <input type="text" id="description-${category.id}" placeholder="Description (optional)">
                 </div>
                 <div class="form-group">
-                    <input type="text" id="location-${categoryId}" placeholder="Location (City, State)">
+                    <input type="text" id="location-${category.id}" placeholder="Location (City, State)">
                 </div>
                 <div class="form-group">
-                    <input type="file" id="receipt-${categoryId}" accept="image/*" class="receipt-input">
+                    <input type="file" id="receipt-${category.id}" accept="image/*" class="receipt-input">
                 </div>
                 <div class="form-buttons">
-                    <button type="button" onclick="addExpense('${categoryId}')" class="btn-primary">Add Expense</button>
-                    <button type="button" onclick="toggleExpenseCard('${categoryId}')" class="btn-secondary">Cancel</button>
+                    <button type="button" onclick="addExpense('${category.id}')" class="btn-primary">Add Expense</button>
+                    <button type="button" onclick="toggleExpenseCard('${category.id}')" class="btn-secondary">Cancel</button>
                 </div>
             </div>
         `;
