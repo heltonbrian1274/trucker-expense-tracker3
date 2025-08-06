@@ -407,21 +407,73 @@
             transform: translateY(-1px);
         }
 
-        .expense-card .btn-primary {
-            background: var(--secondary-color);
-            color: white;
-            margin-right: 10px;
-        }
-
-        .expense-card .btn-primary:hover {
-            background: #059669;
-        }
+        
 
         .form-buttons {
             display: flex;
             gap: 10px;
             margin-top: 20px;
             flex-wrap: wrap;
+        }
+
+        .expense-form .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), #059669);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .expense-form .btn-primary:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        }
+
+        .expense-form .btn-primary:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
+        }
+
+        .expense-form .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .expense-form .btn-secondary {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.25));
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .expense-form .btn-secondary:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.35));
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .expense-form .btn-secondary:focus {
+            outline: 2px solid rgba(255, 255, 255, 0.6);
+            outline-offset: 2px;
+        }
+
+        .expense-form .btn-secondary:active {
+            transform: translateY(0);
         }
 
         .summary-card {
