@@ -610,12 +610,13 @@ function initializeAlreadySubscribedFeature() {
             e.preventDefault();
             e.stopPropagation(); // Prevent event bubbling
 
-            // Only open modal if user is not subscribed
+            // Only process if user is not subscribed
             if (!isSubscribed) {
-                alreadySubscribedModal.style.display = 'flex';
-                setTimeout(() => {
-                    alreadySubscribedModal.classList.add('show');
-                }, 10);
+                // Directly prompt for email instead of showing modal
+                const email = prompt('Enter the email address you used to purchase your subscription:');
+                if (email && email.trim()) {
+                    handleDirectSubscriptionVerification(email.trim());
+                }
             }
         }
     });
@@ -627,43 +628,17 @@ function initializeAlreadySubscribedFeature() {
 
 
 
-async function handleAlreadySubscribedSubmit(e) {
-    e.preventDefault();
-
-    const emailInput = document.getElementById('subscriberEmail');
-    const submitBtn = document.querySelector('#alreadySubscribedForm button[type="submit"]');
-    const email = emailInput ? emailInput.value.trim() : '';
-
-    console.log('🔍 Form submission started');
-    console.log('📧 Email input found:', !!emailInput);
-    console.log('🔘 Submit button found:', !!submitBtn);
-    console.log('📝 Email value:', email);
-
-    if (!emailInput) {
-        showNotification('Email input field not found', 'error');
-        return;
-    }
-
-    if (!email) {
-        showNotification('Please enter your email address', 'error');
-        emailInput.focus();
-        return;
-    }
-
+// Direct verification function without modal
+async function handleDirectSubscriptionVerification(email) {
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         showNotification('Please enter a valid email address', 'error');
-        emailInput.focus();
         return;
     }
 
-    // Update button to show loading state
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Verifying...';
-    submitBtn.disabled = true;
-    submitBtn.style.background = '#6b7280';
-    submitBtn.style.cursor = 'not-allowed';
+    // Show loading notification
+    showNotification('Verifying subscription...', 'info');
 
     try {
         console.log('🔍 Submitting verification request for:', email);
@@ -703,20 +678,8 @@ async function handleAlreadySubscribedSubmit(e) {
 
             console.log('✅ Subscription activated successfully');
 
-            // Close modal
-            const modal = document.getElementById('alreadySubscribedModal');
-            if (modal) {
-                modal.classList.remove('show');
-                setTimeout(() => {
-                    modal.style.display = 'none';
-                }, 300);
-            }
-
             // Show success message
             showNotification('🎉 Pro subscription activated successfully!', 'success');
-
-            // Clear form
-            emailInput.value = '';
 
             // Update UI immediately
             updateTrialCountdownWithAlreadySubscribed();
@@ -768,16 +731,32 @@ async function handleAlreadySubscribedSubmit(e) {
         }
 
         showNotification(errorMessage, 'error');
-
-    } finally {
-        // Reset button state
-        if (submitBtn) {
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-            submitBtn.style.background = '';
-            submitBtn.style.cursor = '';
-        }
     }
+}
+
+// Keep the old modal function for backward compatibility but make it use direct verification
+async function handleAlreadySubscribedSubmit(e) {
+    e.preventDefault();
+
+    const emailInput = document.getElementById('subscriberEmail');
+    const email = emailInput ? emailInput.value.trim() : '';
+
+    if (!email) {
+        showNotification('Please enter your email address', 'error');
+        if (emailInput) emailInput.focus();
+        return;
+    }
+
+    // Close modal and use direct verification
+    const modal = document.getElementById('alreadySubscribedModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    }
+
+    await handleDirectSubscriptionVerification(email);
 }
 
 // ======================
