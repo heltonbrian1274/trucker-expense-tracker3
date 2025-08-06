@@ -163,7 +163,7 @@ async function checkSubscriptionStatusFromServer() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-        const response = await fetch('/api/check-subscription', {
+        const response = await fetch(`/api/check-subscription?token=${encodeURIComponent(token)}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
