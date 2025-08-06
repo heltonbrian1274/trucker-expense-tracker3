@@ -302,6 +302,15 @@ function initializeApp() {
         }, 100);
     }
 
+    // iOS-specific: Force close any existing modals immediately
+    if (isIOSDevice()) {
+        closeAllModals();
+        // Set the flag to prevent welcome modal from ever showing on iOS after subscription
+        if (userIsSubscribed || hasToken || isIOSWithTokenProcessing) {
+            safeLocalStorageSet('hasSeenWelcome', 'true');
+        }
+    }
+
     // Handle welcome modal logic after core initialization
     // Never show welcome modal if:
     // 1. User is subscribed (any method)
@@ -317,7 +326,8 @@ function initializeApp() {
     }
 
     // Only show for truly new, non-subscribed users with no expenses
-    if (currentExpenses.length === 0) {
+    // But NEVER on iOS if there are any URL parameters
+    if (currentExpenses.length === 0 && (!isIOSDevice() || window.location.search === '')) {
         showWelcomeModal();
     }
     updateToggleIcon();
@@ -1347,12 +1357,30 @@ function showWelcomeModal() {
         return;
     }
 
-    // Additional iOS-specific protection
+    // Additional iOS-specific protection - ALWAYS block on iOS if there are ANY URL params
     if (isIOSDevice()) {
-        // Check for any subscription-related URL parameters
+        // Block if ANY URL parameters exist on iOS (aggressive prevention)
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('token') || urlParams.has('ios_refresh') || urlParams.has('v') || urlParams.has('t')) {
-            console.log('🚫 Welcome modal blocked - iOS with subscription-related URL params');
+        if (urlParams.toString().length > 0) {
+            console.log('🚫 iOS Welcome modal blocked - any URL params detected');
+            safeLocalStorageSet('hasSeenWelcome', 'true'); // Prevent future attempts
+            return;
+        }
+        
+        // Extra aggressive iOS checks
+        if (window.location.href.includes('?') || 
+            window.location.href.includes('#') ||
+            document.referrer.includes('stripe') ||
+            document.referrer.includes('payment')) {
+            console.log('🚫 iOS Welcome modal blocked - payment/redirect detected');
+            safeLocalStorageSet('hasSeenWelcome', 'true');
+            return;
+        }
+        
+        // Check if this is a reload/refresh on iOS
+        if (performance.navigation && performance.navigation.type === 1) {
+            console.log('🚫 iOS Welcome modal blocked - page refresh detected');
+            safeLocalStorageSet('hasSeenWelcome', 'true');
             return;
         }
         
@@ -1484,15 +1512,27 @@ function closeAllModals() {
         // iOS-specific: Remove any remaining modal states
         if (isIOSDevice()) {
             modal.style.opacity = '0';
+            modal.style.visibility = 'hidden';
             modal.style.pointerEvents = 'none';
             modal.style.zIndex = '-1';
+            modal.style.transform = 'scale(0)';
         }
     });
 
-    // iOS-specific: Remove any modal overlay effects
+    // iOS-specific: Remove any modal overlay effects and force reflow
     if (isIOSDevice()) {
         document.body.style.overflow = 'auto';
         document.body.style.position = 'static';
+        document.body.style.width = 'auto';
+        document.body.style.height = 'auto';
+        
+        // Force reflow to ensure changes take effect
+        document.body.offsetHeight;
+        
+        // Set the flag to prevent welcome modal
+        safeLocalStorageSet('hasSeenWelcome', 'true');
+        
+        console.log('📱 iOS: All modals forcibly closed and welcome flag set');
     }
 }
 
