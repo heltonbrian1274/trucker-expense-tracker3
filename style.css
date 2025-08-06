@@ -296,11 +296,35 @@
             padding: 12px;
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text-light);
             font-size: 16px;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+        }
+
+        .expense-card.expanded .form-group input,
+        .expense-card.expanded .form-group select,
+        .expense-card.expanded .form-group textarea {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text-light);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .dark-mode .form-group input,
+        .dark-mode .form-group select,
+        .dark-mode .form-group textarea {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .dark-mode .expense-card.expanded .form-group input,
+        .dark-mode .expense-card.expanded .form-group select,
+        .dark-mode .expense-card.expanded .form-group textarea {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }
 
         .section .form-group input,
@@ -321,12 +345,26 @@
 
         .form-group input::placeholder,
         .form-group textarea::placeholder {
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        .dark-mode .form-group input::placeholder,
+        .dark-mode .form-group textarea::placeholder {
             color: rgba(255, 255, 255, 0.7);
         }
 
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        .dark-mode .form-group input:focus,
+        .dark-mode .form-group select:focus,
+        .dark-mode .form-group textarea:focus {
             outline: 2px solid rgba(255, 255, 255, 0.6);
             outline-offset: 2px;
             border-color: rgba(255, 255, 255, 0.6);
