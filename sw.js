@@ -21,7 +21,23 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Listen for skip waiting message (iOS compatibility)
+// Activate event - clean up old caches
+self.addEventListener('activate', (event) => {
+  self.clients.claim();
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+// Listen for messages from the main app
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
@@ -50,24 +66,6 @@ self.addEventListener('message', (event) => {
   
   // Existing message handling code continues below...
   const messageType = event.data?.type || event.data?.action;
-
-// Activate event - clean up old caches
-self.addEventListener('activate', (event) => {
-  self.clients.claim();
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-});
-
-// Continue with existing message handling logic...
   
   if (['CLEAR_ALL_CACHE', 'clearCache', 'CLEAR_INDEX_CACHE'].includes(messageType)) {
     const isFullClear = messageType === 'CLEAR_ALL_CACHE' || messageType === 'clearCache';

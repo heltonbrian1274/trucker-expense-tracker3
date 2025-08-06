@@ -199,12 +199,14 @@ function initializeApp() {
 
     // Force immediate UI update for subscribed users
     if (localStorage.getItem('isSubscribed') === 'true') {
-        // Clear service worker cache first
-        clearServiceWorkerCache();
+        // Clear service worker cache first - but only if needed
+        if (!window.cacheAlreadyCleared) {
+            clearServiceWorkerCache();
+            window.cacheAlreadyCleared = true;
+        }
 
         setTimeout(() => {
             updateTrialCountdownWithAlreadySubscribed();
-            manageSubscriptionButtons();
         }, 100);
     }
 
@@ -327,7 +329,6 @@ async function verifySubscriptionToken(token) {
             if (isIOSDevice()) {
                 setTimeout(() => {
                     updateTrialCountdownWithAlreadySubscribed();
-                    manageSubscriptionButtons();
                     
                     // Force a page refresh on iOS for complete state sync
                     setTimeout(() => {
@@ -653,9 +654,6 @@ function updateTrialCountdownWithAlreadySubscribed() {
         });
 
         console.log('✅ Trial section and subscribe buttons hidden - user is subscribed');
-
-        // Always manage button visibility after UI updates
-        manageSubscriptionButtons();
         return;
     }
 
@@ -714,8 +712,10 @@ function updateTrialCountdownWithAlreadySubscribed() {
         `;
     }
 
-    // Always manage button visibility after all UI updates are complete
-    manageSubscriptionButtons();
+    // Manage button visibility only if not already handled
+    if (!isSubscribed) {
+        manageSubscriptionButtons();
+    }
 }
 
 // ======================
@@ -1525,52 +1525,67 @@ function clearServiceWorkerCache() {
     }
 }
 
-// Unified function to manage all subscription-related buttons
+// Unified function to manage all subscription-related buttons with throttling
+let buttonManagementInProgress = false;
 function manageSubscriptionButtons() {
-    const isUserSubscribed = localStorage.getItem('isSubscribed') === 'true';
-    const buttonsToRemove = document.querySelectorAll('.subscribe-btn, .upgrade-btn, #alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"]');
+    // Prevent multiple simultaneous executions
+    if (buttonManagementInProgress) {
+        return;
+    }
+    buttonManagementInProgress = true;
     
-    if (isUserSubscribed) {
-        // Remove all subscription buttons for subscribed users
-        buttonsToRemove.forEach(button => {
-            if (button.parentNode) {
-                button.parentNode.removeChild(button);
-            }
-        });
-        console.log('🔒 All subscription buttons removed - user is subscribed');
-    } else {
-        // Remove duplicates and ensure only one "Already Subscribed" button exists
-        let alreadySubscribedButton = null;
+    try {
+        const isUserSubscribed = localStorage.getItem('isSubscribed') === 'true';
+        const buttonsToRemove = document.querySelectorAll('.subscribe-btn, .upgrade-btn, #alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"]');
         
-        buttonsToRemove.forEach((button, index) => {
-            if (button.id === 'alreadySubscribedBtn' || button.classList.contains('already-subscribed-btn')) {
-                if (!alreadySubscribedButton) {
-                    alreadySubscribedButton = button;
-                } else if (button.parentNode) {
+        if (isUserSubscribed) {
+            // Remove all subscription buttons for subscribed users
+            let removedCount = 0;
+            buttonsToRemove.forEach(button => {
+                if (button.parentNode) {
                     button.parentNode.removeChild(button);
+                    removedCount++;
                 }
+            });
+            if (removedCount > 0) {
+                console.log(`🔒 ${removedCount} subscription buttons removed - user is subscribed`);
             }
-        });
-        
-        // Create button if none exists
-        if (!alreadySubscribedButton) {
-            const actionButtons = document.querySelector('.action-buttons');
-            if (actionButtons) {
-                const button = document.createElement('button');
-                button.id = 'alreadySubscribedBtn';
-                button.className = 'action-btn';
-                button.style.background = '#10b981';
-                button.innerHTML = '✅ Already Subscribed?';
-                
-                const subscribeBtn = actionButtons.querySelector('.subscribe-btn');
-                if (subscribeBtn) {
-                    actionButtons.insertBefore(button, subscribeBtn);
-                } else {
-                    actionButtons.appendChild(button);
+        } else {
+            // Remove duplicates and ensure only one "Already Subscribed" button exists
+            let alreadySubscribedButton = null;
+            
+            buttonsToRemove.forEach((button, index) => {
+                if (button.id === 'alreadySubscribedBtn' || button.classList.contains('already-subscribed-btn')) {
+                    if (!alreadySubscribedButton) {
+                        alreadySubscribedButton = button;
+                    } else if (button.parentNode) {
+                        button.parentNode.removeChild(button);
+                    }
+                }
+            });
+            
+            // Create button if none exists
+            if (!alreadySubscribedButton) {
+                const actionButtons = document.querySelector('.action-buttons');
+                if (actionButtons) {
+                    const button = document.createElement('button');
+                    button.id = 'alreadySubscribedBtn';
+                    button.className = 'action-btn';
+                    button.style.background = '#10b981';
+                    button.innerHTML = '✅ Already Subscribed?';
+                    
+                    const subscribeBtn = actionButtons.querySelector('.subscribe-btn');
+                    if (subscribeBtn) {
+                        actionButtons.insertBefore(button, subscribeBtn);
+                    } else {
+                        actionButtons.appendChild(button);
+                    }
+                    console.log('👀 Already Subscribed button created - user not subscribed');
                 }
             }
         }
-        console.log('👀 Already Subscribed button shown - user not subscribed');
+    } finally {
+        buttonManagementInProgress = false;
     }
 }
 
