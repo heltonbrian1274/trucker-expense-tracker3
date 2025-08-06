@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function initializeApp() {
     // Sync global subscription status with localStorage
     isSubscribed = localStorage.getItem('isSubscribed') === 'true';
-    
+
     if (isDarkMode) {
         document.body.classList.add('dark-mode');
         document.querySelector('.dark-mode-toggle').textContent = '☀️';
@@ -302,11 +302,11 @@ function manageAlreadySubscribedButton() {
     // Sync global variable with localStorage first
     const subscriptionStatus = localStorage.getItem('isSubscribed') === 'true';
     isSubscribed = subscriptionStatus;
-    
+
     // Handle both the HTML button and any dynamically created button
     const htmlButton = document.getElementById('alreadySubscribedBtn');
     const dynamicButton = document.getElementById('alreadySubscribedActionBtn');
-    
+
     if (subscriptionStatus) {
         // Hide both buttons if user is already subscribed
         if (htmlButton) {
@@ -315,18 +315,18 @@ function manageAlreadySubscribedButton() {
         if (dynamicButton) {
             dynamicButton.style.display = 'none';
         }
-        
+
         // Also hide trial section and upgrade buttons
         const trialSection = document.getElementById('trialSection');
         const upgradeButtons = document.querySelectorAll('.upgrade-btn, .subscribe-btn');
-        
+
         if (trialSection) {
             trialSection.style.display = 'none';
         }
         upgradeButtons.forEach(btn => {
             btn.style.display = 'none';
         });
-        
+
         console.log('🔒 Already Subscribed buttons hidden - user is subscribed');
     } else {
         // Show buttons if user is not subscribed
@@ -401,7 +401,7 @@ async function handleAlreadySubscribedSubmit(e) {
 
             // Show success message
             showNotification('🎉 Pro subscription activated successfully!', 'success');
-            
+
             // Update UI using the centralized function
             updateTrialCountdownWithAlreadySubscribed();
 
@@ -466,7 +466,7 @@ function updateTrialCountdownWithAlreadySubscribed() {
     const trialSection = document.getElementById('trialSection');
     const trialCountdown = document.getElementById('trialCountdown');
     const upgradeButtons = document.querySelectorAll('.upgrade-btn, .subscribe-btn');
-    
+
     if (subscriptionStatus) {
         // Hide trial section and upgrade buttons for subscribers
         if (trialSection) trialSection.style.display = 'none';
@@ -476,7 +476,7 @@ function updateTrialCountdownWithAlreadySubscribed() {
         }
         upgradeButtons.forEach(btn => btn.style.display = 'none');
         console.log('✅ Trial section hidden - user is subscribed');
-        
+
         // Always manage button visibility after UI updates
         manageAlreadySubscribedButton();
         return;
@@ -536,6 +536,9 @@ function updateTrialCountdownWithAlreadySubscribed() {
             </div>
         `;
     }
+
+    // Always manage button visibility after all UI updates are complete
+    manageAlreadySubscribedButton();
 }
 
 // ======================
