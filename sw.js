@@ -39,62 +39,38 @@ self.addEventListener('activate', (event) => {
 
 // Listen for messages from the main app
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'CLEAR_ALL_CACHE') {
-    // Clear all caches completely and force immediate refresh
+  const messageType = event.data?.type || event.data?.action;
+  
+  if (['CLEAR_ALL_CACHE', 'clearCache', 'CLEAR_INDEX_CACHE'].includes(messageType)) {
+    const isFullClear = messageType === 'CLEAR_ALL_CACHE' || messageType === 'clearCache';
+    
     event.waitUntil(
-      caches.keys().then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => caches.delete(cacheName))
-        );
-      }).then(() => {
-        // Notify all clients that cache has been cleared
-        return self.clients.matchAll().then((clients) => {
-          clients.forEach((client) => {
-            client.postMessage({ type: 'ALL_CACHE_CLEARED' });
-            // Force immediate page refresh to show updated buttons
+      (isFullClear ? 
+        // Clear all caches
+        caches.keys().then(cacheNames => 
+          Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)))
+        ) :
+        // Clear only index cache
+        caches.open(CACHE_NAME).then(cache => {
+          const indexUrls = [
+            './',
+            './index.html',
+            self.registration.scope,
+            self.registration.scope + 'index.html'
+          ];
+          return Promise.all(indexUrls.map(url => cache.delete(url)));
+        })
+      ).then(() => {
+        // Notify all clients
+        return self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            const responseType = isFullClear ? 'ALL_CACHE_CLEARED' : 'INDEX_CACHE_CLEARED';
+            client.postMessage({ type: responseType });
             client.postMessage({ type: 'FORCE_REFRESH_UI' });
-          });
-        });
-      })
-    );
-  } else if (event.data && event.data.type === 'CLEAR_INDEX_CACHE') {
-    // Clear cached index page when subscription status changes
-    event.waitUntil(
-      caches.open(CACHE_NAME).then((cache) => {
-        // Clear all potential index page variations
-        const indexUrls = [
-          './',
-          './index.html',
-          self.registration.scope,
-          self.registration.scope + 'index.html'
-        ];
-
-        return Promise.all(
-          indexUrls.map(url => cache.delete(url))
-        ).then(() => {
-          // Notify all clients to reload
-          return self.clients.matchAll().then((clients) => {
-            clients.forEach((client) => {
-              client.postMessage({ type: 'INDEX_CACHE_CLEARED' });
-              client.postMessage({ type: 'FORCE_REFRESH_UI' });
-            });
-          });
-        });
-      })
-    );
-  } else if (event.data && (event.data.action === 'clearCache' || event.data.type === 'clearCache')) {
-    // Legacy support for old cache clearing method
-    event.waitUntil(
-      caches.keys().then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => caches.delete(cacheName))
-        );
-      }).then(() => {
-        // Also notify clients for legacy support
-        return self.clients.matchAll().then((clients) => {
-          clients.forEach((client) => {
-            client.postMessage({ type: 'CACHE_CLEARED' });
-            client.postMessage({ type: 'FORCE_REFRESH_UI' });
+            // Legacy support
+            if (messageType === 'clearCache') {
+              client.postMessage({ type: 'CACHE_CLEARED' });
+            }
           });
         });
       })

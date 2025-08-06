@@ -41,24 +41,14 @@ document.addEventListener('DOMContentLoaded', function () {
             // Listen for service worker messages
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.addEventListener('message', (event) => {
-                    if (event.data && event.data.type === 'ALL_CACHE_CLEARED') {
+                    if (event.data && (event.data.type === 'ALL_CACHE_CLEARED' || 
+                                               event.data.type === 'FORCE_REFRESH_UI' || 
+                                               event.data.type === 'CACHE_CLEARED')) {
                         console.log('Service worker cache cleared, updating UI');
-                        removeAllSubscriptionButtons();
-                        updateTrialCountdownWithAlreadySubscribed();
-                        manageAlreadySubscribedButton();
-                    } else if (event.data && event.data.type === 'FORCE_REFRESH_UI') {
-                        console.log('Service worker requesting UI refresh');
-                        // Force immediate UI update without page reload
                         setTimeout(() => {
-                            removeAllSubscriptionButtons();
                             updateTrialCountdownWithAlreadySubscribed();
-                            manageAlreadySubscribedButton();
+                            manageSubscriptionButtons();
                         }, 50);
-                    } else if (event.data && event.data.type === 'CACHE_CLEARED') {
-                        console.log('Legacy cache cleared, updating UI');
-                        removeAllSubscriptionButtons();
-                        updateTrialCountdownWithAlreadySubscribed();
-                        manageAlreadySubscribedButton();
                     }
                 });
             }
@@ -124,10 +114,8 @@ function initializeApp() {
         clearServiceWorkerCache();
 
         setTimeout(() => {
-            manageAlreadySubscribedButton();
             updateTrialCountdownWithAlreadySubscribed();
-            // Force remove any lingering subscription buttons
-            removeAllSubscriptionButtons();
+            manageSubscriptionButtons();
         }, 100);
     }
 
@@ -292,29 +280,8 @@ async function validateSubscriptionInBackground() {
 // --- Already Subscribed Feature ---
 // ======================
 
-// Clean up any duplicate buttons that might exist
-function cleanupDuplicateButtons() {
-    const allButtons = document.querySelectorAll('#alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"]');
 
-    // Keep track of which button to preserve (the first one found)
-    let primaryButton = null;
-
-    allButtons.forEach((button, index) => {
-        if (index === 0) {
-            primaryButton = button;
-        } else {
-            // Remove duplicate buttons
-            if (button.parentNode) {
-                button.parentNode.removeChild(button);
-                console.log('🧹 Removed duplicate Already Subscribed button');
-            }
-        }
-    });
-}
 function initializeAlreadySubscribedFeature() {
-    // Clean up any duplicate buttons first
-    cleanupDuplicateButtons();
-
     const alreadySubscribedModal = document.getElementById('alreadySubscribedModal');
     const closeAlreadySubscribedBtn = document.getElementById('closeAlreadySubscribedBtn');
     const alreadySubscribedForm = document.getElementById('alreadySubscribedForm');
@@ -363,64 +330,10 @@ function initializeAlreadySubscribedFeature() {
     });
 
     // Initialize the visibility management for the button
-    manageAlreadySubscribedButton();
+    manageSubscriptionButtons();
 }
 
-// Function to manage the Already Subscribed button visibility
-function manageAlreadySubscribedButton() {
-    // Sync global variable with localStorage first
-    const subscriptionStatus = localStorage.getItem('isSubscribed') === 'true';
-    isSubscribed = subscriptionStatus;
 
-    if (subscriptionStatus) {
-        // Remove ALL subscription-related buttons if user is subscribed
-        const allButtons = document.querySelectorAll('#alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"], .subscribe-btn, .upgrade-btn');
-        allButtons.forEach(button => {
-            if (button.parentNode) {
-                button.parentNode.removeChild(button);
-            }
-        });
-
-        // Also hide trial section
-        const trialSection = document.getElementById('trialSection');
-        if (trialSection) {
-            trialSection.style.display = 'none';
-        }
-
-        // Update trial countdown to show active subscription
-        const trialCountdown = document.getElementById('trialCountdown');
-        if (trialCountdown) {
-            trialCountdown.style.background = 'linear-gradient(135deg, #047857, #059669)';
-            trialCountdown.innerHTML = '<span style="color: white; font-weight: bold;">✅ Pro Subscription Active</span>';
-        }
-
-        console.log('🔒 All subscription buttons removed - user is subscribed');
-    } else {
-        // Ensure only ONE button exists for non-subscribed users
-        const existingButton = document.getElementById('alreadySubscribedBtn');
-
-        if (!existingButton) {
-            // Create the button only if it doesn't exist
-            const actionButtons = document.querySelector('.action-buttons');
-            if (actionButtons) {
-                const button = document.createElement('button');
-                button.id = 'alreadySubscribedBtn';
-                button.className = 'action-btn';
-                button.style.background = '#10b981';
-                button.innerHTML = '✅ Already Subscribed?';
-
-                // Insert before subscribe button or append at end
-                const subscribeBtn = actionButtons.querySelector('.subscribe-btn');
-                if (subscribeBtn) {
-                    actionButtons.insertBefore(button, subscribeBtn);
-                } else {
-                    actionButtons.appendChild(button);
-                }
-            }
-        }
-        console.log('👀 Already Subscribed button shown - user not subscribed');
-    }
-}
 
 
 async function handleAlreadySubscribedSubmit(e) {
@@ -619,7 +532,7 @@ function updateTrialCountdownWithAlreadySubscribed() {
         console.log('✅ Trial section and subscribe buttons hidden - user is subscribed');
 
         // Always manage button visibility after UI updates
-        manageAlreadySubscribedButton();
+        manageSubscriptionButtons();
         return;
     }
 
@@ -679,7 +592,7 @@ function updateTrialCountdownWithAlreadySubscribed() {
     }
 
     // Always manage button visibility after all UI updates are complete
-    manageAlreadySubscribedButton();
+    manageSubscriptionButtons();
 }
 
 // ======================
@@ -1449,45 +1362,72 @@ function restoreData() {
 
 // Function to clear service worker cache
 function clearServiceWorkerCache() {
-    if ('serviceWorker' in navigator) {
-        // Send multiple cache clearing messages for maximum compatibility
-        if (navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_ALL_CACHE' });
-            navigator.serviceWorker.controller.postMessage({ action: 'clearCache' });
-            navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_INDEX_CACHE' });
-            console.log('Sent cache clearing messages to service worker');
-        }
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_ALL_CACHE' });
+        console.log('Sent cache clearing message to service worker');
+    }
 
-        // Also clear caches directly from browser immediately
-        if ('caches' in window) {
-            caches.keys().then(function(cacheNames) {
-                cacheNames.forEach(function(cacheName) {
-                    caches.delete(cacheName);
-                });
-                console.log('Browser caches cleared directly');
-
-                // Force UI update after direct cache clearing
-                setTimeout(() => {
-                    removeAllSubscriptionButtons();
-                    updateTrialCountdownWithAlreadySubscribed();
-                    manageAlreadySubscribedButton();
-                }, 100);
-            });
-        }
-    } else {
-        console.log('Service worker not found. Cannot clear cache.');
+    // Also clear caches directly from browser
+    if ('caches' in window) {
+        caches.keys().then(cacheNames => {
+            cacheNames.forEach(cacheName => caches.delete(cacheName));
+            console.log('Browser caches cleared directly');
+            
+            setTimeout(() => {
+                updateTrialCountdownWithAlreadySubscribed();
+                manageSubscriptionButtons();
+            }, 100);
+        });
     }
 }
 
-// Function to remove all subscription-related buttons
-function removeAllSubscriptionButtons() {
+// Unified function to manage all subscription-related buttons
+function manageSubscriptionButtons() {
+    const isUserSubscribed = localStorage.getItem('isSubscribed') === 'true';
     const buttonsToRemove = document.querySelectorAll('.subscribe-btn, .upgrade-btn, #alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"]');
-    buttonsToRemove.forEach(button => {
-        if (button.parentNode) {
-            button.parentNode.removeChild(button);
-            console.log('🧹 Removed subscription button');
+    
+    if (isUserSubscribed) {
+        // Remove all subscription buttons for subscribed users
+        buttonsToRemove.forEach(button => {
+            if (button.parentNode) {
+                button.parentNode.removeChild(button);
+            }
+        });
+        console.log('🔒 All subscription buttons removed - user is subscribed');
+    } else {
+        // Remove duplicates and ensure only one "Already Subscribed" button exists
+        let alreadySubscribedButton = null;
+        
+        buttonsToRemove.forEach((button, index) => {
+            if (button.id === 'alreadySubscribedBtn' || button.classList.contains('already-subscribed-btn')) {
+                if (!alreadySubscribedButton) {
+                    alreadySubscribedButton = button;
+                } else if (button.parentNode) {
+                    button.parentNode.removeChild(button);
+                }
+            }
+        });
+        
+        // Create button if none exists
+        if (!alreadySubscribedButton) {
+            const actionButtons = document.querySelector('.action-buttons');
+            if (actionButtons) {
+                const button = document.createElement('button');
+                button.id = 'alreadySubscribedBtn';
+                button.className = 'action-btn';
+                button.style.background = '#10b981';
+                button.innerHTML = '✅ Already Subscribed?';
+                
+                const subscribeBtn = actionButtons.querySelector('.subscribe-btn');
+                if (subscribeBtn) {
+                    actionButtons.insertBefore(button, subscribeBtn);
+                } else {
+                    actionButtons.appendChild(button);
+                }
+            }
         }
-    });
+        console.log('👀 Already Subscribed button shown - user not subscribed');
+    }
 }
 
 
