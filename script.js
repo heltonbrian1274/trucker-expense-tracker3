@@ -1136,10 +1136,13 @@ function submitFeedback(event) {
     const feedbackMessage = document.getElementById('feedbackMessage').value;
     const feedbackEmail = document.getElementById('feedbackEmail').value;
     
+    // Determine email address based on feedback type
+    const emailAddress = feedbackType === 'feature' ? 'features@truckerexpensetracker.com' : 'support@truckerexpensetracker.com';
+    
     // Create mailto link
     const subject = `Trucker Expense Tracker - ${feedbackType.charAt(0).toUpperCase() + feedbackType.slice(1)}`;
     const body = `Feedback Type: ${feedbackType}\n\nMessage:\n${feedbackMessage}\n\n${feedbackEmail ? `From: ${feedbackEmail}` : ''}`;
-    const mailtoLink = `mailto:support@truckerexpensetracker.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     
     window.open(mailtoLink);
     
@@ -1159,9 +1162,9 @@ function updateEmailDisplay() {
     const emailDisplay = document.getElementById('emailDisplay');
     
     const emails = {
-        'bug': '📧 Will be sent to: bugs@truckerexpensetracker.com',
+        'bug': '📧 Will be sent to: support@truckerexpensetracker.com',
         'feature': '📧 Will be sent to: features@truckerexpensetracker.com',
-        'improvement': '📧 Will be sent to: improvements@truckerexpensetracker.com',
+        'improvement': '📧 Will be sent to: support@truckerexpensetracker.com',
         'general': '📧 Will be sent to: support@truckerexpensetracker.com'
     };
     
