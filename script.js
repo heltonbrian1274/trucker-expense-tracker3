@@ -288,6 +288,14 @@ function initializeAlreadySubscribedFeature() {
             }, 10);
         }
     });
+
+    // Ensure we remove any duplicate buttons on initialization
+    const existingButtons = document.querySelectorAll('[id*="alreadySubscribed"]');
+    existingButtons.forEach((btn, index) => {
+        if (index > 0) { // Keep only the first one
+            btn.remove();
+        }
+    });
 }
 
 async function handleAlreadySubscribedSubmit(e) {
@@ -465,7 +473,6 @@ function updateTrialCountdownWithAlreadySubscribed() {
                 <p style="margin: 0 0 15px 0; font-size: 14px;">Enjoying the app? Upgrade to Pro for unlimited access!</p>
                 <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                     <button onclick="window.open('https://buy.stripe.com/5kAdRF0Qq3Fo9lS4gg', '_blank')" class="upgrade-btn" style="background: white; color: #f59e0b; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px;">Upgrade to Pro</button>
-                    <button id="alreadySubscribedBtn" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px;">Already Subscribed?</button>
                 </div>
             </div>
         `;
