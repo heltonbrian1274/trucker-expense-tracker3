@@ -818,30 +818,52 @@
             border-color: var(--border-dark);
         }
 
-        .modal-content .form-group input {
-            background: var(--background-light) !important;
+        .modal-content .form-group input,
+        .modal-content .form-group select,
+        .modal-content .form-group textarea {
+            background: white !important;
             color: var(--text-light) !important;
             border: 2px solid var(--border-light) !important;
             padding: 12px !important;
             border-radius: 8px !important;
+            font-size: 16px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
         }
 
-        .dark-mode .modal-content .form-group input {
+        .dark-mode .modal-content .form-group input,
+        .dark-mode .modal-content .form-group select,
+        .dark-mode .modal-content .form-group textarea {
             background: var(--background-dark) !important;
             color: var(--text-dark) !important;
             border: 2px solid var(--border-dark) !important;
         }
 
-        .modal-content .form-group input:focus {
+        .modal-content .form-group input:focus,
+        .modal-content .form-group select:focus,
+        .modal-content .form-group textarea:focus {
             outline: 2px solid var(--primary-color) !important;
             border-color: var(--primary-color) !important;
             background: white !important;
         }
 
-        .dark-mode .modal-content .form-group input:focus {
+        .dark-mode .modal-content .form-group input:focus,
+        .dark-mode .modal-content .form-group select:focus,
+        .dark-mode .modal-content .form-group textarea:focus {
             background: var(--card-dark) !important;
             border-color: var(--secondary-color) !important;
             outline-color: var(--secondary-color) !important;
+        }
+
+        .modal-content .form-group label {
+            color: var(--text-light) !important;
+            font-weight: 600 !important;
+            margin-bottom: 8px !important;
+            display: block !important;
+        }
+
+        .dark-mode .modal-content .form-group label {
+            color: var(--text-dark) !important;
         }
 
         .modal-content .btn {
