@@ -46,27 +46,74 @@ try {
 // --- iOS/Safari Compatibility Helpers ---
 // ======================
 function isIOSDevice() {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    // Enhanced iOS detection
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    
+    // Direct iOS device detection
+    if (/iPad|iPhone|iPod/.test(userAgent)) {
+        return true;
+    }
+    
+    // iPad Pro in desktop mode detection
+    if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) {
+        return true;
+    }
+    
+    // iOS Safari specific detection
+    if (/Safari/.test(userAgent) && /Mobile/.test(userAgent) && !/Chrome/.test(userAgent)) {
+        return true;
+    }
+    
+    // Check for iOS-specific features
+    if (window.DeviceMotionEvent !== undefined && window.DeviceOrientationEvent !== undefined) {
+        return /Mobile|Tablet/.test(userAgent);
+    }
+    
+    return false;
 }
 
 function isSafari() {
     return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 }
 
-// iOS-safe localStorage operations
+// Enhanced iOS-safe localStorage operations
 function safeLocalStorageSet(key, value) {
     try {
+        // Test if localStorage is available first
+        const test = '__localStorage_test__';
+        localStorage.setItem(test, 'test');
+        localStorage.removeItem(test);
         localStorage.setItem(key, value);
         return true;
     } catch (e) {
         console.warn('localStorage.setItem failed:', e);
-        // Fallback to sessionStorage for iOS private browsing
+        // iOS private browsing or storage quota exceeded
         try {
+            // Clear some space and try again
+            if (e.name === 'QuotaExceededError') {
+                // Clear old data except critical subscription info
+                const criticalKeys = ['isSubscribed', 'subscriptionToken', 'hasSeenWelcome'];
+                Object.keys(localStorage).forEach(storageKey => {
+                    if (!criticalKeys.includes(storageKey)) {
+                        try {
+                            localStorage.removeItem(storageKey);
+                        } catch (cleanupError) {
+                            console.warn('Cleanup failed:', cleanupError);
+                        }
+                    }
+                });
+                localStorage.setItem(key, value);
+                return true;
+            }
+            
+            // Fallback to sessionStorage for iOS private browsing
             sessionStorage.setItem(key, value);
             return true;
         } catch (e2) {
             console.warn('sessionStorage.setItem also failed:', e2);
+            // Last resort: use in-memory storage for this session
+            if (!window.memoryStorage) window.memoryStorage = {};
+            window.memoryStorage[key] = value;
             return false;
         }
     }
@@ -74,9 +121,25 @@ function safeLocalStorageSet(key, value) {
 
 function safeLocalStorageGet(key) {
     try {
-        return localStorage.getItem(key) || sessionStorage.getItem(key);
+        const value = localStorage.getItem(key);
+        if (value !== null) return value;
+        
+        // Fallback to sessionStorage
+        const sessionValue = sessionStorage.getItem(key);
+        if (sessionValue !== null) return sessionValue;
+        
+        // Last resort: check memory storage
+        if (window.memoryStorage && window.memoryStorage[key]) {
+            return window.memoryStorage[key];
+        }
+        
+        return null;
     } catch (e) {
         console.warn('localStorage/sessionStorage access failed:', e);
+        // Try memory storage
+        if (window.memoryStorage && window.memoryStorage[key]) {
+            return window.memoryStorage[key];
+        }
         return null;
     }
 }
@@ -369,19 +432,32 @@ async function checkSubscriptionStatusFromServer() {
 
 async function verifySubscriptionToken(token) {
     try {
+        console.log('🔍 Verifying subscription token for iOS...');
+        
         // Immediately set subscription status and welcome flag to prevent modal
-        safeLocalStorageSet('isSubscribed', 'true');
-        safeLocalStorageSet('hasSeenWelcome', 'true');
+        const setResult1 = safeLocalStorageSet('isSubscribed', 'true');
+        const setResult2 = safeLocalStorageSet('hasSeenWelcome', 'true');
         isSubscribed = true;
+        
+        console.log('📱 iOS storage set results:', { subscription: setResult1, welcome: setResult2 });
 
-        // Close any open modals immediately (including welcome modal if it appeared)
+        // Aggressive modal cleanup for iOS
         closeAllModals();
-
-        // Force hide welcome modal specifically for subscription flow
-        const welcomeModal = document.getElementById('welcomeModal');
-        if (welcomeModal) {
-            welcomeModal.style.display = 'none';
-            welcomeModal.classList.remove('show', 'active');
+        
+        // Extra iOS modal cleanup
+        if (isIOSDevice()) {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
+                modal.style.opacity = '0';
+                modal.style.visibility = 'hidden';
+                modal.style.pointerEvents = 'none';
+                modal.classList.remove('show', 'active');
+            });
+            
+            // Reset body styles
+            document.body.style.overflow = 'auto';
+            document.body.style.position = 'static';
+            document.body.style.width = 'auto';
         }
 
         const response = await fetch('/api/verify-token', {
@@ -402,17 +478,43 @@ async function verifySubscriptionToken(token) {
 
             // Update UI immediately
             updateTrialCountdownWithAlreadySubscribed();
+            
+            // Clear service worker cache specifically for iOS
+            if (isIOSDevice() && 'serviceWorker' in navigator) {
+                try {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (const registration of registrations) {
+                        await registration.unregister();
+                        console.log('📱 iOS: Unregistered service worker');
+                    }
+                } catch (swError) {
+                    console.warn('iOS SW cleanup failed:', swError);
+                }
+            }
 
-            // iOS-specific handling
+            // iOS-specific handling with cache busting
             if (isIOSDevice()) {
-                // Force a page refresh on iOS for complete state sync
+                // Clear all possible caches
+                if ('caches' in window) {
+                    try {
+                        const cacheNames = await caches.keys();
+                        await Promise.all(cacheNames.map(name => caches.delete(name)));
+                        console.log('📱 iOS: All caches cleared');
+                    } catch (cacheError) {
+                        console.warn('iOS cache clear failed:', cacheError);
+                    }
+                }
+                
+                // Force reload with aggressive cache busting
                 setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
+                    const cacheBuster = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                    const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?ios_verified=1&cb=${cacheBuster}&t=${Date.now()}`;
+                    window.location.href = newUrl;
+                }, 500);
             } else {
                 // Force refresh after a short delay to ensure UI updates
                 setTimeout(() => {
-                    window.location.reload();
+                    window.location.reload(true);
                 }, 1500);
             }
         } else {
@@ -1256,9 +1358,9 @@ function showNotification(message, type = 'info') {
 function showWelcomeModal() {
     // Comprehensive checks to prevent showing for subscribed users
     const isUserSubscribed = safeLocalStorageGet('isSubscribed') === 'true' || isSubscribed;
-    const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
+    const hasSeenWelcome = safeLocalStorageGet('hasSeenWelcome');
     const hasTokenInUrl = window.location.search.includes('token');
-    const hasSubscriptionToken = localStorage.getItem('subscriptionToken');
+    const hasSubscriptionToken = safeLocalStorageGet('subscriptionToken');
 
     // Block modal for any subscription-related scenario
     if (isUserSubscribed || hasSeenWelcome || hasTokenInUrl || hasSubscriptionToken) {
@@ -1270,17 +1372,57 @@ function showWelcomeModal() {
     if (isIOSDevice()) {
         // Check for any subscription-related URL parameters
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('token') || urlParams.has('ios_refresh') || urlParams.has('v')) {
+        if (urlParams.has('token') || urlParams.has('ios_refresh') || urlParams.has('v') || urlParams.has('t')) {
             console.log('🚫 Welcome modal blocked - iOS with subscription-related URL params');
+            return;
+        }
+        
+        // Extra check for iOS Safari's weird behavior with localStorage
+        try {
+            const testStorage = window.localStorage || window.sessionStorage;
+            if (!testStorage) {
+                console.log('🚫 Welcome modal blocked - iOS storage not available');
+                return;
+            }
+        } catch (e) {
+            console.log('🚫 Welcome modal blocked - iOS storage access error');
             return;
         }
     }
 
     const modal = document.getElementById('welcomeModal');
     if (modal) {
+        // iOS-specific modal setup
+        if (isIOSDevice()) {
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+            
+            // Ensure modal is properly positioned for iOS
+            modal.style.position = 'fixed';
+            modal.style.top = '0';
+            modal.style.left = '0';
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.zIndex = '10000';
+        }
+        
         modal.style.display = 'flex';
         modal.classList.add('active');
-        setTimeout(() => modal.classList.add('show'), 10);
+        
+        // Force reflow before adding show class
+        modal.offsetHeight;
+        
+        setTimeout(() => {
+            modal.classList.add('show');
+            // Focus on close button for accessibility
+            const closeBtn = modal.querySelector('#closeWelcomeBtn');
+            if (closeBtn) {
+                closeBtn.focus();
+            }
+        }, 10);
+        
         console.log('✅ Welcome modal displayed for new user');
     } else {
         console.error('❌ Welcome modal element not found');
@@ -1297,13 +1439,24 @@ window.closeWelcomeModal = function closeWelcomeModal() {
         safeLocalStorageSet('hasSeenWelcome', 'true');
         console.log('✅ hasSeenWelcome flag set');
 
-        // iOS-specific: Force immediate hide without animation if needed
+        // iOS-specific: Force immediate cleanup
         if (isIOSDevice()) {
+            // Remove all modal styles and classes immediately
             modal.style.display = 'none';
-            modal.classList.remove('show', 'active');
             modal.style.opacity = '0';
             modal.style.pointerEvents = 'none';
-            console.log('📱 iOS modal force closed');
+            modal.style.visibility = 'hidden';
+            modal.classList.remove('show', 'active');
+            
+            // Restore body scroll immediately
+            document.body.style.overflow = 'auto';
+            document.body.style.position = 'static';
+            document.body.style.width = 'auto';
+            
+            // Force a repaint
+            modal.offsetHeight;
+            
+            console.log('📱 iOS modal force closed with full cleanup');
         } else {
             modal.classList.remove('show', 'active');
             setTimeout(() => {
@@ -1312,14 +1465,31 @@ window.closeWelcomeModal = function closeWelcomeModal() {
         }
 
         // Force focus to main content after modal closes
-        setTimeout(() => {
-            const mainContent = document.getElementById('main-content');
+        const cleanup = () => {
+            const mainContent = document.getElementById('main-content') || document.querySelector('.container');
             if (mainContent) {
                 mainContent.focus();
             }
-            // Remove any body scroll locks
-            document.body.style.overflow = 'auto';
-        }, 350);
+            
+            // Extra cleanup for iOS
+            if (isIOSDevice()) {
+                // Clear any remaining modal artifacts
+                document.querySelectorAll('.modal').forEach(m => {
+                    if (m.style.display !== 'none') {
+                        m.style.display = 'none';
+                    }
+                });
+                
+                // Force window resize event to fix any layout issues
+                window.dispatchEvent(new Event('resize'));
+            }
+        };
+
+        if (isIOSDevice()) {
+            cleanup();
+        } else {
+            setTimeout(cleanup, 350);
+        }
 
         console.log('✅ Welcome modal closed successfully');
     } else {
