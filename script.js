@@ -37,6 +37,31 @@ document.addEventListener('DOMContentLoaded', function () {
             navigator.serviceWorker.register('./sw.js')
                 .then(registration => console.log('SW registered:', registration))
                 .catch(error => console.log('SW registration failed:', error));
+
+            // Listen for service worker messages
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.addEventListener('message', (event) => {
+                    if (event.data && event.data.type === 'ALL_CACHE_CLEARED') {
+                        console.log('Service worker cache cleared, updating UI');
+                        removeAllSubscriptionButtons();
+                        updateTrialCountdownWithAlreadySubscribed();
+                        manageAlreadySubscribedButton();
+                    } else if (event.data && event.data.type === 'FORCE_REFRESH_UI') {
+                        console.log('Service worker requesting UI refresh');
+                        // Force immediate UI update without page reload
+                        setTimeout(() => {
+                            removeAllSubscriptionButtons();
+                            updateTrialCountdownWithAlreadySubscribed();
+                            manageAlreadySubscribedButton();
+                        }, 50);
+                    } else if (event.data && event.data.type === 'CACHE_CLEARED') {
+                        console.log('Legacy cache cleared, updating UI');
+                        removeAllSubscriptionButtons();
+                        updateTrialCountdownWithAlreadySubscribed();
+                        manageAlreadySubscribedButton();
+                    }
+                });
+            }
         }
     });
 
@@ -1424,11 +1449,33 @@ function restoreData() {
 
 // Function to clear service worker cache
 function clearServiceWorkerCache() {
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({ action: 'clearCache' });
-        console.log('Sent clearCache message to service worker');
+    if ('serviceWorker' in navigator) {
+        // Send multiple cache clearing messages for maximum compatibility
+        if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_ALL_CACHE' });
+            navigator.serviceWorker.controller.postMessage({ action: 'clearCache' });
+            navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_INDEX_CACHE' });
+            console.log('Sent cache clearing messages to service worker');
+        }
+
+        // Also clear caches directly from browser immediately
+        if ('caches' in window) {
+            caches.keys().then(function(cacheNames) {
+                cacheNames.forEach(function(cacheName) {
+                    caches.delete(cacheName);
+                });
+                console.log('Browser caches cleared directly');
+
+                // Force UI update after direct cache clearing
+                setTimeout(() => {
+                    removeAllSubscriptionButtons();
+                    updateTrialCountdownWithAlreadySubscribed();
+                    manageAlreadySubscribedButton();
+                }, 100);
+            });
+        }
     } else {
-        console.log('Service worker not found or not controlling the page. Cannot clear cache.');
+        console.log('Service worker not found. Cannot clear cache.');
     }
 }
 

@@ -40,7 +40,7 @@ self.addEventListener('activate', (event) => {
 // Listen for messages from the main app
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'CLEAR_ALL_CACHE') {
-    // Clear all caches completely
+    // Clear all caches completely and force immediate refresh
     event.waitUntil(
       caches.keys().then((cacheNames) => {
         return Promise.all(
@@ -51,6 +51,8 @@ self.addEventListener('message', (event) => {
         return self.clients.matchAll().then((clients) => {
           clients.forEach((client) => {
             client.postMessage({ type: 'ALL_CACHE_CLEARED' });
+            // Force immediate page refresh to show updated buttons
+            client.postMessage({ type: 'FORCE_REFRESH_UI' });
           });
         });
       })
@@ -66,7 +68,7 @@ self.addEventListener('message', (event) => {
           self.registration.scope,
           self.registration.scope + 'index.html'
         ];
-        
+
         return Promise.all(
           indexUrls.map(url => cache.delete(url))
         ).then(() => {
@@ -74,7 +76,25 @@ self.addEventListener('message', (event) => {
           return self.clients.matchAll().then((clients) => {
             clients.forEach((client) => {
               client.postMessage({ type: 'INDEX_CACHE_CLEARED' });
+              client.postMessage({ type: 'FORCE_REFRESH_UI' });
             });
+          });
+        });
+      })
+    );
+  } else if (event.data && (event.data.action === 'clearCache' || event.data.type === 'clearCache')) {
+    // Legacy support for old cache clearing method
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => caches.delete(cacheName))
+        );
+      }).then(() => {
+        // Also notify clients for legacy support
+        return self.clients.matchAll().then((clients) => {
+          clients.forEach((client) => {
+            client.postMessage({ type: 'CACHE_CLEARED' });
+            client.postMessage({ type: 'FORCE_REFRESH_UI' });
           });
         });
       })
@@ -90,12 +110,12 @@ self.addEventListener('fetch', (event) => {
   }
 
   const url = new URL(event.request.url);
-  
+
   // CRITICAL: Handle HTML/navigation requests specially
   if (event.request.mode === 'navigate' || 
       url.pathname.endsWith('.html') || 
       url.pathname === '/') {
-    
+
     // For token requests, always fetch from network and don't cache
     if (url.searchParams.has('token')) {
       event.respondWith(
@@ -142,7 +162,7 @@ self.addEventListener('fetch', (event) => {
         if (cachedResponse) {
           return cachedResponse;
         }
-        
+
         return fetch(event.request).then((networkResponse) => {
           if (networkResponse.ok) {
             // FIXED: Clone the response before caching
@@ -159,4 +179,3 @@ self.addEventListener('fetch', (event) => {
     );
   }
 });
-
