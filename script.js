@@ -95,9 +95,14 @@ function initializeApp() {
 
     // Force immediate UI update for subscribed users
     if (localStorage.getItem('isSubscribed') === 'true') {
+        // Clear service worker cache first
+        clearServiceWorkerCache();
+
         setTimeout(() => {
             manageAlreadySubscribedButton();
             updateTrialCountdownWithAlreadySubscribed();
+            // Force remove any lingering subscription buttons
+            removeAllSubscriptionButtons();
         }, 100);
     }
 
@@ -265,10 +270,10 @@ async function validateSubscriptionInBackground() {
 // Clean up any duplicate buttons that might exist
 function cleanupDuplicateButtons() {
     const allButtons = document.querySelectorAll('#alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"]');
-    
+
     // Keep track of which button to preserve (the first one found)
     let primaryButton = null;
-    
+
     allButtons.forEach((button, index) => {
         if (index === 0) {
             primaryButton = button;
@@ -284,7 +289,7 @@ function cleanupDuplicateButtons() {
 function initializeAlreadySubscribedFeature() {
     // Clean up any duplicate buttons first
     cleanupDuplicateButtons();
-    
+
     const alreadySubscribedModal = document.getElementById('alreadySubscribedModal');
     const closeAlreadySubscribedBtn = document.getElementById('closeAlreadySubscribedBtn');
     const alreadySubscribedForm = document.getElementById('alreadySubscribedForm');
@@ -321,7 +326,7 @@ function initializeAlreadySubscribedFeature() {
             e.target.getAttribute('data-action') === 'already-subscribed') {
             e.preventDefault();
             e.stopPropagation(); // Prevent event bubbling
-            
+
             // Only open modal if user is not subscribed
             if (!isSubscribed) {
                 alreadySubscribedModal.style.display = 'flex';
@@ -368,7 +373,7 @@ function manageAlreadySubscribedButton() {
     } else {
         // Ensure only ONE button exists for non-subscribed users
         const existingButton = document.getElementById('alreadySubscribedBtn');
-        
+
         if (!existingButton) {
             // Create the button only if it doesn't exist
             const actionButtons = document.querySelector('.action-buttons');
@@ -378,7 +383,7 @@ function manageAlreadySubscribedButton() {
                 button.className = 'action-btn';
                 button.style.background = '#10b981';
                 button.innerHTML = '✅ Already Subscribed?';
-                
+
                 // Insert before subscribe button or append at end
                 const subscribeBtn = actionButtons.querySelector('.subscribe-btn');
                 if (subscribeBtn) {
@@ -433,7 +438,7 @@ async function handleAlreadySubscribedSubmit(e) {
 
     try {
         console.log('🔍 Submitting verification request for:', email);
-        
+
         // Add timeout to the fetch request
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
@@ -570,7 +575,7 @@ function updateTrialCountdownWithAlreadySubscribed() {
             trialCountdown.style.background = 'linear-gradient(135deg, #047857, #059669)';
             trialCountdown.innerHTML = '<span style="color: white; font-weight: bold;">✅ Pro Subscription Active</span>';
         }
-        
+
         // Hide ALL subscribe and upgrade buttons
         upgradeButtons.forEach(btn => {
             btn.style.display = 'none';
@@ -585,7 +590,7 @@ function updateTrialCountdownWithAlreadySubscribed() {
                 // If only subscription buttons remain, we should keep other action buttons visible
             }
         });
-        
+
         console.log('✅ Trial section and subscribe buttons hidden - user is subscribed');
 
         // Always manage button visibility after UI updates
@@ -1416,6 +1421,28 @@ function restoreData() {
 
     input.click();
 }
+
+// Function to clear service worker cache
+function clearServiceWorkerCache() {
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ action: 'clearCache' });
+        console.log('Sent clearCache message to service worker');
+    } else {
+        console.log('Service worker not found or not controlling the page. Cannot clear cache.');
+    }
+}
+
+// Function to remove all subscription-related buttons
+function removeAllSubscriptionButtons() {
+    const buttonsToRemove = document.querySelectorAll('.subscribe-btn, .upgrade-btn, #alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"]');
+    buttonsToRemove.forEach(button => {
+        if (button.parentNode) {
+            button.parentNode.removeChild(button);
+            console.log('🧹 Removed subscription button');
+        }
+    });
+}
+
 
 // CSS animations
 const style = document.createElement('style');

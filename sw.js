@@ -39,7 +39,23 @@ self.addEventListener('activate', (event) => {
 
 // Listen for messages from the main app
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'CLEAR_INDEX_CACHE') {
+  if (event.data && event.data.type === 'CLEAR_ALL_CACHE') {
+    // Clear all caches completely
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => caches.delete(cacheName))
+        );
+      }).then(() => {
+        // Notify all clients that cache has been cleared
+        return self.clients.matchAll().then((clients) => {
+          clients.forEach((client) => {
+            client.postMessage({ type: 'ALL_CACHE_CLEARED' });
+          });
+        });
+      })
+    );
+  } else if (event.data && event.data.type === 'CLEAR_INDEX_CACHE') {
     // Clear cached index page when subscription status changes
     event.waitUntil(
       caches.open(CACHE_NAME).then((cache) => {
