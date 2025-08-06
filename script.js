@@ -587,7 +587,7 @@ function addExpense(categoryId) {
         amount: amount,
         description: description || '',
         location: location || '',
-        date: new Date().toISOString().split('T')[0], // Keep today's date implicitly
+        date: new Date().toLocaleDateString('en-CA'), // Use local timezone in YYYY-MM-DD format
         timestamp: Date.now()
     };
 
