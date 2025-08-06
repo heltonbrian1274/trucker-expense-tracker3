@@ -119,6 +119,13 @@ document.addEventListener('DOMContentLoaded', function () {
             // Listen for service worker messages
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.addEventListener('message', (event) => {
+                    if (event.data && event.data.type === 'FORCE_HARD_REFRESH') {
+                        // iOS requires a hard refresh
+                        console.log('Force hard refresh requested by service worker');
+                        window.location.reload(true);
+                        return;
+                    }
+                    
                     if (event.data && (event.data.type === 'ALL_CACHE_CLEARED' || 
                                                event.data.type === 'FORCE_REFRESH_UI' || 
                                                event.data.type === 'CACHE_CLEARED')) {
@@ -525,14 +532,21 @@ async function handleAlreadySubscribedSubmit(e) {
 
             // iOS-specific handling
             if (isIOSDevice()) {
-                // Clear service worker cache for iOS
+                // Clear service worker cache for iOS with force option
                 if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                    navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_ALL_CACHE' });
+                    navigator.serviceWorker.controller.postMessage({ type: 'FORCE_IOS_CACHE_CLEAR' });
                 }
                 
-                // Force immediate reload on iOS
+                // Clear browser caches directly
+                if ('caches' in window) {
+                    caches.keys().then(cacheNames => {
+                        cacheNames.forEach(cacheName => caches.delete(cacheName));
+                    });
+                }
+                
+                // Force immediate hard reload on iOS with cache busting
                 setTimeout(() => {
-                    window.location.href = window.location.href + '?ios_refresh=' + Date.now();
+                    window.location.href = window.location.protocol + '//' + window.location.host + window.location.pathname + '?ios_refresh=' + Date.now() + '&t=' + Math.random();
                 }, 1000);
             } else {
                 // Update UI using the centralized function
@@ -1471,22 +1485,43 @@ function restoreData() {
 
 // Function to clear service worker cache
 function clearServiceWorkerCache() {
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_ALL_CACHE' });
-        console.log('Sent cache clearing message to service worker');
-    }
+    if (isIOSDevice()) {
+        // iOS-specific aggressive cache clearing
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'FORCE_IOS_CACHE_CLEAR' });
+        }
+        
+        // Clear browser caches directly
+        if ('caches' in window) {
+            caches.keys().then(cacheNames => {
+                return Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+            }).then(() => {
+                console.log('iOS: All caches cleared');
+                // Force a hard reload with cache busting on iOS
+                setTimeout(() => {
+                    window.location.href = window.location.protocol + '//' + window.location.host + window.location.pathname + '?ios_cache_clear=' + Date.now();
+                }, 500);
+            });
+        }
+    } else {
+        // Standard cache clearing for other platforms
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_ALL_CACHE' });
+            console.log('Sent cache clearing message to service worker');
+        }
 
-    // Also clear caches directly from browser
-    if ('caches' in window) {
-        caches.keys().then(cacheNames => {
-            cacheNames.forEach(cacheName => caches.delete(cacheName));
-            console.log('Browser caches cleared directly');
-            
-            setTimeout(() => {
-                updateTrialCountdownWithAlreadySubscribed();
-                manageSubscriptionButtons();
-            }, 100);
-        });
+        // Also clear caches directly from browser
+        if ('caches' in window) {
+            caches.keys().then(cacheNames => {
+                cacheNames.forEach(cacheName => caches.delete(cacheName));
+                console.log('Browser caches cleared directly');
+                
+                setTimeout(() => {
+                    updateTrialCountdownWithAlreadySubscribed();
+                    manageSubscriptionButtons();
+                }, 100);
+            });
+        }
     }
 }
 

@@ -28,6 +28,26 @@ self.addEventListener('message', (event) => {
     return;
   }
   
+  // iOS-specific: Force complete cache invalidation
+  if (event.data && event.data.type === 'FORCE_IOS_CACHE_CLEAR') {
+    event.waitUntil(
+      caches.keys().then(cacheNames => {
+        return Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+      }).then(() => {
+        // Force service worker to claim all clients immediately
+        return self.clients.claim();
+      }).then(() => {
+        // Notify all clients to reload completely
+        return self.clients.matchAll({ includeUncontrolled: true }).then(clients => {
+          clients.forEach(client => {
+            client.postMessage({ type: 'FORCE_HARD_REFRESH' });
+          });
+        });
+      })
+    );
+    return;
+  }
+  
   // Existing message handling code continues below...
   const messageType = event.data?.type || event.data?.action;
 
@@ -101,10 +121,10 @@ self.addEventListener('fetch', (event) => {
       url.pathname === '/') {
 
     // For token requests, always fetch from network and don't cache
-    if (url.searchParams.has('token')) {
+    if (url.searchParams.has('token') || url.searchParams.has('ios_refresh')) {
       event.respondWith(
         fetch(event.request).then((networkResponse) => {
-          // Don't cache token responses - return directly
+          // Don't cache token responses or iOS refresh requests - return directly
           return networkResponse;
         }).catch(() => {
           throw new Error('Network required for subscription activation');
