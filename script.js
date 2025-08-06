@@ -191,24 +191,9 @@ function initializeApp() {
     // For iOS: Additional check to prevent modal during token processing
     const isIOSWithTokenProcessing = isIOSDevice() && (hasToken || urlParams.toString().includes('token'));
 
-    // Never show welcome modal if:
-    // 1. User is subscribed (any method)
-    // 2. User has already seen welcome
-    // 3. There's a token being processed (especially important for iOS)
-    // 4. iOS device with any subscription-related URL params
-    if (userIsSubscribed || 
-        localStorage.getItem('hasSeenWelcome') || 
-        hasToken || 
-        isIOSWithTokenProcessing) {
-        console.log('🚫 Welcome modal blocked - user subscribed or token processing');
-        return;
-    }
-
-    // Only show for truly new, non-subscribed users with no expenses
-    if (currentExpenses.length === 0) {
-        showWelcomeModal();
-    }
-
+    // Initialize core components first (always needed regardless of subscription status)
+    populateExpenseGrid();
+    
     // Initialize welcome modal close button with multiple fallbacks
     const closeWelcomeBtn = document.getElementById('closeWelcomeBtn');
     if (closeWelcomeBtn) {
@@ -245,7 +230,24 @@ function initializeApp() {
         }, 100);
     }
 
-    populateExpenseGrid();
+    // Handle welcome modal logic after core initialization
+    // Never show welcome modal if:
+    // 1. User is subscribed (any method)
+    // 2. User has already seen welcome
+    // 3. There's a token being processed (especially important for iOS)
+    // 4. iOS device with any subscription-related URL params
+    if (userIsSubscribed || 
+        localStorage.getItem('hasSeenWelcome') || 
+        hasToken || 
+        isIOSWithTokenProcessing) {
+        console.log('🚫 Welcome modal blocked - user subscribed or token processing');
+        return; // Early return is now safe since core components are already initialized
+    }
+
+    // Only show for truly new, non-subscribed users with no expenses
+    if (currentExpenses.length === 0) {
+        showWelcomeModal();
+    }
     updateToggleIcon();
     updateSummary();
     updateInsights();
