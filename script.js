@@ -182,8 +182,15 @@ function initializeApp() {
     }
 
     const currentExpenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasToken = urlParams.get('token');
+    
     // Only show welcome modal if user is not subscribed and hasn't seen it before
-    if (currentExpenses.length === 0 && !localStorage.getItem('hasSeenWelcome') && !isSubscribed) {
+    // Also don't show on iOS if there's a token parameter (subscription verification in progress)
+    if (currentExpenses.length === 0 && 
+        !localStorage.getItem('hasSeenWelcome') && 
+        !isSubscribed && 
+        !(isIOSDevice() && hasToken)) {
         showWelcomeModal();
     }
 
@@ -325,6 +332,13 @@ async function checkSubscriptionStatusFromServer() {
 
 async function verifySubscriptionToken(token) {
     try {
+        // Immediately set subscription status to prevent welcome modal
+        safeLocalStorageSet('isSubscribed', 'true');
+        isSubscribed = true;
+        
+        // Close any open modals immediately
+        closeAllModals();
+        
         const response = await fetch('/api/verify-token', {
             method: 'POST',
             headers: {
@@ -339,8 +353,6 @@ async function verifySubscriptionToken(token) {
 
         const data = await response.json();
         if (data.success) {
-            safeLocalStorageSet('isSubscribed', 'true');
-            isSubscribed = true;
             showNotification('🎉 Pro subscription activated successfully!', 'success');
             
             // iOS-specific: Force UI update after a longer delay
@@ -357,10 +369,16 @@ async function verifySubscriptionToken(token) {
                 updateTrialCountdownWithAlreadySubscribed();
             }
         } else {
+            // Revert subscription status if verification failed
+            safeLocalStorageSet('isSubscribed', 'false');
+            isSubscribed = false;
             showNotification(data.message || 'Failed to activate subscription', 'error');
         }
     } catch (error) {
         console.error('Token verification failed:', error);
+        // Revert subscription status if verification failed
+        safeLocalStorageSet('isSubscribed', 'false');
+        isSubscribed = false;
         showNotification('Failed to verify subscription token', 'error');
     }
 }
@@ -1187,8 +1205,17 @@ function showNotification(message, type = 'info') {
 }
 
 function showWelcomeModal() {
-    // Don't show welcome modal if user is subscribed
-    if (isSubscribed || localStorage.getItem('isSubscribed') === 'true') {
+    // Multiple checks to prevent showing for subscribed users
+    const isUserSubscribed = safeLocalStorageGet('isSubscribed') === 'true' || isSubscribed;
+    
+    if (isUserSubscribed) {
+        console.log('🚫 Welcome modal blocked - user is subscribed');
+        return;
+    }
+    
+    // Additional iOS-specific check
+    if (isIOSDevice() && window.location.search.includes('token=')) {
+        console.log('🚫 Welcome modal blocked - iOS token verification in progress');
         return;
     }
     
@@ -1213,9 +1240,22 @@ function closeWelcomeModal() {
 
 function closeAllModals() {
     document.querySelectorAll('.modal').forEach(modal => {
-        modal.classList.remove('show');
-        setTimeout(() => modal.style.display = 'none', 300);
+        modal.classList.remove('show', 'active');
+        modal.style.display = 'none';
+        
+        // iOS-specific: Force remove any remaining modal states
+        if (isIOSDevice()) {
+            modal.style.opacity = '0';
+            modal.style.pointerEvents = 'none';
+            modal.style.zIndex = '-1';
+        }
     });
+    
+    // iOS-specific: Remove any modal overlay effects
+    if (isIOSDevice()) {
+        document.body.style.overflow = 'auto';
+        document.body.style.position = 'static';
+    }
 }
 
 // ======================
