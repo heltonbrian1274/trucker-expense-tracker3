@@ -1,0 +1,120 @@
+
+Aug 06 16:31:34.02
+GET
+200
+www.truckerexpensetracker.com
+/api/validate-subscription
+6
+✅ Active subscription verified: sub_1Rr5dvBBY1zHew2iXdRaBEjK
+Aug 06 16:29:26.63
+POST
+200
+www.truckerexpensetracker.com
+/api/verify-and-activate
+4
+🎉 Subscription activated immediately for token: c86fd565647e1bbe8f1b362e6200730a38db1205a97d6cb9
+Aug 06 16:29:00.90
+GET
+200
+www.truckerexpensetracker.com
+/api/check-subscription
+Aug 06 16:22:43.77
+GET
+200
+www.truckerexpensetracker.com
+/api/validate-subscription
+6
+✅ Active subscription verified: sub_1Rr5dvBBY1zHew2iXdRaBEjK
+Aug 06 16:20:51.07
+POST
+200
+www.truckerexpensetracker.com
+/api/verify-and-activate
+4
+🎉 Subscription activated immediately for token: a881c9711df20c2c1c3ef89ca4d3945342604360d73a9e74
+Aug 06 16:20:02.21
+GET
+200
+www.truckerexpensetracker.com
+/api/check-subscription
+Aug 06 16:17:54.50
+GET
+200
+www.truckerexpensetracker.com
+/api/validate-subscription
+6
+✅ Active subscription verified: sub_1Rr5dvBBY1zHew2iXdRaBEjK
+Aug 06 16:15:52.73
+POST
+200
+www.truckerexpensetracker.com
+/api/verify-and-activate
+4
+🎉 Subscription activated immediately for token: 56c2d6792388c963af86d3c501a03f92066e354fe395479f
+Aug 06 16:12:07.36
+GET
+200
+www.truckerexpensetracker.com
+/api/check-subscription
+Aug 06 16:11:28.37
+POST
+200
+www.truckerexpensetracker.com
+/api/verify-and-activate
+4
+🎉 Subscription activated immediately for token: 41b5dcb6052e4fb015d3e2ebb10654e9f5444c419a6e6e0a
+Aug 06 16:10:54.48
+GET
+200
+www.truckerexpensetracker.com
+/api/check-subscription
+Aug 06 16:10:07.81
+GET
+200
+www.truckerexpensetracker.com
+/api/validate-subscription
+6
+✅ Active subscription verified: sub_1Rr5dvBBY1zHew2iXdRaBEjK
+Aug 06 16:09:17.30
+GET
+200
+www.truckerexpensetracker.com
+/api/validate-subscription
+6
+✅ Active subscription verified: sub_1Rr5dvBBY1zHew2iXdRaBEjK
+Aug 06 16:08:40.48
+POST
+200
+www.truckerexpensetracker.com
+/api/verify-and-activate
+4
+🎉 Subscription activated immediately for token: 9b393b77d86e6b7e2b0fdfff494f93dbe925787027af92c3
+Aug 06 16:07:13.63
+GET
+200
+www.truckerexpensetracker.com
+/api/validate-subscription
+6
+✅ Active subscription verified: sub_1Rr5dvBBY1zHew2iXdRaBEjK
+Aug 06 16:07:13.63
+GET
+200
+www.truckerexpensetracker.com
+/api/validate-subscription
+6
+✅ Active subscription verified: sub_1Rr5dvBBY1zHew2iXdRaBEjK
+Aug 06 16:07:13.63
+GET
+200
+www.truckerexpensetracker.com
+/api/validate-subscription
+6
+✅ Active subscription verified: sub_1Rr5dvBBY1zHew2iXdRaBEjK
+Aug 06 16:07:13.63
+GET
+200
+www.truckerexpensetracker.com
+/api/validate-subscription
+6
+✅ Active subscription verified: sub_1Rr5dvBBY1zHew2iXdRaBEjK
+No more logs to show within selected timeline
