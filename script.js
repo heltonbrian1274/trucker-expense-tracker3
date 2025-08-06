@@ -238,7 +238,6 @@ function initializeApp() {
     updateSummary();
     updateInsights();
 
-    const urlParams = new URLSearchParams(window.location.search);
     const action = urlParams.get('action');
     if (action === 'add-fuel') {
         showSection('today');
@@ -1246,7 +1245,8 @@ function showWelcomeModal() {
     }
 }
 
-function closeWelcomeModal() {
+// Make closeWelcomeModal globally accessible
+window.closeWelcomeModal = function closeWelcomeModal() {
     console.log('🔥 closeWelcomeModal called');
 
     const modal = document.getElementById('welcomeModal');
@@ -1283,7 +1283,7 @@ function closeWelcomeModal() {
     } else {
         console.error('❌ Welcome modal element not found');
     }
-}
+};
 
 function closeAllModals() {
     document.querySelectorAll('.modal').forEach(modal => {
