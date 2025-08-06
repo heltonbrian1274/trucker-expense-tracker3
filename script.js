@@ -251,20 +251,11 @@ async function validateSubscriptionInBackground() {
 // --- Already Subscribed Feature ---
 // ======================
 function initializeAlreadySubscribedFeature() {
-    const alreadySubscribedBtn = document.getElementById('alreadySubscribedBtn');
     const alreadySubscribedModal = document.getElementById('alreadySubscribedModal');
     const closeAlreadySubscribedBtn = document.getElementById('closeAlreadySubscribedBtn');
     const alreadySubscribedForm = document.getElementById('alreadySubscribedForm');
 
-    if (alreadySubscribedBtn) {
-        alreadySubscribedBtn.addEventListener('click', () => {
-            alreadySubscribedModal.style.display = 'flex';
-            setTimeout(() => {
-                alreadySubscribedModal.classList.add('show');
-            }, 10);
-        });
-    }
-
+    // Set up modal event listeners
     if (closeAlreadySubscribedBtn) {
         closeAlreadySubscribedBtn.addEventListener('click', () => {
             alreadySubscribedModal.classList.remove('show');
@@ -286,6 +277,17 @@ function initializeAlreadySubscribedFeature() {
             }
         });
     }
+
+    // Set up button click handlers using event delegation
+    document.addEventListener('click', (e) => {
+        if (e.target.id === 'alreadySubscribedBtn' || e.target.closest('#alreadySubscribedBtn')) {
+            e.preventDefault();
+            alreadySubscribedModal.style.display = 'flex';
+            setTimeout(() => {
+                alreadySubscribedModal.classList.add('show');
+            }, 10);
+        }
+    });
 }
 
 async function handleAlreadySubscribedSubmit(e) {
@@ -401,20 +403,21 @@ function initializeEnhancedValidation() {
 function updateTrialCountdownWithAlreadySubscribed() {
     const trialSection = document.getElementById('trialSection');
     const upgradeButtons = document.querySelectorAll('.upgrade-btn');
-    const alreadySubscribedBtn = document.getElementById('alreadySubscribedBtn');
 
     if (isSubscribed) {
         // Hide trial section and upgrade buttons for subscribers
         if (trialSection) trialSection.style.display = 'none';
         upgradeButtons.forEach(btn => btn.style.display = 'none');
-        if (alreadySubscribedBtn) alreadySubscribedBtn.style.display = 'none';
+        // Remove any existing already subscribed buttons
+        document.querySelectorAll('[id*="alreadySubscribed"]').forEach(btn => {
+            if (btn.id.includes('alreadySubscribed')) btn.style.display = 'none';
+        });
         return;
     }
 
     // Show elements for trial users
     if (trialSection) trialSection.style.display = 'block';
     upgradeButtons.forEach(btn => btn.style.display = 'inline-block');
-    if (alreadySubscribedBtn) alreadySubscribedBtn.style.display = 'inline-block';
 
     const trialStart = parseInt(trialStartDate);
     const trialDuration = 3 * 24 * 60 * 60 * 1000; // 3 days
@@ -444,10 +447,21 @@ function updateTrialCountdownWithAlreadySubscribed() {
 
     const trialInfo = document.getElementById('trialInfo');
     if (trialInfo) {
+        // Check if we already have the trial info to avoid recreating it unnecessarily
+        const existingContent = trialInfo.querySelector('[data-trial-content]');
+        if (existingContent) {
+            // Just update the time
+            const timeElement = existingContent.querySelector('[data-time-remaining]');
+            if (timeElement) {
+                timeElement.textContent = `${days}d ${hours}h ${minutes}m remaining`;
+                return;
+            }
+        }
+
         trialInfo.innerHTML = `
-            <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 12px; color: white;">
+            <div data-trial-content style="text-align: center; padding: 15px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 12px; color: white;">
                 <h3 style="margin: 0 0 10px 0;">⏰ Free Trial</h3>
-                <p style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold;">${days}d ${hours}h ${minutes}m remaining</p>
+                <p data-time-remaining style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold;">${days}d ${hours}h ${minutes}m remaining</p>
                 <p style="margin: 0 0 15px 0; font-size: 14px;">Enjoying the app? Upgrade to Pro for unlimited access!</p>
                 <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                     <button onclick="window.open('https://buy.stripe.com/5kAdRF0Qq3Fo9lS4gg', '_blank')" class="upgrade-btn" style="background: white; color: #f59e0b; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px;">Upgrade to Pro</button>
@@ -455,20 +469,6 @@ function updateTrialCountdownWithAlreadySubscribed() {
                 </div>
             </div>
         `;
-
-        // Re-initialize the already subscribed button
-        const newAlreadySubscribedBtn = document.getElementById('alreadySubscribedBtn');
-        if (newAlreadySubscribedBtn) {
-            newAlreadySubscribedBtn.addEventListener('click', () => {
-                const modal = document.getElementById('alreadySubscribedModal');
-                if (modal) {
-                    modal.style.display = 'flex';
-                    setTimeout(() => {
-                        modal.classList.add('show');
-                    }, 10);
-                }
-            });
-        }
     }
 }
 
