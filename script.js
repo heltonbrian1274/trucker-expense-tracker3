@@ -182,7 +182,8 @@ function initializeApp() {
     }
 
     const currentExpenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
-    if (currentExpenses.length === 0 && !localStorage.getItem('hasSeenWelcome')) {
+    // Only show welcome modal if user is not subscribed and hasn't seen it before
+    if (currentExpenses.length === 0 && !localStorage.getItem('hasSeenWelcome') && !isSubscribed) {
         showWelcomeModal();
     }
 
@@ -257,6 +258,23 @@ function initializeApp() {
             closeAllModals();
         }
     });
+
+    // iOS-specific: Add touch-based escape mechanism for modal freezes
+    if (isIOSDevice()) {
+        let touchStartTime = 0;
+        document.addEventListener('touchstart', function(e) {
+            touchStartTime = Date.now();
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            const touchDuration = Date.now() - touchStartTime;
+            // If user holds touch for 3+ seconds on modal background, force close all modals
+            if (touchDuration > 3000 && e.target.classList.contains('modal')) {
+                closeAllModals();
+                showNotification('Modal closed - tap detected', 'info');
+            }
+        });
+    }
 
     // Initialize real-time validation
     setTimeout(() => {
@@ -1169,6 +1187,11 @@ function showNotification(message, type = 'info') {
 }
 
 function showWelcomeModal() {
+    // Don't show welcome modal if user is subscribed
+    if (isSubscribed || localStorage.getItem('isSubscribed') === 'true') {
+        return;
+    }
+    
     const modal = document.getElementById('welcomeModal');
     if (modal) {
         modal.style.display = 'flex';
