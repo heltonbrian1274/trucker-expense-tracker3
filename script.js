@@ -628,54 +628,207 @@ function addExpense(categoryId) {
 
 function updateSummary(){const today=new Date().toISOString().split('T')[0];const todayExpenses=expenses.filter(ex=>ex.date===today);const totalExpenses=expenses.reduce((sum,ex)=>sum+ex.amount,0);const todayTotal=todayExpenses.reduce((sum,ex)=>sum+ex.amount,0);const dailyEl=document.getElementById('dailyTotal');const totalEl=document.getElementById('totalExpenses');if(dailyEl)dailyEl.textContent=`$${todayTotal.toFixed(2)}`;if(totalEl)totalEl.textContent=`$${totalExpenses.toFixed(2)}`;}
 
-function updateInsights(){const total=expenses.reduce((s,e)=>s+e.amount,0);const days=[...new Set(expenses.map(e=>new Date(e.date).toDateString()))].length;const avgDaily=days>0?total/days:0;const catTotals={};expenses.forEach(e=>{catTotals[e.categoryName]=(catTotals[e.categoryName]||0)+e.amount});const topCat=Object.keys(catTotals).reduce((a,b)=>catTotals[a]>catTotals[b]?a:b,'None');const now=new Date();const curMonth=now.getMonth();const curYear=now.getFullYear();const lastMonthDate=new Date(now.getFullYear(),now.getMonth()-1,1);const lastMonth=lastMonthDate.getMonth();const lastYear=lastMonthDate.getFullYear();const curMonthExp=expenses.filter(e=>{const d=new Date(e.date);return d.getMonth()===curMonth&&d.getFullYear()===curYear}).reduce((s,e)=>s+e.amount,0);const lastMonthExp=expenses.filter(e=>{const d=new Date(e.date);return d.getMonth()===lastMonth&&d.getFullYear()===lastYear}).reduce((s,e)=>s+e.amount,0);const change=lastMonthExp>0?((curMonthExp-lastMonthExp)/lastMonthExp*100).toFixed(1):(curMonthExp>0?'∞':'0');const elements={'insightsTotalExpenses':`$${total.toFixed(2)}`,'averageDailyExpense':`$${avgDaily.toFixed(2)}`,'topCategory':topCat,'currentMonthTotal':`$${curMonthExp.toFixed(2)}`,'lastMonthTotal':`$${lastMonthExp.toFixed(2)}`};Object.entries(elements).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.textContent=val});const changeEl=document.getElementById('monthlyChange');if(changeEl){if(change==='∞'){changeEl.textContent='New spending';changeEl.style.color='#fbbf24'}else if(change==='0'){changeEl.textContent='No change';changeEl.style.color='#6b7280'}else{const changeVal=parseFloat(change);changeEl.textContent=`${changeVal>0?'+':''}${changeVal}%`;changeEl.style.color=changeVal>0?'#ef4444':'#10b981'}}}
+function updateInsights() {
+    const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
+    const uniqueDays = [...new Set(expenses.map(ex => new Date(ex.date).toDateString()))].length;
+    const averageDaily = uniqueDays > 0 ? totalExpenses / uniqueDays : 0;
+    
+    // Calculate category totals
+    const categoryTotals = {};
+    expenses.forEach(ex => {
+        categoryTotals[ex.categoryName] = (categoryTotals[ex.categoryName] || 0) + ex.amount;
+    });
+    
+    const topCategory = Object.keys(categoryTotals).reduce((a, b) => categoryTotals[a] > categoryTotals[b] ? a : b, 'None');
+    
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastMonth = lastMonthDate.getMonth();
+    const lastMonthYear = lastMonthDate.getFullYear();
+    
+    const currentMonthExpenses = expenses.filter(ex => {
+        const d = new Date(ex.date);
+        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+    }).reduce((sum, ex) => sum + ex.amount, 0);
+    
+    const lastMonthExpenses = expenses.filter(ex => {
+        const d = new Date(ex.date);
+        return d.getMonth() === lastMonth && d.getFullYear() === lastMonthYear;
+    }).reduce((sum, ex) => sum + ex.amount, 0);
+    
+    const monthlyChange = lastMonthExpenses > 0 ? ((currentMonthExpenses - lastMonthExpenses) / lastMonthExpenses * 100).toFixed(1) : (currentMonthExpenses > 0 ? '∞' : '0');
+    
+    // Update DOM elements
+    const elements = {
+        'insightsTotalExpenses': `$${totalExpenses.toFixed(2)}`,
+        'averageDailyExpense': `$${averageDaily.toFixed(2)}`,
+        'topCategory': topCategory,
+        'currentMonthTotal': `$${currentMonthExpenses.toFixed(2)}`,
+        'lastMonthTotal': `$${lastMonthExpenses.toFixed(2)}`
+    };
+    
+    Object.entries(elements).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value;
+    });
+    
+    const changeElement = document.getElementById('monthlyChange');
+    if (changeElement) {
+        if (monthlyChange === '∞') {
+            changeElement.textContent = 'New spending';
+            changeElement.style.color = '#fbbf24';
+        } else if (monthlyChange === '0') {
+            changeElement.textContent = 'No change';
+            changeElement.style.color = '#6b7280';
+        } else {
+            const changeValue = parseFloat(monthlyChange);
+            changeElement.textContent = `${changeValue > 0 ? '+' : ''}${changeValue}%`;
+            changeElement.style.color = changeValue > 0 ? '#ef4444' : '#10b981';
+        }
+    }
+    
+    // Update category and monthly breakdowns
+    updateCategoryBreakdown(categoryTotals);
+    updateMonthlyBreakdown();
+}
+
+function updateCategoryBreakdown(categoryTotals) {
+    const categoryList = document.getElementById('categoryList');
+    
+    if (!categoryList) return;
+    
+    if (Object.keys(categoryTotals).length === 0) {
+        categoryList.innerHTML = '<p class="no-data-message">No expense data available for analysis.</p>';
+        return;
+    }
+    
+    const sortedCategories = Object.entries(categoryTotals)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 10);
+    
+    const totalAmount = Object.values(categoryTotals).reduce((sum, amount) => sum + amount, 0);
+    
+    const content = sortedCategories.map(([categoryName, amount]) => {
+        const percentage = totalAmount > 0 ? ((amount / totalAmount) * 100).toFixed(1) : '0';
+        const categoryData = expenseCategories.find(cat => cat.name === categoryName);
+        const icon = categoryData ? categoryData.icon : '💼';
+        
+        return `
+            <li class="category-breakdown-item">
+                <div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light); align-items: center;">
+                    <span style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.5rem;">${icon}</span>
+                        <div>
+                            <div style="font-weight: 600; margin-bottom: 2px;">${categoryName}</div>
+                            <div style="font-size: 0.85rem; opacity: 0.7;">${percentage}% of total</div>
+                        </div>
+                    </span>
+                    <span style="font-weight: 700; color: var(--secondary-color);">$${amount.toFixed(2)}</span>
+                </div>
+            </li>`;
+    }).join('');
+    
+    categoryList.innerHTML = content;
+}
+
+function updateMonthlyBreakdown() {
+    const monthlyBreakdown = document.getElementById('monthlyBreakdown');
+    
+    if (!monthlyBreakdown) return;
+    
+    if (expenses.length === 0) {
+        monthlyBreakdown.innerHTML = '<p class="no-data-message">No expense data available for monthly analysis.</p>';
+        return;
+    }
+    
+    const monthlyTotals = {};
+    expenses.forEach(ex => {
+        const date = new Date(ex.date);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        const monthName = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+        
+        if (!monthlyTotals[monthKey]) {
+            monthlyTotals[monthKey] = { name: monthName, total: 0, count: 0 };
+        }
+        monthlyTotals[monthKey].total += ex.amount;
+        monthlyTotals[monthKey].count += 1;
+    });
+    
+    const sortedMonths = Object.entries(monthlyTotals)
+        .sort(([a], [b]) => b.localeCompare(a))
+        .slice(0, 6);
+    
+    const content = sortedMonths.map(([monthKey, data]) => {
+        const average = data.count > 0 ? data.total / data.count : 0;
+        
+        return `
+            <li class="monthly-breakdown-item">
+                <div class="summary-item" style="padding: 15px 0; border-bottom: 1px solid var(--border-light); align-items: center;">
+                    <span style="display: flex; flex-direction: column;">
+                        <div style="font-weight: 600; margin-bottom: 2px;">${data.name}</div>
+                        <div style="font-size: 0.85rem; opacity: 0.7; line-height: 1.3;">${data.count} transactions • $${average.toFixed(2)} avg</div>
+                    </span>
+                    <span style="font-weight: 700; color: var(--secondary-color);">$${data.total.toFixed(2)}</span>
+                </div>
+            </li>`;
+    }).join('');
+    
+    monthlyBreakdown.innerHTML = content;
+}
 
 function updateHistory() {
     const historyList = document.getElementById('historyList');
-    const searchTerm = document.getElementById('expenseSearch')?.value.toLowerCase() || '';
-    const categoryFilter = document.getElementById('categoryFilter')?.value || 'all';
-    const sortBy = document.getElementById('sortBy')?.value || 'date-desc';
+    const filter = document.getElementById('dateFilter')?.value || 'all';
 
     if (!historyList) return;
 
-    let filteredExpenses = expenses.filter(ex => {
-        const matchesSearch = !searchTerm || 
-            ex.categoryName.toLowerCase().includes(searchTerm) ||
-            ex.description.toLowerCase().includes(searchTerm);
-        const matchesCategory = categoryFilter === 'all' || ex.categoryId === categoryFilter;
-        return matchesSearch && matchesCategory;
-    });
-
-    // Sort expenses
-    filteredExpenses.sort((a, b) => {
-        switch(sortBy) {
-            case 'date-desc': return new Date(b.date) - new Date(a.date);
-            case 'date-asc': return new Date(a.date) - new Date(b.date);
-            case 'amount-desc': return b.amount - a.amount;
-            case 'amount-asc': return a.amount - b.amount;
-            case 'category': return a.categoryName.localeCompare(b.categoryName);
-            default: return new Date(b.date) - new Date(a.date);
-        }
-    });
+    let filteredExpenses = [...expenses];
+    const now = new Date();
+    
+    switch (filter) {
+        case 'today':
+            filteredExpenses = expenses.filter(ex => new Date(ex.date).toDateString() === now.toDateString());
+            break;
+        case 'week':
+            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            filteredExpenses = expenses.filter(ex => new Date(ex.date) >= weekAgo);
+            break;
+        case 'month':
+            filteredExpenses = expenses.filter(ex => {
+                const expenseDate = new Date(ex.date);
+                return expenseDate.getMonth() === now.getMonth() && expenseDate.getFullYear() === now.getFullYear();
+            });
+            break;
+        case 'year':
+            filteredExpenses = expenses.filter(ex => new Date(ex.date).getFullYear() === now.getFullYear());
+            break;
+    }
 
     if (filteredExpenses.length === 0) {
-        historyList.innerHTML = '<div class="no-data-message">No expenses found matching your criteria.</div>';
+        historyList.innerHTML = '<p style="text-align: center; color: var(--text-light); opacity: 0.7; margin: 40px 0;">No expenses found for the selected period.</p>';
         return;
     }
 
+    // Sort by date descending
+    filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+
     historyList.innerHTML = filteredExpenses.map(ex => `
         <li class="history-item">
-            <div class="history-header">
-                <span class="history-icon">${ex.categoryIcon}</span>
-                <div class="history-info">
-                    <div class="history-category">${ex.categoryName}</div>
-                    <div class="history-date">${new Date(ex.date).toLocaleDateString()}</div>
+            <div class="history-card">
+                <div class="history-header">
+                    <span class="history-icon">${ex.categoryIcon}</span>
+                    <div class="history-info">
+                        <div class="history-category">${ex.categoryName}</div>
+                        <div class="history-date">${new Date(ex.date).toLocaleDateString()}</div>
+                    </div>
+                    <div class="history-amount">$${ex.amount.toFixed(2)}</div>
                 </div>
-                <div class="history-amount">$${ex.amount.toFixed(2)}</div>
+                ${ex.description ? `<div class="history-description">${ex.description}</div>` : ''}
+                ${ex.receipt ? `<div class="receipt-preview"><img src="${ex.receipt}" class="receipt-image" alt="Receipt" style="max-width: 200px; max-height: 150px; border-radius: 6px;"></div>` : ''}
+                <button onclick="deleteExpense('${ex.id}')" class="btn-delete">Delete</button>
             </div>
-            ${ex.description ? `<div class="history-description">${ex.description}</div>` : ''}
-            ${ex.receipt ? `<div class="receipt-preview"><img src="${ex.receipt}" class="receipt-image" alt="Receipt"></div>` : ''}
-            <button onclick="deleteExpense('${ex.id}')" class="btn-delete">Delete</button>
         </li>
     `).join('');
 }
