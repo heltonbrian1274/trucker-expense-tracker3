@@ -48,27 +48,27 @@ try {
 function isIOSDevice() {
     // Enhanced iOS detection
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    
+
     // Direct iOS device detection
     if (/iPad|iPhone|iPod/.test(userAgent)) {
         return true;
     }
-    
+
     // iPad Pro in desktop mode detection
     if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) {
         return true;
     }
-    
+
     // iOS Safari specific detection
     if (/Safari/.test(userAgent) && /Mobile/.test(userAgent) && !/Chrome/.test(userAgent)) {
         return true;
     }
-    
+
     // Check for iOS-specific features
     if (window.DeviceMotionEvent !== undefined && window.DeviceOrientationEvent !== undefined) {
         return /Mobile|Tablet/.test(userAgent);
     }
-    
+
     return false;
 }
 
@@ -105,7 +105,7 @@ function safeLocalStorageSet(key, value) {
                 localStorage.setItem(key, value);
                 return true;
             }
-            
+
             // Fallback to sessionStorage for iOS private browsing
             sessionStorage.setItem(key, value);
             return true;
@@ -123,16 +123,16 @@ function safeLocalStorageGet(key) {
     try {
         const value = localStorage.getItem(key);
         if (value !== null) return value;
-        
+
         // Fallback to sessionStorage
         const sessionValue = sessionStorage.getItem(key);
         if (sessionValue !== null) return sessionValue;
-        
+
         // Last resort: check memory storage
         if (window.memoryStorage && window.memoryStorage[key]) {
             return window.memoryStorage[key];
         }
-        
+
         return null;
     } catch (e) {
         console.warn('localStorage/sessionStorage access failed:', e);
@@ -224,10 +224,10 @@ document.addEventListener('DOMContentLoaded', function () {
         safeLocalStorageSet('isSubscribed', 'true');
         safeLocalStorageSet('hasSeenWelcome', 'true');
         isSubscribed = true;
-        
+
         // Critical path initialization
         initializeApp();
-        
+
         // Verify token immediately
         verifySubscriptionToken(token);
     } else {
@@ -443,17 +443,17 @@ async function checkSubscriptionStatusFromServer() {
 async function verifySubscriptionToken(token) {
     try {
         console.log('🔍 Verifying subscription token for iOS...');
-        
+
         // Immediately set subscription status and welcome flag to prevent modal
         const setResult1 = safeLocalStorageSet('isSubscribed', 'true');
         const setResult2 = safeLocalStorageSet('hasSeenWelcome', 'true');
         isSubscribed = true;
-        
+
         console.log('📱 iOS storage set results:', { subscription: setResult1, welcome: setResult2 });
 
         // Aggressive modal cleanup for iOS
         closeAllModals();
-        
+
         // Extra iOS modal cleanup
         if (isIOSDevice()) {
             document.querySelectorAll('.modal').forEach(modal => {
@@ -463,7 +463,7 @@ async function verifySubscriptionToken(token) {
                 modal.style.pointerEvents = 'none';
                 modal.classList.remove('show', 'active');
             });
-            
+
             // Reset body styles
             document.body.style.overflow = 'auto';
             document.body.style.position = 'static';
@@ -488,7 +488,7 @@ async function verifySubscriptionToken(token) {
 
             // Update UI immediately
             updateTrialCountdownWithAlreadySubscribed();
-            
+
             // Clear service worker cache specifically for iOS
             if (isIOSDevice() && 'serviceWorker' in navigator) {
                 try {
@@ -514,7 +514,7 @@ async function verifySubscriptionToken(token) {
                         console.warn('iOS cache clear failed:', cacheError);
                     }
                 }
-                
+
                 // Force reload with aggressive cache busting
                 setTimeout(() => {
                     const cacheBuster = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
@@ -1366,9 +1366,9 @@ function showWelcomeModal() {
             safeLocalStorageSet('hasSeenWelcome', 'true'); // Prevent future attempts
             return;
         }
-        
+
         // Extra aggressive iOS checks
-        if (window.location.href.includes('?') || 
+        if (window.location.href.includes('?') ||
             window.location.href.includes('#') ||
             document.referrer.includes('stripe') ||
             document.referrer.includes('payment')) {
@@ -1376,15 +1376,15 @@ function showWelcomeModal() {
             safeLocalStorageSet('hasSeenWelcome', 'true');
             return;
         }
-        
+
         // Check if this is a reload/refresh on iOS
         if (performance.navigation && performance.navigation.type === 1) {
             console.log('🚫 iOS Welcome modal blocked - page refresh detected');
             safeLocalStorageSet('hasSeenWelcome', 'true');
             return;
         }
-        
-        // Extra check for iOS Safari's weird behavior with localStorage
+
+        // Check for iOS Safari's weird behavior with localStorage
         try {
             const testStorage = window.localStorage || window.sessionStorage;
             if (!testStorage) {
@@ -1405,7 +1405,7 @@ function showWelcomeModal() {
             document.body.style.overflow = 'hidden';
             document.body.style.position = 'fixed';
             document.body.style.width = '100%';
-            
+
             // Ensure modal is properly positioned for iOS
             modal.style.position = 'fixed';
             modal.style.top = '0';
@@ -1414,13 +1414,13 @@ function showWelcomeModal() {
             modal.style.height = '100vh';
             modal.style.zIndex = '10000';
         }
-        
+
         modal.style.display = 'flex';
         modal.classList.add('active');
-        
+
         // Force reflow before adding show class
         modal.offsetHeight;
-        
+
         setTimeout(() => {
             modal.classList.add('show');
             // Focus on close button for accessibility
@@ -1429,7 +1429,7 @@ function showWelcomeModal() {
                 closeBtn.focus();
             }
         }, 10);
-        
+
         console.log('✅ Welcome modal displayed for new user');
     } else {
         console.error('❌ Welcome modal element not found');
@@ -1454,15 +1454,15 @@ window.closeWelcomeModal = function closeWelcomeModal() {
             modal.style.pointerEvents = 'none';
             modal.style.visibility = 'hidden';
             modal.classList.remove('show', 'active');
-            
+
             // Restore body scroll immediately
             document.body.style.overflow = 'auto';
             document.body.style.position = 'static';
             document.body.style.width = 'auto';
-            
+
             // Force a repaint
             modal.offsetHeight;
-            
+
             console.log('📱 iOS modal force closed with full cleanup');
         } else {
             modal.classList.remove('show', 'active');
@@ -1477,7 +1477,7 @@ window.closeWelcomeModal = function closeWelcomeModal() {
             if (mainContent) {
                 mainContent.focus();
             }
-            
+
             // Extra cleanup for iOS
             if (isIOSDevice()) {
                 // Clear any remaining modal artifacts
@@ -1486,7 +1486,7 @@ window.closeWelcomeModal = function closeWelcomeModal() {
                         m.style.display = 'none';
                     }
                 });
-                
+
                 // Force window resize event to fix any layout issues
                 window.dispatchEvent(new Event('resize'));
             }
@@ -1525,13 +1525,13 @@ function closeAllModals() {
         document.body.style.position = 'static';
         document.body.style.width = 'auto';
         document.body.style.height = 'auto';
-        
+
         // Force reflow to ensure changes take effect
         document.body.offsetHeight;
-        
+
         // Set the flag to prevent welcome modal
         safeLocalStorageSet('hasSeenWelcome', 'true');
-        
+
         console.log('📱 iOS: All modals forcibly closed and welcome flag set');
     }
 }
