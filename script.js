@@ -80,6 +80,19 @@ function isIOSDevice() {
     return false;
 }
 
+// Renamed function to match the change request.
+function isRealIOSDevice() {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    if (/iPad|iPhone|iPod/.test(userAgent)) return true;
+    if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) return true;
+    if (/Safari/.test(userAgent) && /Mobile/.test(userAgent) && !/Chrome/.test(userAgent)) return true;
+    if (window.DeviceMotionEvent !== undefined && window.DeviceOrientationEvent !== undefined) {
+        return /Mobile|Tablet/.test(userAgent);
+    }
+    return false;
+}
+
+
 function isSafari() {
     return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 }
@@ -529,7 +542,7 @@ function initializeApp() {
         document.addEventListener('touchstart', function(e) {
             touchStartTime = Date.now();
             touchStartY = e.touches[0].clientY;
-        }, { passive: true });
+        }, {passive: true});
 
         document.addEventListener('touchend', function(e) {
             const touchDuration = Date.now() - touchStartTime;
@@ -541,7 +554,7 @@ function initializeApp() {
                 closeAllModals();
                 showNotification('Modal closed - long tap detected', 'info');
             }
-        }, { passive: true });
+        }, {passive: true});
 
         // Additional iOS safety: detect if modal becomes unresponsive
         let modalCheckInterval;
@@ -562,7 +575,7 @@ function initializeApp() {
                 // Clear interval after 10 seconds
                 setTimeout(() => clearInterval(modalCheckInterval), 10000);
             }
-        }, { passive: true });
+        }, {passive: true});
     }
 
     // Initialize real-time validation
@@ -682,7 +695,8 @@ async function verifySubscriptionToken(token) {
             safeLocalStorageSet('isSubscribed', 'false');
             isSubscribed = false;
 
-            if (isIOSDevice()) {
+            // Use the renamed function here
+            if (isRealIOSDevice()) {
                 iosModalState.preventModalShow = false;
             }
         }
@@ -692,7 +706,8 @@ async function verifySubscriptionToken(token) {
         safeLocalStorageSet('isSubscribed', 'false');
         isSubscribed = false;
 
-        if (isIOSDevice()) {
+        // Use the renamed function here
+        if (isRealIOSDevice()) {
             iosModalState.preventModalShow = false;
         }
     }
