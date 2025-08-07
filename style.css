@@ -372,6 +372,14 @@
             color: rgba(255, 255, 255, 0.7);
         }
 
+        #emailDisplay {
+            color: var(--text-light) !important;
+        }
+
+        .dark-mode #emailDisplay {
+            color: var(--text-dark) !important;
+        }
+
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
