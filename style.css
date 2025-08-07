@@ -1288,7 +1288,7 @@
             font-weight: 600 !important;
         }
 
-        /* Override for "No change" text in dark mode */
-        .dark-mode .summary-item #monthlyChange[style*="color: #374151"] {
-            color: #d1d5db !important;
+        /* Monthly change text inherits color from parent */
+        .summary-item #monthlyChange {
+            color: inherit;
         }

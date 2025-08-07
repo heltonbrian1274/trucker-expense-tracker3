@@ -1138,7 +1138,7 @@ function updateInsights() {
             changeElement.style.fontWeight = '600';
         } else if (monthlyChange === '0') {
             changeElement.textContent = 'No change';
-            changeElement.style.color = '#374151';
+            changeElement.style.color = 'inherit';
             changeElement.style.fontWeight = '600';
         } else {
             const changeValue = parseFloat(monthlyChange);
