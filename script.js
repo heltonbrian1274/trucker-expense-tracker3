@@ -1135,13 +1135,16 @@ function updateInsights() {
         if (monthlyChange === '∞') {
             changeElement.textContent = 'New spending';
             changeElement.style.color = '#fbbf24';
+            changeElement.style.fontWeight = '600';
         } else if (monthlyChange === '0') {
             changeElement.textContent = 'No change';
-            changeElement.style.color = '#6b7280';
+            changeElement.style.color = '#374151';
+            changeElement.style.fontWeight = '600';
         } else {
             const changeValue = parseFloat(monthlyChange);
             changeElement.textContent = `${changeValue > 0 ? '+' : ''}${changeValue}%`;
             changeElement.style.color = changeValue > 0 ? '#ef4444' : '#10b981';
+            changeElement.style.fontWeight = '600';
         }
     }
 
