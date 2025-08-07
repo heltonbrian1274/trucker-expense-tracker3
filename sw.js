@@ -43,14 +43,10 @@ self.addEventListener('message', (event) => {
     self.skipWaiting();
   }
 
-  // Ignore problematic iOS cache clearing messages to prevent Lighthouse loops
-  if (event.data && event.data.type === 'FORCE_IOS_CACHE_CLEAR') {
-    console.log('Ignoring FORCE_IOS_CACHE_CLEAR message');
-    return;
-  }
-
-  if (event.data && event.data.type === 'CLEAR_ALL_CACHE') {
-    console.log('Ignoring CLEAR_ALL_CACHE message');
+  // Ignore problematic cache clearing messages that cause Lighthouse loops
+  const ignoredTypes = ['FORCE_IOS_CACHE_CLEAR', 'CLEAR_ALL_CACHE'];
+  if (event.data && ignoredTypes.includes(event.data.type)) {
+    console.log(`SW: Ignoring ${event.data.type} message to prevent Lighthouse loops`);
     return;
   }
 
