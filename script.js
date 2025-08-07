@@ -1042,7 +1042,9 @@ function addExpense(categoryId) {
         amount: amount,
         description: description || '',
         location: location || '',
-        date: new Date().toLocaleDateString('en-CA'), // Use local timezone in YYYY-MM-DD format
+        date: new Date().getFullYear() + '-' + 
+              String(new Date().getMonth() + 1).padStart(2, '0') + '-' + 
+              String(new Date().getDate()).padStart(2, '0'), // Ensure consistent local date
         timestamp: Date.now()
     };
 
