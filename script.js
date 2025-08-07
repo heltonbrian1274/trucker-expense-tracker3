@@ -1042,9 +1042,13 @@ function addExpense(categoryId) {
         amount: amount,
         description: description || '',
         location: location || '',
-        date: new Date().getFullYear() + '-' + 
-              String(new Date().getMonth() + 1).padStart(2, '0') + '-' + 
-              String(new Date().getDate()).padStart(2, '0'), // Ensure consistent local date
+        date: (() => {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        })(), // Always use current local date
         timestamp: Date.now()
     };
 
