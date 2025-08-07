@@ -46,6 +46,11 @@ self.addEventListener('message', (event) => {
 
   // Existing message handling code continues below...
   const messageType = event.data?.type || event.data?.action;
+  
+  // Skip problematic iOS cache clearing to prevent Lighthouse loops
+  if (messageType === 'FORCE_IOS_CACHE_CLEAR') {
+    return; // Ignore this message type
+  }
 
   if (['CLEAR_ALL_CACHE', 'clearCache', 'CLEAR_INDEX_CACHE'].includes(messageType)) {
     const isFullClear = messageType === 'CLEAR_ALL_CACHE' || messageType === 'clearCache';
