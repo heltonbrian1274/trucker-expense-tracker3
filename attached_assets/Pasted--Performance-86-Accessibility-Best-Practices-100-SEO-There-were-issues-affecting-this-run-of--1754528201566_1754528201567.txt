@@ -1,0 +1,287 @@
+
+Performance
+86
+Accessibility
+Best Practices
+100
+SEO
+There were issues affecting this run of Lighthouse:
+
+The page loaded too slowly to finish within the time limit. Results may be incomplete.
+The page may not be loading as expected because your test URL (https://www.truckerexpensetracker.com/) was redirected to https://www.truckerexpensetracker.com/?v=1754527892050-38uj5347p&ios_refresh=1&t=1754527892050. Try testing the second URL directly.
+Performance
+Values are estimated and may vary. The performance score is calculated directly from these metrics.See calculator.
+0–49
+50–89
+90–100
+Final Screenshot
+
+Metrics
+Collapse view
+First Contentful Paint
+Error!
+The page did not paint any content. Please ensure you keep the browser window in the foreground during the load and try again. (NO_FCP)
+Largest Contentful Paint
+Error!
+The page did not paint any content. Please ensure you keep the browser window in the foreground during the load and try again. (NO_FCP)
+Total Blocking Time
+Error!
+The page did not paint any content. Please ensure you keep the browser window in the foreground during the load and try again. (NO_FCP)
+Cumulative Layout Shift
+0.268
+Cumulative Layout Shift measures the movement of visible elements within the viewport. Learn more about the Cumulative Layout Shift metric.
+Speed Index
+Error!
+The page did not paint any content. Please ensure you keep the browser window in the foreground during the load and try again. (NO_FCP)
+View Treemap
+Later this year, insights will replace performance audits. Learn more and provide feedback here.
+Go back to audits
+Show audits relevant to:
+
+All
+
+TBT
+Insights
+Layout shift culprits Error!
+Layout shifts occur when elements move absent any user interaction. Investigate the causes of layout shifts, such as elements being added, removed, or their fonts changing as the page loads.
+Document request latency Error!
+Your first network request is the most important. Reduce its latency by avoiding redirects, ensuring a fast server response, and enabling text compression.
+Optimize DOM size Error!
+A large DOM can increase the duration of style calculations and layout reflows, impacting page responsiveness. A large DOM will also increase memory usage. Learn how to avoid an excessive DOM size.
+Font display Error!
+Consider setting font-display to swap or optional to ensure text is consistently visible. swap can be further optimized to mitigate layout shifts with font metric overrides.
+Forced reflow Error!
+Many APIs, typically reading layout geometry, force the rendering engine to pause script execution in order to calculate the style and layout. Learn more about forced reflow and its mitigations.
+Improve image delivery Error!
+Reducing the download time of images can improve the perceived load time of the page and LCP. Learn more about optimizing image size
+INP by phase Error!
+Start investigating with the longest phase. Delays can be minimized. To reduce processing duration, optimize the main-thread costs, often JS.
+LCP request discovery Error!
+Optimize LCP by making the LCP image discoverable from the HTML immediately, and avoiding lazy-loading
+LCP by phase Error!
+Each phase has specific improvement strategies. Ideally, most of the LCP time should be spent on loading the resources, not within delays.
+Render blocking requests Error!
+Requests are blocking the page's initial render, which may delay LCP. Deferring or inlining can move these network requests out of the critical path.
+3rd parties Error!
+3rd party code can significantly impact load performance. Reduce and defer loading of 3rd party code to prioritize your page's content.
+Optimize viewport for mobile Error!
+Tap interactions may be delayed by up to 300 ms if the viewport is not optimized for mobile.
+These insights are also available in the Chrome DevTools Performance Panel - record a trace to view more detailed information.
+Diagnostics
+Minify CSS Error!
+Minifying CSS files can reduce network payload sizes. Learn how to minify CSS.
+Minify JavaScript Error!
+Minifying JavaScript files can reduce payload sizes and script parse time. Learn how to minify JavaScript.
+Preconnect to required origins Error!
+Consider adding preconnect or dns-prefetch resource hints to establish early connections to important third-party origins. Learn how to preconnect to required origins.
+Use HTTP/2 Error!
+HTTP/2 offers many benefits over HTTP/1.1, including binary headers and multiplexing. Learn more about HTTP/2.
+Lazy load third-party resources with facades Error!
+Some third-party embeds can be lazy loaded. Consider replacing them with a facade until they are required. Learn how to defer third-parties with a facade.
+Defer offscreen images Error!
+Consider lazy-loading offscreen and hidden images after all critical resources have finished loading to lower time to interactive. Learn how to defer offscreen images.
+Avoid serving legacy JavaScript to modern browsers Error!
+Polyfills and transforms enable legacy browsers to use new JavaScript features. However, many aren't necessary for modern browsers. Consider modifying your JavaScript build process to not transpile Baseline features, unless you know you must support legacy browsers. Learn why most sites can deploy ES6+ code without transpiling
+Reduce unused CSS Error!
+Reduce unused rules from stylesheets and defer CSS not used for above-the-fold content to decrease bytes consumed by network activity. Learn how to reduce unused CSS.
+Reduce unused JavaScript Error!
+Reduce unused JavaScript and defer loading scripts until they are required to decrease bytes consumed by network activity. Learn how to reduce unused JavaScript.
+Avoid long main-thread tasks Error!
+Lists the longest tasks on the main thread, useful for identifying worst contributors to input delay. Learn how to avoid long main-thread tasks
+Avoid enormous network payloads Total size was 10,992 KiB
+Large network payloads cost users real money and are highly correlated with long load times. Learn how to reduce payload sizes.
+URL
+Transfer Size
+truckerexpensetracker.com 1st party
+555.6 KiB
+/icon-192x192.png(www.truckerexpensetracker.com)
+55.6 KiB
+/icon-192x192.png(www.truckerexpensetracker.com)
+55.6 KiB
+/icon-192x192.png(www.truckerexpensetracker.com)
+55.6 KiB
+/icon-192x192.png(www.truckerexpensetracker.com)
+55.6 KiB
+/icon-192x192.png(www.truckerexpensetracker.com)
+55.6 KiB
+/icon-192x192.png(www.truckerexpensetracker.com)
+55.5 KiB
+/icon-192x192.png(www.truckerexpensetracker.com)
+55.5 KiB
+/icon-192x192.png(www.truckerexpensetracker.com)
+55.5 KiB
+/icon-192x192.png(www.truckerexpensetracker.com)
+55.5 KiB
+/icon-192x192.png(www.truckerexpensetracker.com)
+55.5 KiB
+Reduce JavaScript execution time 7.9 s
+Consider reducing the time spent parsing, compiling, and executing JS. You may find delivering smaller JS payloads helps with this. Learn how to reduce Javascript execution time.TBT
+URL
+Total CPU Time
+Script Evaluation
+Script Parse
+Unattributable
+81,193 ms	387 ms	0 ms
+Unattributable
+81,193 ms
+387 ms
+0 ms
+truckerexpensetracker.com 1st party
+58,576 ms	6,394 ms	1,125 ms
+/?v=175…-38uj5347p&ios_refresh=1&t=175…(www.truckerexpensetracker.com)
+43,403 ms
+1,250 ms
+0 ms
+/script.js(www.truckerexpensetracker.com)
+14,689 ms
+5,144 ms
+1,125 ms
+/style.css(www.truckerexpensetracker.com)
+484 ms
+0 ms
+0 ms
+Minimize main-thread work 142.0 s
+Consider reducing the time spent parsing, compiling and executing JS. You may find delivering smaller JS payloads helps with this. Learn how to minimize main-thread workTBT
+Category
+Time Spent
+Other
+101,357 ms
+Style & Layout
+26,598 ms
+Script Evaluation
+7,451 ms
+Rendering
+3,117 ms
+Parse HTML & CSS
+2,162 ms
+Script Parsing & Compilation
+1,125 ms
+Garbage Collection
+150 ms
+More information about the performance of your application. These numbers don't directly affect the Performance score.
+Passed audits (9)
+Show
+86
+Accessibility
+These checks highlight opportunities to improve the accessibility of your web app. Automatic detection can only detect a subset of issues and does not guarantee the accessibility of your web app, so manual testing is also encouraged.
+Best practices
+[user-scalable="no"] is used in the <meta name="viewport"> element or the [maximum-scale] attribute is less than 5.
+Disabling zooming is problematic for users with low vision who rely on screen magnification to properly see the contents of a web page. Learn more about the viewport meta tag.
+Failing Elements
+meta
+Touch targets do not have sufficient size or spacing.
+Touch targets with sufficient size and spacing help users who may have difficulty targeting small controls to activate the targets. Learn more about touch targets.
+Failing Elements
+button.action-btn.export-btn
+button.action-btn.faq-btn
+button.action-btn.print-btn
+button.action-btn.update-btn
+button.action-btn.csv-btn
+button.action-btn
+button.action-btn.faq-btn
+button.action-btn.export-btn
+button.action-btn
+button.action-btn.update-btn
+button.action-btn.print-btn
+💳 Subscribe - $14.99/mo
+<button class="action-btn subscribe-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')">
+button.action-btn
+button.action-btn.csv-btn
+💳 Subscribe - $14.99/mo
+<button class="action-btn subscribe-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')">
+button.action-btn
+button.action-btn.faq-btn
+💳 Subscribe - $14.99/mo
+<button class="action-btn subscribe-btn" onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')">
+button.action-btn.update-btn
+button.action-btn.export-btn
+button.nav-btn.active
+button.action-btn.print-btn
+button.nav-btn
+button.action-btn.csv-btn
+button.nav-btn
+button.nav-btn.active
+button.action-btn.export-btn
+button.nav-btn
+button.action-btn.print-btn
+button.nav-btn
+button.action-btn.csv-btn
+button.btn
+input#subscriberEmail
+These items highlight common accessibility best practices.
+Tables and lists
+Lists do not contain only <li> elements and script supporting elements (<script> and <template>).
+Screen readers have a specific way of announcing lists. Ensuring proper list structure aids screen reader output. Learn more about proper list structure.
+Failing Elements
+ul#historyList
+p
+ul#categoryList
+p.no-data-message
+ul#monthlyBreakdown
+p.no-data-message
+These are opportunities to improve the experience of reading tabular or list data using assistive technology, like a screen reader.
+Additional items to manually check (10)
+Show
+These items address areas which an automated testing tool cannot cover. Learn more in our guide on conducting an accessibility review.
+Passed audits (21)
+Show
+Not applicable (33)
+Show
+Best Practices
+Browser Compatibility
+Properly defines charset Error!
+A character encoding declaration is required. It can be done with a <meta> tag in the first 1024 bytes of the HTML or in the Content-Type HTTP response header. Learn more about declaring the character encoding.
+Trust and Safety
+Ensure CSP is effective against XSS attacks
+A strong Content Security Policy (CSP) significantly reduces the risk of cross-site scripting (XSS) attacks. Learn how to use a CSP to prevent XSS
+Description
+Directive
+Severity
+Host allowlists can frequently be bypassed. Consider using CSP nonces or hashes instead, along with `'strict-dynamic'` if necessary.
+script-src
+High
+`'unsafe-inline'` allows the execution of unsafe in-page scripts and event handlers. Consider using CSP nonces or hashes to allow scripts individually.
+script-src
+High
+The page contains a CSP defined in a `<meta>` tag. Consider moving the CSP to an HTTP header or defining another strict CSP in an HTTP header.
+Medium
+Use a strong HSTS policy
+Deployment of the HSTS header significantly reduces the risk of downgrading HTTP connections and eavesdropping attacks. A rollout in stages, starting with a low max-age is recommended. Learn more about using a strong HSTS policy.
+Description
+Directive
+Severity
+No `includeSubDomains` directive found
+includeSubDomains
+Medium
+No `preload` directive found
+preload
+Medium
+Ensure proper origin isolation with COOP
+The Cross-Origin-Opener-Policy (COOP) can be used to isolate the top-level window from other documents such as pop-ups. Learn more about deploying the COOP header.
+Description
+Directive
+Severity
+No COOP header found
+High
+Mitigate clickjacking with XFO or CSP
+The X-Frame-Options (XFO) header or the frame-ancestors directive in the Content-Security-Policy (CSP) header control where a page can be embedded. These can mitigate clickjacking attacks by blocking some or all sites from embedding the page. Learn more about mitigating clickjacking.
+Description
+Severity
+No frame control policy found
+High
+Passed audits (14)
+Show
+Not applicable (2)
+Show
+100
+SEO
+These checks ensure that your page is following basic search engine optimization advice. There are many additional factors Lighthouse does not score here that may affect your search ranking, including performance on Core Web Vitals. Learn more about Google Search Essentials.
+Additional items to manually check (1)
+Hide
+Structured data is valid
+Run the Structured Data Testing Tool and the Structured Data Linter to validate structured data. Learn more about Structured Data.
+Run these additional validators on your site to check additional SEO best practices.
+Passed audits (9)
+Show
+Not applicable (1)
+Show
