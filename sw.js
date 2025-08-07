@@ -43,18 +43,40 @@ self.addEventListener('message', (event) => {
     self.skipWaiting();
     return;
   }
-
+  
+  // iOS-specific: Force complete cache invalidation
+  if (event.data && event.data.type === 'FORCE_IOS_CACHE_CLEAR') {
+    event.waitUntil(
+      // Force immediate cache deletion
+      caches.keys().then(cacheNames => {
+        console.log('SW: Deleting all caches:', cacheNames);
+        return Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+      }).then(() => {
+        // Force service worker to claim all clients immediately
+        return self.clients.claim();
+      }).then(() => {
+        // Skip waiting and activate immediately
+        return self.skipWaiting();
+      }).then(() => {
+        // Notify all clients to reload completely
+        return self.clients.matchAll({ includeUncontrolled: true }).then(clients => {
+          clients.forEach(client => {
+            client.postMessage({ type: 'FORCE_HARD_REFRESH' });
+            // Also send legacy message
+            client.postMessage({ type: 'CACHE_CLEARED' });
+          });
+        });
+      })
+    );
+    return;
+  }
+  
   // Existing message handling code continues below...
   const messageType = event.data?.type || event.data?.action;
   
-  // Skip problematic iOS cache clearing to prevent Lighthouse loops
-  if (messageType === 'FORCE_IOS_CACHE_CLEAR') {
-    return; // Ignore this message type
-  }
-
   if (['CLEAR_ALL_CACHE', 'clearCache', 'CLEAR_INDEX_CACHE'].includes(messageType)) {
     const isFullClear = messageType === 'CLEAR_ALL_CACHE' || messageType === 'clearCache';
-
+    
     event.waitUntil(
       (isFullClear ? 
         // Clear all caches
