@@ -1,4 +1,3 @@
-
 // ======================
 // --- Polyfills ---
 // ======================
@@ -57,27 +56,27 @@ try {
 function isIOSDevice() {
     // Enhanced iOS detection
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    
+
     // Direct iOS device detection
     if (/iPad|iPhone|iPod/.test(userAgent)) {
         return true;
     }
-    
+
     // iPad Pro in desktop mode detection
     if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) {
         return true;
     }
-    
+
     // iOS Safari specific detection
     if (/Safari/.test(userAgent) && /Mobile/.test(userAgent) && !/Chrome/.test(userAgent)) {
         return true;
     }
-    
+
     // Check for iOS-specific features
     if (window.DeviceMotionEvent !== undefined && window.DeviceOrientationEvent !== undefined) {
         return /Mobile|Tablet/.test(userAgent);
     }
-    
+
     return false;
 }
 
@@ -114,7 +113,7 @@ function safeLocalStorageSet(key, value) {
                 localStorage.setItem(key, value);
                 return true;
             }
-            
+
             // Fallback to sessionStorage for iOS private browsing
             sessionStorage.setItem(key, value);
             return true;
@@ -132,16 +131,16 @@ function safeLocalStorageGet(key) {
     try {
         const value = localStorage.getItem(key);
         if (value !== null) return value;
-        
+
         // Fallback to sessionStorage
         const sessionValue = sessionStorage.getItem(key);
         if (sessionValue !== null) return sessionValue;
-        
+
         // Last resort: check memory storage
         if (window.memoryStorage && window.memoryStorage[key]) {
             return window.memoryStorage[key];
         }
-        
+
         return null;
     } catch (e) {
         console.warn('localStorage/sessionStorage access failed:', e);
@@ -181,10 +180,10 @@ function restoreBodyStyles() {
         Object.keys(iosModalState.originalBodyStyles).forEach(property => {
             document.body.style[property] = iosModalState.originalBodyStyles[property];
         });
-        
+
         // Restore scroll position
         window.scrollTo(0, iosModalState.originalScrollPosition);
-        
+
         // Clear the saved styles
         iosModalState.originalBodyStyles = {};
         iosModalState.originalScrollPosition = 0;
@@ -193,10 +192,10 @@ function restoreBodyStyles() {
 
 function applyIOSModalStyles(modal) {
     if (!isIOSDevice()) return;
-    
+
     // Save current body styles before making changes
     saveBodyStyles();
-    
+
     // Apply iOS-specific modal container styles
     modal.style.position = 'fixed';
     modal.style.top = '0';
@@ -209,20 +208,20 @@ function applyIOSModalStyles(modal) {
     modal.style.overflow = 'auto';
     modal.style.webkitOverflowScrolling = 'touch';
     modal.style.touchAction = 'manipulation';
-    
+
     // Apply body styles to prevent background scrolling
     // CRITICAL FIX: Don't use position: fixed on body for iOS
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
     document.body.style.webkitOverflowScrolling = 'touch';
-    
+
     // Set modal state
     iosModalState.isModalOpen = true;
 }
 
 function removeIOSModalStyles(modal) {
     if (!isIOSDevice()) return;
-    
+
     // Remove modal-specific styles
     modal.style.position = '';
     modal.style.top = '';
@@ -234,17 +233,17 @@ function removeIOSModalStyles(modal) {
     modal.style.overflow = '';
     modal.style.webkitOverflowScrolling = '';
     modal.style.touchAction = '';
-    
+
     // Restore body styles
     restoreBodyStyles();
-    
+
     // Clear modal state
     iosModalState.isModalOpen = false;
-    
+
     // Force layout recalculation
     modal.offsetHeight;
     document.body.offsetHeight;
-    
+
     // Dispatch resize event to fix any layout issues
     setTimeout(() => {
         window.dispatchEvent(new Event('resize'));
@@ -267,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function () {
             metaCapable.content = 'yes';
             document.head.appendChild(metaCapable);
         }
-        
+
         // Add viewport meta tag for iOS if not present
         if (!document.querySelector('meta[name="viewport"]')) {
             const metaViewport = document.createElement('meta');
@@ -339,15 +338,15 @@ document.addEventListener('DOMContentLoaded', function () {
         safeLocalStorageSet('isSubscribed', 'true');
         safeLocalStorageSet('hasSeenWelcome', 'true');
         isSubscribed = true;
-        
+
         // CRITICAL: Prevent modal from showing on iOS during token processing
         if (isIOSDevice()) {
             iosModalState.preventModalShow = true;
         }
-        
+
         // Critical path initialization
         initializeApp();
-        
+
         // Verify token immediately
         verifySubscriptionToken(token);
     } else {
@@ -399,7 +398,7 @@ function initializeApp() {
                 e.stopPropagation();
                 closeWelcomeModal();
             }, { passive: false });
-            
+
             // Additional safety: touchstart event
             closeWelcomeBtn.addEventListener('touchstart', function(e) {
                 e.stopPropagation();
@@ -460,22 +459,22 @@ function initializeApp() {
         // Additional iOS safety check
         if (isIOSDevice()) {
             // Check if we're in a potentially problematic state
-            const isProblematicState = 
+            const isProblematicState =
                 document.referrer.includes('stripe') ||
                 document.referrer.includes('payment') ||
                 window.location.href.includes('#') ||
                 (performance.navigation && performance.navigation.type === 1); // reload
-                
+
             if (isProblematicState) {
                 console.log('🚫 iOS Welcome modal blocked - problematic state detected');
                 safeLocalStorageSet('hasSeenWelcome', 'true');
                 return;
             }
         }
-        
+
         showWelcomeModal();
     }
-    
+
     updateToggleIcon();
     updateSummary();
     updateInsights();
@@ -526,7 +525,7 @@ function initializeApp() {
     if (isIOSDevice()) {
         let touchStartTime = 0;
         let touchStartY = 0;
-        
+
         document.addEventListener('touchstart', function(e) {
             touchStartTime = Date.now();
             touchStartY = e.touches[0].clientY;
@@ -536,14 +535,14 @@ function initializeApp() {
             const touchDuration = Date.now() - touchStartTime;
             const touchEndY = e.changedTouches[0].clientY;
             const touchDistance = Math.abs(touchEndY - touchStartY);
-            
+
             // If user holds touch for 3+ seconds on modal background, force close all modals
             if (touchDuration > 3000 && e.target.classList.contains('modal') && touchDistance < 10) {
                 closeAllModals();
                 showNotification('Modal closed - long tap detected', 'info');
             }
         }, { passive: true });
-        
+
         // Additional iOS safety: detect if modal becomes unresponsive
         let modalCheckInterval;
         document.addEventListener('touchstart', function(e) {
@@ -559,7 +558,7 @@ function initializeApp() {
                         modal.style.touchAction = 'manipulation';
                     }
                 }, 1000);
-                
+
                 // Clear interval after 10 seconds
                 setTimeout(() => clearInterval(modalCheckInterval), 10000);
             }
@@ -616,12 +615,12 @@ async function checkSubscriptionStatusFromServer() {
 async function verifySubscriptionToken(token) {
     try {
         console.log('🔍 Verifying subscription token for iOS...');
-        
+
         // Immediately set subscription status and prevent modal
         safeLocalStorageSet('isSubscribed', 'true');
         safeLocalStorageSet('hasSeenWelcome', 'true');
         isSubscribed = true;
-        
+
         // iOS-specific: Set prevention flag
         if (isIOSDevice()) {
             iosModalState.preventModalShow = true;
@@ -647,30 +646,42 @@ async function verifySubscriptionToken(token) {
         }
 
         const data = await response.json();
-        
-        if (data.success) {
+
+        if (response.ok && data.success) {
+            // Store subscription data
+            safeLocalStorageSet('subscriptionToken', data.token);
+            safeLocalStorageSet('isSubscribed', 'true');
+            isSubscribed = true;
+
             console.log('✅ Subscription verified successfully');
-            
+
+            // Show success notification
+            showNotification('🎉 Pro subscription activated successfully!', 'success');
+
             // Update UI immediately
             updateTrialCountdownWithAlreadySubscribed();
-            manageSubscriptionButtons();
-            
-            // Clear URL parameters to prevent re-processing
-            if (window.history && window.history.replaceState) {
-                window.history.replaceState({}, document.title, window.location.pathname);
+
+            // ✅ FIXED iOS HANDLING - Simplified and Safe
+            if (isIOSDevice()) {
+                // Simple approach: Just reload the page after a short delay
+                // No aggressive cache clearing, no service worker messages
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000); // Slightly longer delay for iOS
+            } else {
+                // Desktop: Standard reload
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
             }
-            
-            // Show success notification
-            setTimeout(() => {
-                showNotification('Welcome! Your subscription is now active.', 'success');
-            }, 500);
-            
+
         } else {
-            console.warn('⚠️ Subscription verification failed:', data.message);
+            const errorMessage = data?.message || 'Failed to verify subscription';
+            console.warn('⚠️ Subscription verification failed:', errorMessage);
             // Reset subscription status
             safeLocalStorageSet('isSubscribed', 'false');
             isSubscribed = false;
-            
+
             if (isIOSDevice()) {
                 iosModalState.preventModalShow = false;
             }
@@ -680,7 +691,7 @@ async function verifySubscriptionToken(token) {
         // Reset subscription status on error
         safeLocalStorageSet('isSubscribed', 'false');
         isSubscribed = false;
-        
+
         if (isIOSDevice()) {
             iosModalState.preventModalShow = false;
         }
@@ -1504,7 +1515,7 @@ function showWelcomeModal() {
             safeLocalStorageSet('hasSeenWelcome', 'true');
             return;
         }
-        
+
         // Block if ANY URL parameters exist on iOS (aggressive prevention)
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.toString().length > 0) {
@@ -1512,9 +1523,9 @@ function showWelcomeModal() {
             safeLocalStorageSet('hasSeenWelcome', 'true'); // Prevent future attempts
             return;
         }
-        
+
         // Extra aggressive iOS checks
-        if (window.location.href.includes('?') || 
+        if (window.location.href.includes('?') ||
             window.location.href.includes('#') ||
             document.referrer.includes('stripe') ||
             document.referrer.includes('payment')) {
@@ -1522,14 +1533,14 @@ function showWelcomeModal() {
             safeLocalStorageSet('hasSeenWelcome', 'true');
             return;
         }
-        
+
         // Check if this is a reload/refresh on iOS
         if (performance.navigation && performance.navigation.type === 1) {
             console.log('🚫 iOS Welcome modal blocked - page refresh detected');
             safeLocalStorageSet('hasSeenWelcome', 'true');
             return;
         }
-        
+
         // Extra check for iOS Safari's weird behavior with localStorage
         try {
             const testStorage = window.localStorage || window.sessionStorage;
@@ -1557,20 +1568,20 @@ function showWelcomeModal() {
             modal.style.height = '100vh';
             modal.style.zIndex = '10000';
         }
-        
+
         modal.style.display = 'flex';
         modal.classList.add('active');
-        
+
         // Force reflow before adding show class
         modal.offsetHeight;
-        
+
         setTimeout(() => {
             modal.classList.add('show');
             // Focus on close button for accessibility
             const closeBtn = modal.querySelector('#closeWelcomeBtn');
             if (closeBtn) {
                 closeBtn.focus();
-                
+
                 // iOS-specific: Ensure button is properly interactive
                 if (isIOSDevice()) {
                     closeBtn.style.pointerEvents = 'auto';
@@ -1578,7 +1589,7 @@ function showWelcomeModal() {
                 }
             }
         }, 10);
-        
+
         console.log('✅ Welcome modal displayed for new user');
     } else {
         console.error('❌ Welcome modal element not found');
@@ -1599,16 +1610,16 @@ window.closeWelcomeModal = function closeWelcomeModal() {
         if (isIOSDevice()) {
             // Remove modal classes immediately
             modal.classList.remove('show', 'active');
-            
+
             // Apply immediate hiding
             modal.style.display = 'none';
             modal.style.opacity = '0';
             modal.style.pointerEvents = 'none';
             modal.style.visibility = 'hidden';
-            
+
             // Remove iOS-specific styles
             removeIOSModalStyles(modal);
-            
+
             console.log('📱 iOS modal force closed with improved cleanup');
         } else {
             // Standard modal closing for non-iOS
@@ -1624,7 +1635,7 @@ window.closeWelcomeModal = function closeWelcomeModal() {
             if (mainContent) {
                 mainContent.focus();
             }
-            
+
             // Extra cleanup for iOS
             if (isIOSDevice()) {
                 // Clear any remaining modal artifacts
@@ -1633,7 +1644,7 @@ window.closeWelcomeModal = function closeWelcomeModal() {
                         m.style.display = 'none';
                     }
                 });
-                
+
                 // Force window resize event to fix any layout issues
                 setTimeout(() => {
                     window.dispatchEvent(new Event('resize'));
@@ -1665,7 +1676,7 @@ function closeAllModals() {
             modal.style.pointerEvents = 'none';
             modal.style.zIndex = '-1';
             modal.style.transform = 'scale(0)';
-            
+
             // Apply improved iOS cleanup
             removeIOSModalStyles(modal);
         }
@@ -1677,13 +1688,13 @@ function closeAllModals() {
         if (iosModalState.isModalOpen) {
             restoreBodyStyles();
         }
-        
+
         // Force reflow to ensure changes take effect
         document.body.offsetHeight;
-        
+
         // Set the flag to prevent welcome modal
         safeLocalStorageSet('hasSeenWelcome', 'true');
-        
+
         console.log('📱 iOS: All modals forcibly closed with improved cleanup');
     }
 }
