@@ -694,6 +694,30 @@
             border-color: #92400e !important;
         }
 
+        .backup-btn {
+            background: linear-gradient(135deg, #059669, #047857) !important;
+            color: white !important;
+            border-color: #059669 !important;
+            font-weight: 700 !important;
+        }
+
+        .backup-btn:hover {
+            background: linear-gradient(135deg, #047857, #065f46) !important;
+            box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4) !important;
+        }
+
+        .restore-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+            color: white !important;
+            border-color: #3b82f6 !important;
+            font-weight: 700 !important;
+        }
+
+        .restore-btn:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4) !important;
+        }
+
         .subscribe-btn {
             background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
             color: white !important;
