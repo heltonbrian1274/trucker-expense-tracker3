@@ -622,7 +622,7 @@
         }
 
         .action-btn {
-            background: linear-gradient(135deg, #94a3b8, #64748b);
+            background: linear-gradient(135deg, #6b7280, #4b5563);
             border: 2px solid var(--border-light);
             border-radius: 12px;
             padding: 20px;
@@ -635,15 +635,15 @@
             justify-content: center;
             gap: 8px;
             touch-action: manipulation;
-            color: #000000;
+            color: #ffffff;
             min-height: 70px;
             height: 70px;
         }
 
         .dark-mode .action-btn {
-            background: linear-gradient(135deg, #475569, #1e293b);
+            background: linear-gradient(135deg, #374151, #111827);
             border-color: var(--border-dark);
-            color: #ffffff;
+            color: #f9fafb;
             font-weight: 700;
         }
 
