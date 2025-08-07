@@ -706,6 +706,48 @@
             box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4) !important;
         }
 
+        .already-subscribed-btn,
+        #alreadySubscribedBtn,
+        #alreadySubscribedActionBtn,
+        [data-action="already-subscribed"] {
+            background: linear-gradient(135deg, #1f2937, #111827) !important;
+            color: #ffffff !important;
+            border: 2px solid #374151 !important;
+            font-weight: 700 !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .already-subscribed-btn:hover,
+        #alreadySubscribedBtn:hover,
+        #alreadySubscribedActionBtn:hover,
+        [data-action="already-subscribed"]:hover {
+            background: linear-gradient(135deg, #374151, #1f2937) !important;
+            border-color: #4b5563 !important;
+            color: #ffffff !important;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        .dark-mode .already-subscribed-btn,
+        .dark-mode #alreadySubscribedBtn,
+        .dark-mode #alreadySubscribedActionBtn,
+        .dark-mode [data-action="already-subscribed"] {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb) !important;
+            color: #111827 !important;
+            border: 2px solid #d1d5db !important;
+            font-weight: 700 !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .dark-mode .already-subscribed-btn:hover,
+        .dark-mode #alreadySubscribedBtn:hover,
+        .dark-mode #alreadySubscribedActionBtn:hover,
+        .dark-mode [data-action="already-subscribed"]:hover {
+            background: linear-gradient(135deg, #e5e7eb, #d1d5db) !important;
+            border-color: #9ca3af !important;
+            color: #111827 !important;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3) !important;
+        }
+
         .restore-btn {
             background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
             color: white !important;
