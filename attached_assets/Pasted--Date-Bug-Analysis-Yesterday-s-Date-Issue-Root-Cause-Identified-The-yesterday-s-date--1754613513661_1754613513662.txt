@@ -1,0 +1,132 @@
+# Date Bug Analysis - Yesterday's Date Issue
+
+## Root Cause Identified ✅
+
+The "yesterday's date" bug is caused by **timezone conversion issues** between expense creation and history display.
+
+## The Problem Flow
+
+### 1. Expense Creation (Lines 1045-1051) ✅ CORRECT
+```javascript
+date: (() => {
+    const now = new Date();                    // Gets local time
+    const year = now.getFullYear();            // Local year
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');  // Local month
+    const day = now.getDate().toString().padStart(2, '0');           // Local day
+    return `${year}-${month}-${day}`;          // Returns "2025-01-08" (local date)
+})(),
+```
+**This is CORRECT** - it stores the local date as a string.
+
+### 2. History Display (Line 1290) ❌ PROBLEMATIC
+```javascript
+<div class="expense-subtitle">${new Date(ex.date).toLocaleDateString()}</div>
+```
+
+**The Issue:**
+- `ex.date` is "2025-01-08" (local date string)
+- `new Date("2025-01-08")` parses this as **UTC midnight** on Jan 8th
+- `toLocaleDateString()` converts UTC to local timezone
+- **If user is behind UTC, this shows the previous day!**
+
+### 3. Today Filter (Line 1257) ❌ PROBLEMATIC
+```javascript
+filteredExpenses = expenses.filter(ex => new Date(ex.date).toDateString() === now.toDateString());
+```
+
+**The Issue:**
+- `new Date(ex.date)` parses stored date as UTC
+- `now.toDateString()` uses local time
+- Comparison fails for users in timezones behind UTC
+
+### 4. Summary Calculation (Line 1091) ❌ PROBLEMATIC
+```javascript
+const today = new Date().toISOString().split('T')[0];  // UTC date
+const todayExpenses = expenses.filter(ex => ex.date === today);  // Local date
+```
+
+**The Issue:**
+- `today` is UTC date string
+- `ex.date` is local date string
+- They don't match for users not in UTC
+
+## Timezone Examples
+
+### User in PST (UTC-8):
+1. **Creates expense on Jan 8th, 10 PM PST**
+2. **Stored date**: "2025-01-08" ✅ (correct local date)
+3. **History display**: 
+   - `new Date("2025-01-08")` = Jan 8th UTC midnight
+   - Converted to PST = Jan 7th, 4 PM
+   - **Shows**: Jan 7th ❌ (wrong!)
+
+### User in EST (UTC-5):
+1. **Creates expense on Jan 8th, 10 PM EST**
+2. **Stored date**: "2025-01-08" ✅ (correct local date)
+3. **History display**:
+   - `new Date("2025-01-08")` = Jan 8th UTC midnight
+   - Converted to EST = Jan 7th, 7 PM
+   - **Shows**: Jan 7th ❌ (wrong!)
+
+### User in UTC+2:
+1. **Creates expense on Jan 8th, 10 PM**
+2. **Stored date**: "2025-01-08" ✅ (correct local date)
+3. **History display**:
+   - `new Date("2025-01-08")` = Jan 8th UTC midnight
+   - Converted to UTC+2 = Jan 8th, 2 AM
+   - **Shows**: Jan 8th ✅ (correct by luck!)
+
+## Additional Issues Found
+
+### Date Filtering Problems:
+- **Today filter**: May not show today's expenses
+- **Week filter**: May miss expenses from edge days
+- **Month filter**: May miss expenses from edge days
+- **Year filter**: May miss expenses from edge days
+
+### Summary Calculation Problems:
+- **Daily total**: May not include today's expenses
+- **Today's count**: May be incorrect
+
+## The Fix Strategy
+
+### Option 1: Parse Dates as Local (Recommended)
+```javascript
+// Instead of: new Date(ex.date)
+// Use: new Date(ex.date + 'T00:00:00')  // Forces local timezone
+```
+
+### Option 2: Store Dates with Timezone Info
+```javascript
+// Store: "2025-01-08T00:00:00-08:00" (with timezone)
+// Parse: new Date(ex.date)  // Preserves timezone
+```
+
+### Option 3: Use Date-Only Comparisons
+```javascript
+// Compare date strings directly without Date parsing
+// ex.date === "2025-01-08"
+```
+
+## Impact Assessment
+
+### Current State:
+- ❌ History shows wrong dates for users behind UTC
+- ❌ Today filter may not work
+- ❌ Daily summary may be incorrect
+- ❌ Date-based filtering unreliable
+
+### After Fix:
+- ✅ History shows correct dates for all timezones
+- ✅ Today filter works correctly
+- ✅ Daily summary accurate
+- ✅ All date filtering reliable
+
+## Files Affected:
+1. **script.js** - Main date handling logic
+2. **History display function** (Line 1290)
+3. **Filter functions** (Lines 1257, 1261, 1265, 1270)
+4. **Summary calculation** (Line 1091)
+
+This is a critical bug that affects the core functionality of the expense tracker for users in many timezones.
+

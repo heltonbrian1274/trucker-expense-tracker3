@@ -1,0 +1,217 @@
+// ===================================================
+// DATE BUG FIX - Complete Solution
+// ===================================================
+
+// PROBLEM: Expenses show yesterday's date due to timezone conversion issues
+// SOLUTION: Parse dates as local timezone instead of UTC
+
+// 1. HELPER FUNCTION - Add this near the top of script.js (around line 60)
+// ====================================================================
+
+/**
+ * Parse a date string as local date without timezone conversion
+ * @param {string} dateString - Date in YYYY-MM-DD format
+ * @returns {Date} - Date object in local timezone
+ */
+function parseLocalDate(dateString) {
+    // Parse as local date by adding time component
+    return new Date(dateString + 'T00:00:00');
+}
+
+/**
+ * Format a date as YYYY-MM-DD string in local timezone
+ * @param {Date} date - Date object
+ * @returns {string} - Date string in YYYY-MM-DD format
+ */
+function formatLocalDate(date) {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+/**
+ * Get today's date as YYYY-MM-DD string in local timezone
+ * @returns {string} - Today's date string
+ */
+function getTodayString() {
+    return formatLocalDate(new Date());
+}
+
+// 2. FIX HISTORY DISPLAY (Line 1290)
+// ==================================
+
+// ❌ REPLACE THIS LINE:
+// <div class="expense-subtitle">${new Date(ex.date).toLocaleDateString()}</div>
+
+// ✅ WITH THIS:
+// <div class="expense-subtitle">${parseLocalDate(ex.date).toLocaleDateString()}</div>
+
+// 3. FIX TODAY FILTER (Line 1257)
+// ===============================
+
+// ❌ REPLACE THIS LINE:
+// filteredExpenses = expenses.filter(ex => new Date(ex.date).toDateString() === now.toDateString());
+
+// ✅ WITH THIS:
+// filteredExpenses = expenses.filter(ex => ex.date === getTodayString());
+
+// 4. FIX WEEK FILTER (Line 1261)
+// ==============================
+
+// ❌ REPLACE THIS LINE:
+// filteredExpenses = expenses.filter(ex => new Date(ex.date) >= weekAgo);
+
+// ✅ WITH THIS:
+// filteredExpenses = expenses.filter(ex => parseLocalDate(ex.date) >= weekAgo);
+
+// 5. FIX MONTH FILTER (Lines 1264-1267)
+// =====================================
+
+// ❌ REPLACE THIS BLOCK:
+// filteredExpenses = expenses.filter(ex => {
+//     const expenseDate = new Date(ex.date);
+//     return expenseDate.getMonth() === now.getMonth() && expenseDate.getFullYear() === now.getFullYear();
+// });
+
+// ✅ WITH THIS:
+// filteredExpenses = expenses.filter(ex => {
+//     const expenseDate = parseLocalDate(ex.date);
+//     return expenseDate.getMonth() === now.getMonth() && expenseDate.getFullYear() === now.getFullYear();
+// });
+
+// 6. FIX YEAR FILTER (Line 1270)
+// ==============================
+
+// ❌ REPLACE THIS LINE:
+// filteredExpenses = expenses.filter(ex => new Date(ex.date).getFullYear() === now.getFullYear());
+
+// ✅ WITH THIS:
+// filteredExpenses = expenses.filter(ex => parseLocalDate(ex.date).getFullYear() === now.getFullYear());
+
+// 7. FIX SORTING (Line 1280)
+// ==========================
+
+// ❌ REPLACE THIS LINE:
+// filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+// ✅ WITH THIS:
+// filteredExpenses.sort((a, b) => parseLocalDate(b.date) - parseLocalDate(a.date));
+
+// 8. FIX SUMMARY CALCULATION (Line 1091)
+// ======================================
+
+// ❌ REPLACE THIS BLOCK:
+// const today = new Date().toISOString().split('T')[0];
+// const todayExpenses = expenses.filter(ex => ex.date === today);
+
+// ✅ WITH THIS:
+// const today = getTodayString();
+// const todayExpenses = expenses.filter(ex => ex.date === today);
+
+// 9. FIX INSIGHTS CALCULATION (Line 1095)
+// =======================================
+
+// ❌ REPLACE THIS LINE:
+// const uniqueDays = [...new Set(expenses.map(ex => new Date(ex.date).toDateString()))].length;
+
+// ✅ WITH THIS:
+// const uniqueDays = [...new Set(expenses.map(ex => ex.date))].length;
+
+// 10. COMPLETE FIXED FUNCTIONS
+// ============================
+
+// Fixed updateSummary function
+function updateSummary() {
+    const today = getTodayString();
+    const todayExpenses = expenses.filter(ex => ex.date === today);
+    const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
+    const todayTotal = todayExpenses.reduce((sum, ex) => sum + ex.amount, 0);
+    
+    const dailyEl = document.getElementById('dailyTotal');
+    const totalEl = document.getElementById('totalExpenses');
+    
+    if (dailyEl) dailyEl.textContent = `$${todayTotal.toFixed(2)}`;
+    if (totalEl) totalEl.textContent = `$${totalExpenses.toFixed(2)}`;
+}
+
+// Fixed updateHistory function (partial - key sections)
+function updateHistory() {
+    const historyList = document.getElementById('historyList');
+    const filter = document.getElementById('dateFilter')?.value || 'all';
+    
+    if (!historyList) return;
+    
+    let filteredExpenses = [...expenses];
+    const now = new Date();
+    
+    switch (filter) {
+        case 'today':
+            filteredExpenses = expenses.filter(ex => ex.date === getTodayString());
+            break;
+        case 'week':
+            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            filteredExpenses = expenses.filter(ex => parseLocalDate(ex.date) >= weekAgo);
+            break;
+        case 'month':
+            filteredExpenses = expenses.filter(ex => {
+                const expenseDate = parseLocalDate(ex.date);
+                return expenseDate.getMonth() === now.getMonth() && expenseDate.getFullYear() === now.getFullYear();
+            });
+            break;
+        case 'year':
+            filteredExpenses = expenses.filter(ex => parseLocalDate(ex.date).getFullYear() === now.getFullYear());
+            break;
+    }
+    
+    if (filteredExpenses.length === 0) {
+        historyList.innerHTML = '<p style="text-align: center; color: var(--text-light); opacity: 0.7; margin: 40px 0;">No expenses found for the selected period.</p>';
+        return;
+    }
+    
+    // Sort by date descending
+    filteredExpenses.sort((a, b) => parseLocalDate(b.date) - parseLocalDate(a.date));
+    
+    historyList.innerHTML = filteredExpenses.map(ex => `
+        <li class="history-item">
+            <div class="expense-card" style="cursor: default; margin-bottom: 15px;">
+                <div class="expense-header">
+                    <div class="expense-icon">${ex.categoryIcon}</div>
+                    <div class="expense-title">${ex.categoryName}</div>
+                    <div class="expense-amount">$${ex.amount.toFixed(2)}</div>
+                </div>
+                <div class="expense-subtitle">${parseLocalDate(ex.date).toLocaleDateString()}</div>
+                ${ex.description ? `<div class="expense-description"><strong>Description:</strong> ${ex.description}</div>` : ''}
+                ${ex.location ? `<div class="expense-description"><strong>Location:</strong> ${ex.location}</div>` : ''}
+                ${ex.receipt ? `<div class="receipt-preview" style="margin-top: 15px; text-align: center;"><img src="${ex.receipt}" class="receipt-image" alt="Receipt" style="max-width: 200px; max-height: 150px; border-radius: 6px; border: 1px solid var(--border-light);"></div>` : ''}
+                <button onclick="deleteExpense('${ex.id}')" class="btn-delete" style="margin-top: 15px;">Delete</button>
+            </div>
+        </li>
+    `).join('');
+}
+
+// ===================================================
+// IMPLEMENTATION CHECKLIST
+// ===================================================
+
+/*
+1. ✅ Add helper functions (parseLocalDate, formatLocalDate, getTodayString)
+2. ✅ Fix history display (Line 1290)
+3. ✅ Fix today filter (Line 1257)
+4. ✅ Fix week filter (Line 1261)
+5. ✅ Fix month filter (Lines 1264-1267)
+6. ✅ Fix year filter (Line 1270)
+7. ✅ Fix sorting (Line 1280)
+8. ✅ Fix summary calculation (Line 1091)
+9. ✅ Fix insights calculation (Line 1095)
+10. ✅ Test all date-related functionality
+
+TESTING CHECKLIST:
+- Create expense today → Should show today's date in history
+- Filter by "Today" → Should show today's expenses
+- Filter by "Week" → Should show this week's expenses
+- Filter by "Month" → Should show this month's expenses
+- Daily summary → Should show correct today's total
+- Different timezones → Should work consistently
+*/
+
