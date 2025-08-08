@@ -12,6 +12,40 @@ if (!window.requestIdleCallback) {
 // ======================
 const expenseCategories=[{id:'fuel',name:'Fuel',icon:'⛽'},{id:'maintenance',name:'Maintenance & Repairs',icon:'🔧'},{id:'meals',name:'Meals',icon:'🍽️'},{id:'lodging',name:'Lodging',icon:'🏨'},{id:'tolls',name:'Tolls & Parking',icon:'🛣️'},{id:'permits',name:'Permits & Licenses',icon:'📋'},{id:'insurance',name:'Insurance',icon:'🛡️'},{id:'phone',name:'Phone & Communication',icon:'📱'},{id:'supplies',name:'Supplies & Equipment',icon:'📦'},{id:'training',name:'Training & Education',icon:'📚'},{id:'medical',name:'Medical & DOT Exams',icon:'🏥'},{id:'office',name:'Office Expenses',icon:'🏢'},{id:'bank',name:'Bank & Financial Fees',icon:'🏦'},{id:'legal',name:'Legal & Professional',icon:'⚖️'},{id:'other',name:'Other Business Expenses',icon:'💼'}];
 
+// ======================
+// --- Date Helper Functions ---
+// ======================
+
+/**
+ * Parse a date string as local date without timezone conversion
+ * @param {string} dateString - Date in YYYY-MM-DD format
+ * @returns {Date} - Date object in local timezone
+ */
+function parseLocalDate(dateString) {
+    // Parse as local date by adding time component
+    return new Date(dateString + 'T00:00:00');
+}
+
+/**
+ * Format a date as YYYY-MM-DD string in local timezone
+ * @param {Date} date - Date object
+ * @returns {string} - Date string in YYYY-MM-DD format
+ */
+function formatLocalDate(date) {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+/**
+ * Get today's date as YYYY-MM-DD string in local timezone
+ * @returns {string} - Today's date string
+ */
+function getTodayString() {
+    return formatLocalDate(new Date());
+}
+
 // State Variables - iOS-safe initialization
 let expenses = [];
 let isDarkMode = false;
@@ -1089,15 +1123,7 @@ function addExpense(categoryId) {
 }
 
 function updateSummary() {
-    // Use local date string for consistency
-    const today = (() => {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = (now.getMonth() + 1).toString().padStart(2, '0');
-        const day = now.getDate().toString().padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    })();
-    
+    const today = getTodayString();
     const todayExpenses = expenses.filter(ex => ex.date === today);
     const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
     const todayTotal = todayExpenses.reduce((sum, ex) => sum + ex.amount, 0);
@@ -1111,7 +1137,7 @@ function updateSummary() {
 
 function updateInsights() {
     const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
-    const uniqueDays = [...new Set(expenses.map(ex => new Date(ex.date).toDateString()))].length;
+    const uniqueDays = [...new Set(expenses.map(ex => ex.date))].length;
     const averageDaily = uniqueDays > 0 ? totalExpenses / uniqueDays : 0;
 
     // Calculate category totals
@@ -1271,40 +1297,22 @@ function updateHistory() {
     let filteredExpenses = [...expenses];
     const now = new Date();
 
-    // Get current local date string for consistent comparison
-    const todayString = (() => {
-        const year = now.getFullYear();
-        const month = (now.getMonth() + 1).toString().padStart(2, '0');
-        const day = now.getDate().toString().padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    })();
-
     switch (filter) {
         case 'today':
-            filteredExpenses = expenses.filter(ex => ex.date === todayString);
+            filteredExpenses = expenses.filter(ex => ex.date === getTodayString());
             break;
         case 'week':
             const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-            const weekAgoString = (() => {
-                const year = weekAgo.getFullYear();
-                const month = (weekAgo.getMonth() + 1).toString().padStart(2, '0');
-                const day = weekAgo.getDate().toString().padStart(2, '0');
-                return `${year}-${month}-${day}`;
-            })();
-            filteredExpenses = expenses.filter(ex => ex.date >= weekAgoString);
+            filteredExpenses = expenses.filter(ex => parseLocalDate(ex.date) >= weekAgo);
             break;
         case 'month':
             filteredExpenses = expenses.filter(ex => {
-                const expenseYear = ex.date.substring(0, 4);
-                const expenseMonth = ex.date.substring(5, 7);
-                const currentYear = now.getFullYear().toString();
-                const currentMonth = (now.getMonth() + 1).toString().padStart(2, '0');
-                return expenseYear === currentYear && expenseMonth === currentMonth;
+                const expenseDate = parseLocalDate(ex.date);
+                return expenseDate.getMonth() === now.getMonth() && expenseDate.getFullYear() === now.getFullYear();
             });
             break;
         case 'year':
-            const currentYear = now.getFullYear().toString();
-            filteredExpenses = expenses.filter(ex => ex.date.substring(0, 4) === currentYear);
+            filteredExpenses = expenses.filter(ex => parseLocalDate(ex.date).getFullYear() === now.getFullYear());
             break;
     }
 
@@ -1314,7 +1322,7 @@ function updateHistory() {
     }
 
     // Sort by date descending
-    filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+    filteredExpenses.sort((a, b) => parseLocalDate(b.date) - parseLocalDate(a.date));
 
     historyList.innerHTML = filteredExpenses.map(ex => `
         <li class="history-item">
@@ -1324,7 +1332,7 @@ function updateHistory() {
                     <div class="expense-title">${ex.categoryName}</div>
                     <div class="expense-amount">$${ex.amount.toFixed(2)}</div>
                 </div>
-                <div class="expense-subtitle">${new Date(ex.date).toLocaleDateString()}</div>
+                <div class="expense-subtitle">${parseLocalDate(ex.date).toLocaleDateString()}</div>
                 ${ex.description ? `<div class="expense-description"><strong>Description:</strong> ${ex.description}</div>` : ''}
                 ${ex.location ? `<div class="expense-description"><strong>Location:</strong> ${ex.location}</div>` : ''}
                 ${ex.receipt ? `<div class="receipt-preview" style="margin-top: 15px; text-align: center;"><img src="${ex.receipt}" class="receipt-image" alt="Receipt" style="max-width: 200px; max-height: 150px; border-radius: 6px; border: 1px solid var(--border-light);"></div>` : ''}
