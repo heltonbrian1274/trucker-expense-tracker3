@@ -1042,7 +1042,12 @@ function addExpense(categoryId) {
         amount: amount,
         description: description || '',
         location: location || '',
-        date: new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().split('T')[0], // Force local date in YYYY-MM-DD format
+        date: (() => {
+            const now = new Date();
+            // Force local date by creating a new Date with local values
+            const localDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            return localDate.toISOString().split('T')[0];
+        })(),
         timestamp: Date.now()
     };
 
