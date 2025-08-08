@@ -1044,9 +1044,10 @@ function addExpense(categoryId) {
         location: location || '',
         date: (() => {
             const now = new Date();
-            // Force local date by creating a new Date with local values
-            const localDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            return localDate.toISOString().split('T')[0];
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
         })(),
         timestamp: Date.now()
     };
