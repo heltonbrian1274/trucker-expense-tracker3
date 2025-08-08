@@ -1088,7 +1088,26 @@ function addExpense(categoryId) {
     }
 }
 
-function updateSummary(){const today=new Date().toISOString().split('T')[0];const todayExpenses=expenses.filter(ex=>ex.date===today);const totalExpenses=expenses.reduce((sum,ex)=>sum+ex.amount,0);const todayTotal=todayExpenses.reduce((sum,ex)=>sum+ex.amount,0);const dailyEl=document.getElementById('dailyTotal');const totalEl=document.getElementById('totalExpenses');if(dailyEl)dailyEl.textContent=`$${todayTotal.toFixed(2)}`;if(totalEl)totalEl.textContent=`$${totalExpenses.toFixed(2)}`;}
+function updateSummary() {
+    // Use local date string for consistency
+    const today = (() => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    })();
+    
+    const todayExpenses = expenses.filter(ex => ex.date === today);
+    const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
+    const todayTotal = todayExpenses.reduce((sum, ex) => sum + ex.amount, 0);
+    
+    const dailyEl = document.getElementById('dailyTotal');
+    const totalEl = document.getElementById('totalExpenses');
+    
+    if (dailyEl) dailyEl.textContent = `$${todayTotal.toFixed(2)}`;
+    if (totalEl) totalEl.textContent = `$${totalExpenses.toFixed(2)}`;
+}
 
 function updateInsights() {
     const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
@@ -1252,22 +1271,40 @@ function updateHistory() {
     let filteredExpenses = [...expenses];
     const now = new Date();
 
+    // Get current local date string for consistent comparison
+    const todayString = (() => {
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    })();
+
     switch (filter) {
         case 'today':
-            filteredExpenses = expenses.filter(ex => new Date(ex.date).toDateString() === now.toDateString());
+            filteredExpenses = expenses.filter(ex => ex.date === todayString);
             break;
         case 'week':
             const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-            filteredExpenses = expenses.filter(ex => new Date(ex.date) >= weekAgo);
+            const weekAgoString = (() => {
+                const year = weekAgo.getFullYear();
+                const month = (weekAgo.getMonth() + 1).toString().padStart(2, '0');
+                const day = weekAgo.getDate().toString().padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            })();
+            filteredExpenses = expenses.filter(ex => ex.date >= weekAgoString);
             break;
         case 'month':
             filteredExpenses = expenses.filter(ex => {
-                const expenseDate = new Date(ex.date);
-                return expenseDate.getMonth() === now.getMonth() && expenseDate.getFullYear() === now.getFullYear();
+                const expenseYear = ex.date.substring(0, 4);
+                const expenseMonth = ex.date.substring(5, 7);
+                const currentYear = now.getFullYear().toString();
+                const currentMonth = (now.getMonth() + 1).toString().padStart(2, '0');
+                return expenseYear === currentYear && expenseMonth === currentMonth;
             });
             break;
         case 'year':
-            filteredExpenses = expenses.filter(ex => new Date(ex.date).getFullYear() === now.getFullYear());
+            const currentYear = now.getFullYear().toString();
+            filteredExpenses = expenses.filter(ex => ex.date.substring(0, 4) === currentYear);
             break;
     }
 
