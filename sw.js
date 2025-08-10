@@ -96,9 +96,13 @@ self.addEventListener('fetch', (event) => {
       event.respondWith(
         fetch(event.request).then((networkResponse) => {
           if (networkResponse.ok) {
-            // Cache the response for offline access
-            const cache = caches.open(CACHE_NAME);
-            cache.then(c => c.put(event.request, networkResponse.clone()));
+            // FIXED: Clone the response BEFORE using it
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseClone);
+            }).catch(err => {
+              console.warn('Cache put failed:', err);
+            });
           }
           return networkResponse;
         }).catch(() => {
@@ -122,8 +126,13 @@ self.addEventListener('fetch', (event) => {
       caches.match(event.request).then((cachedResponse) => {
         return cachedResponse || fetch(event.request).then((networkResponse) => {
           if (networkResponse.ok) {
-            const cache = caches.open(CACHE_NAME);
-            cache.then(c => c.put(event.request, networkResponse.clone()));
+            // FIXED: Clone the response BEFORE using it
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseClone);
+            }).catch(err => {
+              console.warn('Cache put failed:', err);
+            });
           }
           return networkResponse;
         });

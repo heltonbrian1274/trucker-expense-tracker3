@@ -310,7 +310,11 @@ async function verifySubscriptionToken(token) {
             // Update UI immediately
             updateTrialCountdownWithAlreadySubscribed();
 
-            // Simple reload after success
+            // FIXED: Clean URL before reload to prevent infinite loop
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+
+            // Safe reload after URL cleanup
             setTimeout(() => {
                 window.location.reload();
             }, 1500);
