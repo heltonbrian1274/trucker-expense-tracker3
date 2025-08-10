@@ -1,0 +1,81 @@
+// ===== SCRIPT.JS FIXES FOR PWA LOOPING ISSUE =====
+
+// 1. Enhanced iOS detection function (add after line 10)
+function isIOSDevice() {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+    const isIOSPWA = window.navigator.standalone === true;
+    const isIOSSafari = /Safari/.test(userAgent) && /Apple Computer/.test(navigator.vendor);
+    
+    return isIOS || isIOSPWA || isIOSSafari;
+}
+
+// 2. iOS-safe URL parameter cleanup function (add after line 420)
+function cleanUrlParametersIOS() {
+    if (isIOSDevice() && window.location.search) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasProcessedParams = urlParams.has('token') || 
+                                  urlParams.has('reset') || 
+                                  urlParams.has('action');
+        
+        if (hasProcessedParams) {
+            // Clean URL without reload on iOS
+            const cleanUrl = window.location.origin + window.location.pathname;
+            history.replaceState({}, document.title, cleanUrl);
+            console.log('🍎 iOS: Cleaned URL parameters to prevent loops');
+        }
+    }
+}
+
+// 3. REPLACE lines 289-296 with this fixed version:
+// Reset trial logic (for URL ?reset=trial)
+if (urlParams.get('reset') === 'trial') {
+    try {
+        localStorage.clear();
+        sessionStorage.clear();
+    } catch (e) {
+        console.warn('Storage clear failed:', e);
+    }
+    
+    // iOS-safe redirect: Clear URL parameters and redirect without reload
+    if (isIOSDevice()) {
+        // Use history.replaceState to clear parameters without reload
+        const cleanUrl = window.location.origin + window.location.pathname;
+        history.replaceState({}, document.title, cleanUrl);
+        // Force re-initialization without reload
+        setTimeout(() => {
+            initializeApp();
+        }, 100);
+    } else {
+        // For non-iOS devices, use reload as fallback
+        location.reload();
+    }
+    return;
+}
+
+// 4. REPLACE lines 299-310 with this improved token handling:
+// If there's a token, handle subscription immediately before app initialization
+if (token) {
+    safeLocalStorageSet('subscriptionToken', token);
+    safeLocalStorageSet('isSubscribed', 'true');
+    safeLocalStorageSet('hasSeenWelcome', 'true');
+    isSubscribed = true;
+    
+    // Clean URL parameters on iOS to prevent loops
+    if (isIOSDevice()) {
+        cleanUrlParametersIOS();
+    }
+    
+    // Critical path initialization
+    initializeApp();
+    // Verify token immediately
+    verifySubscriptionToken(token);
+} else {
+    // Critical path initialization
+    initializeApp();
+    // Defer subscription checks
+    requestIdleCallback(() => {
+        checkSubscriptionStatusFromServer();
+    });
+}
+
