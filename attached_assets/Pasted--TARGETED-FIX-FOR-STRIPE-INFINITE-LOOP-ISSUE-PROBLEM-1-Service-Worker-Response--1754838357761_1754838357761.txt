@@ -1,0 +1,141 @@
+// ===== TARGETED FIX FOR STRIPE INFINITE LOOP ISSUE =====
+
+// PROBLEM 1: Service Worker Response Cloning Error (sw.js line 126)
+// PROBLEM 2: Token verification reload causing infinite loop
+
+// ===== FIX 1: UPDATE verifySubscriptionToken FUNCTION =====
+// FIND this function in script.js and REPLACE the success block:
+
+async function verifySubscriptionToken(token) {
+    try {
+        console.log('🔍 Verifying subscription token...');
+        
+        // Immediately set subscription status and welcome flag to prevent modal
+        localStorage.setItem('isSubscribed', 'true');
+        localStorage.setItem('hasSeenWelcome', 'true');
+        isSubscribed = true;
+        
+        // Close modals
+        closeAllModals();
+        
+        const response = await fetch('/api/verify-token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        if (data.success) {
+            showNotification('🎉 Pro subscription activated successfully!', 'success');
+            
+            // Update UI immediately
+            updateTrialCountdownWithAlreadySubscribed();
+            
+            // ===== CRITICAL FIX: Clean URL before any reload =====
+            // Remove token from URL to prevent infinite loop
+            const cleanUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
+            
+            // Optional: Reload with clean URL (or just update UI)
+            setTimeout(() => {
+                // Since URL is now clean, this won't cause a loop
+                window.location.reload();
+            }, 1500);
+            
+        } else {
+            // Revert subscription status if verification failed
+            localStorage.setItem('isSubscribed', 'false');
+            isSubscribed = false;
+            localStorage.setItem('hasSeenWelcome', 'false');
+            showNotification(data.message || 'Failed to activate subscription', 'error');
+        }
+    } catch (error) {
+        console.error('Token verification failed:', error);
+        // Revert subscription status if verification failed
+        localStorage.setItem('isSubscribed', 'false');
+        isSubscribed = false;
+        localStorage.setItem('hasSeenWelcome', 'false');
+        showNotification('Failed to verify subscription token', 'error');
+    }
+}
+
+// ===== FIX 2: UPDATE SERVICE WORKER (sw.js) =====
+// FIND the fetch event handler around line 126 and REPLACE with this:
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  const url = new URL(event.request.url);
+  
+  if (event.request.mode === 'navigate' || 
+      url.pathname.endsWith('.html') || 
+      url.pathname === '/') {
+    
+    if (url.searchParams.has('token')) {
+      event.respondWith(
+        fetch(event.request).then((networkResponse) => {
+          // Don't cache token responses - return directly without cloning
+          return networkResponse;
+        }).catch(() => {
+          throw new Error('Network required for subscription activation');
+        })
+      );
+    } else {
+      event.respondWith(
+        fetch(event.request).then((networkResponse) => {
+          if (networkResponse.ok) {
+            // FIX: Clone BEFORE using the response
+            const responseClone = networkResponse.clone();
+            const cache = caches.open(CACHE_NAME);
+            cache.then(c => c.put(event.request, responseClone));
+          }
+          return networkResponse;
+        }).catch(() => {
+          return caches.match(event.request).then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            return new Response(
+              '<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>Offline</h1><p>Please check your internet connection.</p></body></html>',
+              { headers: { 'Content-Type': 'text/html' } }
+            );
+          });
+        })
+      );
+    }
+  } else {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        return cachedResponse || fetch(event.request).then((networkResponse) => {
+          if (networkResponse.ok) {
+            // FIX: Clone BEFORE using the response
+            const responseClone = networkResponse.clone();
+            const cache = caches.open(CACHE_NAME);
+            cache.then(c => c.put(event.request, responseClone));
+          }
+          return networkResponse;
+        });
+      })
+    );
+  }
+});
+
+// ===== ALTERNATIVE SIMPLE FIX (One-liner) =====
+// If you want the simplest possible fix, just change line 311 in verifySubscriptionToken:
+
+// CHANGE THIS:
+// window.location.reload();
+
+// TO THIS:
+// window.location.href = window.location.pathname;
+
+// This will reload without the token parameter, breaking the infinite loop.
+
