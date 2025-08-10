@@ -721,6 +721,12 @@ function addExpense(categoryId) {
     const addButton = document.querySelector(`[data-category="${categoryId}"] .btn-primary`);
     const originalText = addButton.textContent;
 
+    // Create a function to reset button state
+    function resetButtonState() {
+        addButton.textContent = originalText;
+        addButton.disabled = false;
+    }
+
     addButton.textContent = 'Adding...';
     addButton.disabled = true;
 
@@ -729,24 +735,21 @@ function addExpense(categoryId) {
     const location = locationInput.value.trim();
 
     if (!amount || amount <= 0 || amount > 99999.99) {
-        addButton.textContent = originalText;
-        addButton.disabled = false;
+        resetButtonState();
         showNotification('Please enter a valid amount between $0.01 and $99,999.99', 'error');
         amountInput.focus();
         return;
     }
 
     if (description.length > 200) {
-        addButton.textContent = originalText;
-        addButton.disabled = false;
+        resetButtonState();
         showNotification('Description must be 200 characters or less', 'error');
         descriptionInput.focus();
         return;
     }
 
     if (location.length > 100) {
-        addButton.textContent = originalText;
-        addButton.disabled = false;
+        resetButtonState();
         showNotification('Location must be 100 characters or less', 'error');
         locationInput.focus();
         return;
@@ -777,27 +780,25 @@ function addExpense(categoryId) {
         const reader = new FileReader();
         reader.onload = function(e) {
             expense.receipt = e.target.result;
-            saveExpense(expense, addButton, originalText, categoryId);
+            saveExpenseAndReset(expense, categoryId, resetButtonState);
         };
         reader.onerror = function() {
-            addButton.textContent = originalText;
-            addButton.disabled = false;
+            resetButtonState();
             showNotification('Error reading receipt file', 'error');
         };
         reader.readAsDataURL(file);
     } else {
-        saveExpense(expense, addButton, originalText, categoryId);
+        saveExpenseAndReset(expense, categoryId, resetButtonState);
     }
 }
 
-function saveExpense(expenseData, addButton, originalText, categoryId) {
+function saveExpenseAndReset(expenseData, categoryId, resetButtonCallback) {
     try {
         expenses.push(expenseData);
         localStorage.setItem('truckerExpenses', JSON.stringify(expenses));
 
-        // Reset button state
-        addButton.textContent = originalText;
-        addButton.disabled = false;
+        // Reset button state first
+        resetButtonCallback();
 
         // Reset form
         const amountInput = document.getElementById(`amount-${categoryId}`);
@@ -823,8 +824,7 @@ function saveExpense(expenseData, addButton, originalText, categoryId) {
         showNotification(`${category.name} expense added successfully!`, 'success');
     } catch (error) {
         // Reset button state on error
-        addButton.textContent = originalText;
-        addButton.disabled = false;
+        resetButtonCallback();
         showNotification('Error saving expense. Please try again.', 'error');
         console.error('Save expense error:', error);
     }
