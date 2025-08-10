@@ -46,7 +46,7 @@ function getTodayString() {
     return formatLocalDate(new Date());
 }
 
-// State Variables - iOS-safe initialization
+// State Variables - Simple initialization
 let expenses = [];
 let isDarkMode = false;
 let currentSection = 'today';
@@ -54,18 +54,18 @@ let isSubscribed = false;
 let trialStartDate = null;
 let isTrialExpired = false;
 
-// Initialize state with iOS-safe localStorage access
+// Initialize state with simple localStorage access
 try {
-    const expensesData = safeLocalStorageGet('truckerExpenses');
+    const expensesData = localStorage.getItem('truckerExpenses');
     expenses = expensesData ? JSON.parse(expensesData) : [];
 
-    isDarkMode = safeLocalStorageGet('darkMode') === 'true';
-    isSubscribed = safeLocalStorageGet('isSubscribed') === 'true';
+    isDarkMode = localStorage.getItem('darkMode') === 'true';
+    isSubscribed = localStorage.getItem('isSubscribed') === 'true';
 
-    trialStartDate = safeLocalStorageGet('trialStartDate');
+    trialStartDate = localStorage.getItem('trialStartDate');
     if (!trialStartDate) {
         trialStartDate = Date.now().toString();
-        safeLocalStorageSet('trialStartDate', trialStartDate);
+        localStorage.setItem('trialStartDate', trialStartDate);
     }
 } catch (error) {
     console.warn('State initialization error:', error);
@@ -77,283 +77,69 @@ try {
 }
 
 // ======================
-// --- iOS/Safari Compatibility Helpers ---
+// --- Simple Device Detection ---
 // ======================
-
-// Detect Lighthouse and other automated testing tools
-function isLighthouseOrBot() {
-    const userAgent = navigator.userAgent.toLowerCase();
-
-    // Lighthouse specific detection
-    if (userAgent.includes('lighthouse') ||
-        userAgent.includes('chrome-lighthouse') ||
-        userAgent.includes('pagespeed')) {
-        return true;
-    }
-
-    // Common bot patterns
-    if (userAgent.includes('headlesschrome') ||
-        userAgent.includes('phantomjs') ||
-        userAgent.includes('bot') ||
-        userAgent.includes('crawler') ||
-        userAgent.includes('spider')) {
-        return true;
-    }
-
-    // Automation tools
-    if (userAgent.includes('selenium') ||
-        userAgent.includes('webdriver') ||
-        userAgent.includes('puppeteer')) {
-        return true;
-    }
-
-    // Check for headless indicators
-    if (navigator.webdriver === true) {
-        return true;
-    }
-
-    return false;
-}
-
-// Detect real iOS devices (excluding automated testing)
-function isRealIOSDevice() {
-    // First check if this is automated testing
-    if (isLighthouseOrBot()) {
-        return false;
-    }
-
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
-    // Direct iOS device detection
-    if (/iPad|iPhone|iPod/.test(userAgent)) {
-        return true;
-    }
-
-    // iPad Pro in desktop mode detection
-    if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) {
-        return true;
-    }
-
-    // iOS Safari specific detection
-    if (/Safari/.test(userAgent) && /Mobile/.test(userAgent) && !/Chrome/.test(userAgent)) {
-        return true;
-    }
-
-    // Check for iOS-specific features
-    if (window.DeviceMotionEvent !== undefined && window.DeviceOrientationEvent !== undefined) {
-        return /Mobile|Tablet/.test(userAgent);
-    }
-
-    return false;
-}
-
-// Keep old function name for backward compatibility but use new logic
 function isIOSDevice() {
-    return isRealIOSDevice();
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    return /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
 }
 
 function isSafari() {
     return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 }
 
-// Enhanced iOS-safe localStorage operations
-function safeLocalStorageSet(key, value) {
-    try {
-        // Test if localStorage is available first
-        const test = '__localStorage_test__';
-        localStorage.setItem(test, 'test');
-        localStorage.removeItem(test);
-        localStorage.setItem(key, value);
-        return true;
-    } catch (e) {
-        console.warn('localStorage.setItem failed:', e);
-        // iOS private browsing or storage quota exceeded
-        try {
-            // Clear some space and try again
-            if (e.name === 'QuotaExceededError') {
-                // Clear old data except critical subscription info
-                const criticalKeys = ['isSubscribed', 'subscriptionToken', 'hasSeenWelcome'];
-                Object.keys(localStorage).forEach(storageKey => {
-                    if (!criticalKeys.includes(storageKey)) {
-                        try {
-                            localStorage.removeItem(storageKey);
-                        } catch (cleanupError) {
-                            console.warn('Cleanup failed:', cleanupError);
-                        }
-                    }
-                });
-                localStorage.setItem(key, value);
-                return true;
-            }
-
-            // Fallback to sessionStorage for iOS private browsing
-            sessionStorage.setItem(key, value);
-            return true;
-        } catch (e2) {
-            console.warn('sessionStorage.setItem also failed:', e2);
-            // Last resort: use in-memory storage for this session
-            if (!window.memoryStorage) window.memoryStorage = {};
-            window.memoryStorage[key] = value;
-            return false;
-        }
-    }
-}
-
-function safeLocalStorageGet(key) {
-    try {
-        const value = localStorage.getItem(key);
-        if (value !== null) return value;
-
-        // Fallback to sessionStorage
-        const sessionValue = sessionStorage.getItem(key);
-        if (sessionValue !== null) return sessionValue;
-
-        // Last resort: check memory storage
-        if (window.memoryStorage && window.memoryStorage[key]) {
-            return window.memoryStorage[key];
-        }
-
-        return null;
-    } catch (e) {
-        console.warn('localStorage/sessionStorage access failed:', e);
-        // Try memory storage
-        if (window.memoryStorage && window.memoryStorage[key]) {
-            return window.memoryStorage[key];
-        }
-        return null;
-    }
-}
-
-// Function to clean URL parameters without reloading
-function cleanURLParametersSafely() {
-    if (window.history && window.history.replaceState) {
-        const url = window.location.protocol + "//" + window.location.host + window.location.pathname;
-        window.history.replaceState({ path: url }, '', url);
-        console.log('URL parameters cleaned safely.');
-    } else {
-        console.warn('History API not available for safe URL cleaning.');
-        // Fallback for older browsers or environments without history API
-        try {
-            window.location.href = window.location.origin + window.location.pathname;
-        } catch (error) {
-            console.error('Fallback URL cleaning failed:', error);
-        }
-    }
-}
-
 // ======================
-// --- DOMContentLoaded & Initialization ---
+// --- DOMContentLoaded & Initialization (SIMPLE WORKING APPROACH) ---
 // ======================
 document.addEventListener('DOMContentLoaded', function () {
-    // iOS-specific handling (but not for Lighthouse)
-    if (isRealIOSDevice()) {
-        // Prevent zoom on input focus
-        document.addEventListener('touchstart', function() {}, {passive: true});
-
-        // Add iOS-specific meta tags if not present
-        if (!document.querySelector('meta[name="apple-mobile-web-app-capable"]')) {
-            const metaCapable = document.createElement('meta');
-            metaCapable.name = 'apple-mobile-web-app-capable';
-            metaCapable.content = 'yes';
-            document.head.appendChild(metaCapable);
-        }
+    // 1. AGGRESSIVE SERVICE WORKER UNREGISTER (This was the key!)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+            for (let registration of registrations) registration.unregister();
+        }).catch(function (err) {
+            console.error('Service worker unregistration failed: ', err);
+        });
     }
-
-    // Defer non-critical initialization
-    requestIdleCallback(() => {
-        // Register Service Worker for PWA functionality
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js', {
-                updateViaCache: 'none' // iOS Safari compatibility
-            })
-                .then(registration => {
-                    console.log('SW registered:', registration);
-
-                    // iOS-specific: Force service worker activation
-                    if (isIOSDevice() && registration.waiting) {
-                        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-                    }
-                })
-                .catch(error => console.log('SW registration failed:', error));
-
-            // Listen for service worker messages
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.addEventListener('message', (event) => {
-                    if (event.data && event.data.type === 'FORCE_HARD_REFRESH') {
-                        // iOS requires a hard refresh
-                        console.log('Force hard refresh requested by service worker');
-                        window.location.reload(true);
-                        return;
-                    }
-
-                    if (event.data && (event.data.type === 'ALL_CACHE_CLEARED' ||
-                                               event.data.type === 'FORCE_REFRESH_UI' ||
-                                               event.data.type === 'CACHE_CLEARED')) {
-                        console.log('Service worker cache cleared, updating UI');
-                        setTimeout(() => {
-                            updateTrialCountdownWithAlreadySubscribed();
-                            manageSubscriptionButtons();
-                        }, 50);
-                    }
-                });
-            }
-        }
-    });
 
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
 
-    // Reset trial logic (for URL ?reset=trial)
+    // 2. SIMPLE TOKEN HANDLING (No complex iOS logic)
+    if (token) {
+        localStorage.setItem('subscriptionToken', token);
+        verifySubscriptionToken(token);
+    } else {
+        checkSubscriptionStatusFromServer();
+    }
+
+    // 3. SIMPLE RESET LOGIC - NO RELOAD! (This was causing the loop)
     if (urlParams.get('reset') === 'trial') {
-        try {
-            localStorage.clear();
-            sessionStorage.clear();
-            if ('caches' in window) {
-                caches.keys().then(cacheNames => {
-                    return Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
-                });
-            }
-            // Clean URL parameters safely without reload
-            cleanURLParametersSafely();
-            // Reinitialize app without reload
-            setTimeout(() => {
-                initializeApp();
-            }, 100);
-        } catch (error) {
-            console.error('Reset trial error:', error);
-        }
+        localStorage.clear();
+        sessionStorage.clear();
+        alert('Trial has been reset! Redirecting...');
+        window.location.href = window.location.pathname;  // Simple redirect, not reload!
         return;
     }
 
-    // If there's a token, handle subscription immediately before app initialization
-    if (token) {
-        safeLocalStorageSet('subscriptionToken', token);
-        safeLocalStorageSet('isSubscribed', 'true');
-        safeLocalStorageSet('hasSeenWelcome', 'true');
-        isSubscribed = true;
+    // 4. RE-REGISTER SERVICE WORKER AFTER DELAY (Critical for proper operation)
+    setTimeout(() => {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => console.log('New SW registered:', registration))
+                .catch(error => console.log('New SW registration failed:', error));
+        }
+    }, 500); // 500ms delay is important
 
-        // Critical path initialization
-        initializeApp();
-
-        // Verify token immediately
-        verifySubscriptionToken(token);
-    } else {
-        // Critical path initialization
-        initializeApp();
-
-        // Defer subscription checks
-        requestIdleCallback(() => {
-            checkSubscriptionStatusFromServer();
-        });
-    }
+    // 5. INITIALIZE APP NORMALLY
+    initializeApp();
 });
 
 // ======================
-// --- App Initialization Logic ---
+// --- App Initialization Logic (Simplified) ---
 // ======================
 function initializeApp() {
-    // Sync global subscription status with iOS-safe localStorage
-    isSubscribed = safeLocalStorageGet('isSubscribed') === 'true';
+    // Sync global subscription status with localStorage
+    isSubscribed = localStorage.getItem('isSubscribed') === 'true';
 
     if (isDarkMode) {
         document.body.classList.add('dark-mode');
@@ -361,30 +147,15 @@ function initializeApp() {
     }
 
     const currentExpenses = JSON.parse(localStorage.getItem('truckerExpenses') || '[]');
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasToken = urlParams.get('token');
+    const userIsSubscribed = localStorage.getItem('isSubscribed') === 'true' || isSubscribed;
 
-    // Get subscription status using multiple checks for reliability
-    const userIsSubscribed = safeLocalStorageGet('isSubscribed') === 'true' || isSubscribed;
-
-    // For iOS: Additional check to prevent modal during token processing
-    const isIOSWithTokenProcessing = isIOSDevice() && (hasToken || urlParams.toString().includes('token'));
-
-    // Initialize core components first (always needed regardless of subscription status)
+    // Initialize core components first
     populateExpenseGrid();
 
-    // Initialize welcome modal close button with multiple fallbacks
+    // Initialize welcome modal close button
     const closeWelcomeBtn = document.getElementById('closeWelcomeBtn');
     if (closeWelcomeBtn) {
         closeWelcomeBtn.addEventListener('click', closeWelcomeModal);
-
-        // iOS-specific: Add touch event as fallback
-        if (isIOSDevice()) {
-            closeWelcomeBtn.addEventListener('touchend', function(e) {
-                e.preventDefault();
-                closeWelcomeModal();
-            });
-        }
     }
 
     // Initialize the Already Subscribed feature
@@ -398,49 +169,27 @@ function initializeApp() {
 
     // Force immediate UI update for subscribed users
     if (localStorage.getItem('isSubscribed') === 'true') {
-        // Clear service worker cache first - but only if needed
-        if (!window.cacheAlreadyCleared) {
-            clearServiceWorkerCache();
-            window.cacheAlreadyCleared = true;
-        }
-
         setTimeout(() => {
             updateTrialCountdownWithAlreadySubscribed();
         }, 100);
     }
 
-    // iOS-specific: Force close any existing modals immediately
-    if (isIOSDevice()) {
-        closeAllModals();
-        // Set the flag to prevent welcome modal from ever showing on iOS after subscription
-        if (userIsSubscribed || hasToken || isIOSWithTokenProcessing) {
-            safeLocalStorageSet('hasSeenWelcome', 'true');
-        }
-    }
-
-    // Handle welcome modal logic after core initialization
-    // Never show welcome modal if:
-    // 1. User is subscribed (any method)
-    // 2. User has already seen welcome
-    // 3. There's a token being processed (especially important for iOS)
-    // 4. iOS device with any subscription-related URL params
-    if (userIsSubscribed ||
-        localStorage.getItem('hasSeenWelcome') ||
-        hasToken ||
-        isIOSWithTokenProcessing) {
-        console.log('🚫 Welcome modal blocked - user subscribed or token processing');
-        return; // Early return is now safe since core components are already initialized
+    // Handle welcome modal logic - SIMPLE APPROACH
+    if (userIsSubscribed || localStorage.getItem('hasSeenWelcome')) {
+        console.log('Welcome modal blocked - user subscribed or has seen welcome');
+        return;
     }
 
     // Only show for truly new, non-subscribed users with no expenses
-    // But NEVER on iOS if there are any URL parameters
-    if (currentExpenses.length === 0 && (!isIOSDevice() || window.location.search === '')) {
+    if (currentExpenses.length === 0) {
         showWelcomeModal();
     }
+
     updateToggleIcon();
     updateSummary();
     updateInsights();
 
+    const urlParams = new URLSearchParams(window.location.search);
     const action = urlParams.get('action');
     if (action === 'add-fuel') {
         showSection('today');
@@ -482,23 +231,6 @@ function initializeApp() {
             closeAllModals();
         }
     });
-
-    // iOS-specific: Add touch-based escape mechanism for modal freezes
-    if (isIOSDevice()) {
-        let touchStartTime = 0;
-        document.addEventListener('touchstart', function(e) {
-            touchStartTime = Date.now();
-        });
-
-        document.addEventListener('touchend', function(e) {
-            const touchDuration = Date.now() - touchStartTime;
-            // If user holds touch for 3+ seconds on modal background, force close all modals
-            if (touchDuration > 3000 && e.target.classList.contains('modal')) {
-                closeAllModals();
-                showNotification('Modal closed - tap detected', 'info');
-            }
-        });
-    }
 
     // Initialize real-time validation
     setTimeout(() => {
@@ -552,30 +284,12 @@ async function verifySubscriptionToken(token) {
         console.log('🔍 Verifying subscription token...');
 
         // Immediately set subscription status and welcome flag to prevent modal
-        const setResult1 = safeLocalStorageSet('isSubscribed', 'true');
-        const setResult2 = safeLocalStorageSet('hasSeenWelcome', 'true');
+        localStorage.setItem('isSubscribed', 'true');
+        localStorage.setItem('hasSeenWelcome', 'true');
         isSubscribed = true;
 
-        console.log('💾 Storage set results:', { subscription: setResult1, welcome: setResult2 });
-
-        // Close modals for all platforms
+        // Close modals
         closeAllModals();
-
-        // Additional modal cleanup for real iOS devices
-        if (isRealIOSDevice()) {
-            document.querySelectorAll('.modal').forEach(modal => {
-                modal.style.display = 'none';
-                modal.style.opacity = '0';
-                modal.style.visibility = 'hidden';
-                modal.style.pointerEvents = 'none';
-                modal.classList.remove('show', 'active');
-            });
-
-            // Reset body styles
-            document.body.style.overflow = 'auto';
-            document.body.style.position = 'static';
-            document.body.style.width = 'auto';
-        }
 
         const response = await fetch('/api/verify-token', {
             method: 'POST',
@@ -596,48 +310,23 @@ async function verifySubscriptionToken(token) {
             // Update UI immediately
             updateTrialCountdownWithAlreadySubscribed();
 
-            // Handle cache clearing and refresh based on device type
-            if (isLighthouseOrBot()) {
-                // For Lighthouse/bots: NO aggressive cache clearing or forced refresh
-                console.log('🤖 Lighthouse detected - skipping aggressive refresh');
-                // Just update the UI without refreshing
-                setTimeout(() => {
-                    updateTrialCountdownWithAlreadySubscribed();
-                    manageSubscriptionButtons();
-                }, 100);
-            } else if (isRealIOSDevice()) {
-                // For real iOS devices: Use simplified refresh approach
-                console.log('📱 Real iOS device - using simplified refresh');
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
-            } else {
-                // For other browsers: Standard refresh
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-            }
+            // Simple reload after success
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         } else {
             // Revert subscription status if verification failed
-            safeLocalStorageSet('isSubscribed', 'false');
+            localStorage.setItem('isSubscribed', 'false');
             isSubscribed = false;
-
-            if (isRealIOSDevice()) {
-                // Reset iOS modal prevention flag
-                safeLocalStorageSet('hasSeenWelcome', 'false');
-            }
+            localStorage.setItem('hasSeenWelcome', 'false');
             showNotification(data.message || 'Failed to activate subscription', 'error');
         }
     } catch (error) {
         console.error('Token verification failed:', error);
         // Revert subscription status if verification failed
-        safeLocalStorageSet('isSubscribed', 'false');
+        localStorage.setItem('isSubscribed', 'false');
         isSubscribed = false;
-
-        if (isRealIOSDevice()) {
-            // Reset iOS modal prevention flag
-            safeLocalStorageSet('hasSeenWelcome', 'false');
-        }
+        localStorage.setItem('hasSeenWelcome', 'false');
         showNotification('Failed to verify subscription token', 'error');
     }
 }
@@ -678,8 +367,6 @@ async function validateSubscriptionInBackground() {
 // ======================
 // --- Already Subscribed Feature ---
 // ======================
-
-
 function initializeAlreadySubscribedFeature() {
     const alreadySubscribedModal = document.getElementById('alreadySubscribedModal');
     const closeAlreadySubscribedBtn = document.getElementById('closeAlreadySubscribedBtn');
@@ -733,9 +420,6 @@ function initializeAlreadySubscribedFeature() {
     manageSubscriptionButtons();
 }
 
-
-
-
 // Direct verification function without modal
 async function handleDirectSubscriptionVerification(email) {
     // Validate email format
@@ -779,9 +463,9 @@ async function handleDirectSubscriptionVerification(email) {
         }
 
         if (response.ok && data.success) {
-            // Store the token and activate subscription with iOS-safe methods
-            safeLocalStorageSet('subscriptionToken', data.token);
-            safeLocalStorageSet('isSubscribed', 'true');
+            // Store the token and activate subscription
+            localStorage.setItem('subscriptionToken', data.token);
+            localStorage.setItem('isSubscribed', 'true');
             isSubscribed = true;
 
             console.log('✅ Subscription activated successfully');
@@ -792,26 +476,10 @@ async function handleDirectSubscriptionVerification(email) {
             // Update UI immediately
             updateTrialCountdownWithAlreadySubscribed();
 
-            // Handle refresh based on device type
-            if (isLighthouseOrBot()) {
-                // For Lighthouse/bots: NO forced refresh - just update UI
-                console.log('🤖 Lighthouse detected - updating UI without refresh');
-                setTimeout(() => {
-                    updateTrialCountdownWithAlreadySubscribed();
-                    manageSubscriptionButtons();
-                }, 100);
-            } else if (isRealIOSDevice()) {
-                // For real iOS devices: Simple reload without aggressive cache clearing
-                console.log('📱 Real iOS device - using simple reload');
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
-            } else {
-                // For other browsers: Standard refresh
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-            }
+            // Simple reload
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
 
         } else {
             const errorMessage = data?.message || 'Failed to verify subscription';
@@ -892,8 +560,8 @@ function initializeEnhancedValidation() {
 // --- Trial Management ---
 // ======================
 function updateTrialCountdownWithAlreadySubscribed() {
-    // Sync the global variable with iOS-safe localStorage
-    const subscriptionStatus = safeLocalStorageGet('isSubscribed') === 'true';
+    // Sync the global variable with localStorage
+    const subscriptionStatus = localStorage.getItem('isSubscribed') === 'true';
     isSubscribed = subscriptionStatus;
 
     const trialSection = document.getElementById('trialSection');
@@ -911,16 +579,6 @@ function updateTrialCountdownWithAlreadySubscribed() {
         // Hide ALL subscribe and upgrade buttons
         upgradeButtons.forEach(btn => {
             btn.style.display = 'none';
-            // Also hide parent container if it only contains subscription-related buttons
-            const parent = btn.parentElement;
-            if (parent && parent.classList.contains('action-buttons')) {
-                const visibleButtons = Array.from(parent.children).filter(child =>
-                    child.style.display !== 'none' &&
-                    !child.classList.contains('subscribe-btn') &&
-                    !child.classList.contains('upgrade-btn')
-                );
-                // If only subscription buttons remain, we should keep other action buttons visible
-            }
         });
 
         console.log('✅ Trial section and subscribe buttons hidden - user is subscribed');
@@ -959,21 +617,10 @@ function updateTrialCountdownWithAlreadySubscribed() {
 
     const trialInfo = document.getElementById('trialInfo');
     if (trialInfo) {
-        // Check if we already have the trial info to avoid recreating it unnecessarily
-        const existingContent = trialInfo.querySelector('[data-trial-content]');
-        if (existingContent) {
-            // Just update the time
-            const timeElement = existingContent.querySelector('[data-time-remaining]');
-            if (timeElement) {
-                timeElement.textContent = `${days}d ${hours}h ${minutes}m remaining`;
-                return;
-            }
-        }
-
         trialInfo.innerHTML = `
-            <div data-trial-content style="text-align: center; padding: 15px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 12px; color: white;">
+            <div style="text-align: center; padding: 15px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 12px; color: white;">
                 <h3 style="margin: 0 0 10px 0;">⏰ Free Trial</h3>
-                <p data-time-remaining style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold;">${days}d ${hours}h ${minutes}m remaining</p>
+                <p style="margin: 0 0 10px 0; font-size: 18px; font-weight: bold;">${days}d ${hours}h ${minutes}m remaining</p>
                 <p style="margin: 0 0 15px 0; font-size: 14px;">Enjoying the app? Upgrade to Pro for unlimited access!</p>
                 <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                     <button onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')" class="upgrade-btn" style="background: white; color: #f59e0b; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px;">Upgrade to Pro</button>
@@ -1459,76 +1106,18 @@ function showNotification(message, type = 'info') {
 }
 
 function showWelcomeModal() {
-    // Comprehensive checks to prevent showing for subscribed users
-    const isUserSubscribed = safeLocalStorageGet('isSubscribed') === 'true' || isSubscribed;
-    const hasSeenWelcome = safeLocalStorageGet('hasSeenWelcome');
-    const hasTokenInUrl = window.location.search.includes('token');
-    const hasSubscriptionToken = safeLocalStorageGet('subscriptionToken');
+    // Simple checks to prevent showing for subscribed users
+    const isUserSubscribed = localStorage.getItem('isSubscribed') === 'true' || isSubscribed;
+    const hasSeenWelcome = localStorage.getItem('hasSeenWelcome');
 
-    // Block modal for any subscription-related scenario
-    if (isUserSubscribed || hasSeenWelcome || hasTokenInUrl || hasSubscriptionToken) {
-        console.log('🚫 Welcome modal blocked - user is subscribed, has seen welcome, or has tokens');
+    // Block modal for subscription-related scenarios
+    if (isUserSubscribed || hasSeenWelcome) {
+        console.log('🚫 Welcome modal blocked - user is subscribed or has seen welcome');
         return;
-    }
-
-    // Additional iOS-specific protection - ALWAYS block on iOS if there are ANY URL params
-    if (isIOSDevice()) {
-        // Block if ANY URL parameters exist on iOS (aggressive prevention)
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.toString().length > 0) {
-            console.log('🚫 iOS Welcome modal blocked - any URL params detected');
-            safeLocalStorageSet('hasSeenWelcome', 'true'); // Prevent future attempts
-            return;
-        }
-
-        // Extra aggressive iOS checks
-        if (window.location.href.includes('?') ||
-            window.location.href.includes('#') ||
-            document.referrer.includes('stripe') ||
-            document.referrer.includes('payment')) {
-            console.log('🚫 iOS Welcome modal blocked - payment/redirect detected');
-            safeLocalStorageSet('hasSeenWelcome', 'true');
-            return;
-        }
-
-        // Check if this is a reload/refresh on iOS
-        if (performance.navigation && performance.navigation.type === 1) {
-            console.log('🚫 iOS Welcome modal blocked - page refresh detected');
-            safeLocalStorageSet('hasSeenWelcome', 'true');
-            return;
-        }
-
-        // Check for iOS Safari's weird behavior with localStorage
-        try {
-            const testStorage = window.localStorage || window.sessionStorage;
-            if (!testStorage) {
-                console.log('🚫 Welcome modal blocked - iOS storage not available');
-                return;
-            }
-        } catch (e) {
-            console.log('🚫 Welcome modal blocked - iOS storage access error');
-            return;
-        }
     }
 
     const modal = document.getElementById('welcomeModal');
     if (modal) {
-        // iOS-specific modal setup
-        if (isIOSDevice()) {
-            // Prevent body scroll
-            document.body.style.overflow = 'hidden';
-            document.body.style.position = 'fixed';
-            document.body.style.width = '100%';
-
-            // Ensure modal is properly positioned for iOS
-            modal.style.position = 'fixed';
-            modal.style.top = '0';
-            modal.style.left = '0';
-            modal.style.width = '100vw';
-            modal.style.height = '100vh';
-            modal.style.zIndex = '10000';
-        }
-
         modal.style.display = 'flex';
         modal.classList.add('active');
 
@@ -1550,67 +1139,20 @@ function showWelcomeModal() {
     }
 }
 
-// Make closeWelcomeModal globally accessible
+// Simple close welcome modal function
 window.closeWelcomeModal = function closeWelcomeModal() {
     console.log('🔥 closeWelcomeModal called');
 
     const modal = document.getElementById('welcomeModal');
     if (modal) {
         // Set the flag immediately to prevent re-showing
-        safeLocalStorageSet('hasSeenWelcome', 'true');
+        localStorage.setItem('hasSeenWelcome', 'true');
         console.log('✅ hasSeenWelcome flag set');
 
-        // iOS-specific: Force immediate cleanup
-        if (isIOSDevice()) {
-            // Remove all modal styles and classes immediately
+        modal.classList.remove('show', 'active');
+        setTimeout(() => {
             modal.style.display = 'none';
-            modal.style.opacity = '0';
-            modal.style.pointerEvents = 'none';
-            modal.style.visibility = 'hidden';
-            modal.classList.remove('show', 'active');
-
-            // Restore body scroll immediately
-            document.body.style.overflow = 'auto';
-            document.body.style.position = 'static';
-            document.body.style.width = 'auto';
-
-            // Force a repaint
-            modal.offsetHeight;
-
-            console.log('📱 iOS modal force closed with full cleanup');
-        } else {
-            modal.classList.remove('show', 'active');
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
-        }
-
-        // Force focus to main content after modal closes
-        const cleanup = () => {
-            const mainContent = document.getElementById('main-content') || document.querySelector('.container');
-            if (mainContent) {
-                mainContent.focus();
-            }
-
-            // Extra cleanup for iOS
-            if (isIOSDevice()) {
-                // Clear any remaining modal artifacts
-                document.querySelectorAll('.modal').forEach(m => {
-                    if (m.style.display !== 'none') {
-                        m.style.display = 'none';
-                    }
-                });
-
-                // Force window resize event to fix any layout issues
-                window.dispatchEvent(new Event('resize'));
-            }
-        };
-
-        if (isIOSDevice()) {
-            cleanup();
-        } else {
-            setTimeout(cleanup, 350);
-        }
+        }, 300);
 
         console.log('✅ Welcome modal closed successfully');
     } else {
@@ -1622,32 +1164,7 @@ function closeAllModals() {
     document.querySelectorAll('.modal').forEach(modal => {
         modal.classList.remove('show', 'active');
         modal.style.display = 'none';
-
-        // iOS-specific: Remove any remaining modal states
-        if (isIOSDevice()) {
-            modal.style.opacity = '0';
-            modal.style.visibility = 'hidden';
-            modal.style.pointerEvents = 'none';
-            modal.style.zIndex = '-1';
-            modal.style.transform = 'scale(0)';
-        }
     });
-
-    // iOS-specific: Remove any modal overlay effects and force reflow
-    if (isIOSDevice()) {
-        document.body.style.overflow = 'auto';
-        document.body.style.position = 'static';
-        document.body.style.width = 'auto';
-        document.body.style.height = 'auto';
-
-        // Force reflow to ensure changes take effect
-        document.body.offsetHeight;
-
-        // Set the flag to prevent welcome modal
-        safeLocalStorageSet('hasSeenWelcome', 'true');
-
-        console.log('📱 iOS: All modals forcibly closed and welcome flag set');
-    }
 }
 
 // ======================
@@ -1938,118 +1455,46 @@ function restoreData() {
     input.click();
 }
 
-// Function to clear service worker cache
-function clearServiceWorkerCache() {
-    // Skip cache clearing for Lighthouse/bots to prevent infinite loops
-    if (isLighthouseOrBot()) {
-        console.log('🤖 Lighthouse detected - skipping cache clear');
-        setTimeout(() => {
-            updateTrialCountdownWithAlreadySubscribed();
-            manageSubscriptionButtons();
-        }, 100);
-        return;
-    }
+// Unified function to manage all subscription-related buttons
+function manageSubscriptionButtons() {
+    const isUserSubscribed = localStorage.getItem('isSubscribed') === 'true';
+    const buttonsToRemove = document.querySelectorAll('.subscribe-btn, .upgrade-btn, #alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"]');
 
-    if (isRealIOSDevice()) {
-        // iOS-specific but less aggressive approach
-        console.log('📱 Real iOS device - clearing caches');
-        if ('caches' in window) {
-            caches.keys().then(cacheNames => {
-                return Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
-            }).then(() => {
-                console.log('📱 iOS: Caches cleared');
-                setTimeout(() => {
-                    updateTrialCountdownWithAlreadySubscribed();
-                    manageSubscriptionButtons();
-                }, 100);
-            });
+    if (isUserSubscribed) {
+        // Remove all subscription buttons for subscribed users
+        let removedCount = 0;
+        buttonsToRemove.forEach(button => {
+            if (button.parentNode) {
+                button.parentNode.removeChild(button);
+                removedCount++;
+            }
+        });
+        if (removedCount > 0) {
+            console.log(`🔒 ${removedCount} subscription buttons removed - user is subscribed`);
         }
     } else {
-        // Standard cache clearing for other platforms
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_ALL_CACHE' });
-            console.log('Sent cache clearing message to service worker');
-        }
+        // Ensure "Already Subscribed" button exists for non-subscribed users
+        let alreadySubscribedButton = document.getElementById('alreadySubscribedBtn');
+        if (!alreadySubscribedButton) {
+            const actionButtons = document.querySelector('.action-buttons');
+            if (actionButtons) {
+                const button = document.createElement('button');
+                button.id = 'alreadySubscribedBtn';
+                button.className = 'action-btn';
+                button.style.background = '#10b981';
+                button.innerHTML = '✅ Already Subscribed?';
 
-        // Also clear caches directly from browser
-        if ('caches' in window) {
-            caches.keys().then(cacheNames => {
-                cacheNames.forEach(cacheName => caches.delete(cacheName));
-                console.log('Browser caches cleared directly');
-
-                setTimeout(() => {
-                    updateTrialCountdownWithAlreadySubscribed();
-                    manageSubscriptionButtons();
-                }, 100);
-            });
+                const subscribeBtn = actionButtons.querySelector('.subscribe-btn');
+                if (subscribeBtn) {
+                    actionButtons.insertBefore(button, subscribeBtn);
+                } else {
+                    actionButtons.appendChild(button);
+                }
+                console.log('👀 Already Subscribed button created - user not subscribed');
+            }
         }
     }
 }
-
-// Unified function to manage all subscription-related buttons with throttling
-let buttonManagementInProgress = false;
-function manageSubscriptionButtons() {
-    // Prevent multiple simultaneous executions
-    if (buttonManagementInProgress) {
-        return;
-    }
-    buttonManagementInProgress = true;
-
-    try {
-        const isUserSubscribed = localStorage.getItem('isSubscribed') === 'true';
-        const buttonsToRemove = document.querySelectorAll('.subscribe-btn, .upgrade-btn, #alreadySubscribedBtn, #alreadySubscribedActionBtn, .already-subscribed-btn, [data-action="already-subscribed"]');
-
-        if (isUserSubscribed) {
-            // Remove all subscription buttons for subscribed users
-            let removedCount = 0;
-            buttonsToRemove.forEach(button => {
-                if (button.parentNode) {
-                    button.parentNode.removeChild(button);
-                    removedCount++;
-                }
-            });
-            if (removedCount > 0) {
-                console.log(`🔒 ${removedCount} subscription buttons removed - user is subscribed`);
-            }
-        } else {
-            // Remove duplicates and ensure only one "Already Subscribed" button exists
-            let alreadySubscribedButton = null;
-
-            buttonsToRemove.forEach((button, index) => {
-                if (button.id === 'alreadySubscribedBtn' || button.classList.contains('already-subscribed-btn')) {
-                    if (!alreadySubscribedButton) {
-                        alreadySubscribedButton = button;
-                    } else if (button.parentNode) {
-                        button.parentNode.removeChild(button);
-                    }
-                }
-            });
-
-            // Create button if none exists
-            if (!alreadySubscribedButton) {
-                const actionButtons = document.querySelector('.action-buttons');
-                if (actionButtons) {
-                    const button = document.createElement('button');
-                    button.id = 'alreadySubscribedBtn';
-                    button.className = 'action-btn';
-                    button.style.background = '#10b981';
-                    button.innerHTML = '✅ Already Subscribed?';
-
-                    const subscribeBtn = actionButtons.querySelector('.subscribe-btn');
-                    if (subscribeBtn) {
-                        actionButtons.insertBefore(button, subscribeBtn);
-                    } else {
-                        actionButtons.appendChild(button);
-                    }
-                    console.log('👀 Already Subscribed button created - user not subscribed');
-                }
-            }
-        }
-    } finally {
-        buttonManagementInProgress = false;
-    }
-}
-
 
 // CSS animations
 const style = document.createElement('style');

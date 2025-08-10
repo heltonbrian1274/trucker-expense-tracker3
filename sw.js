@@ -1,7 +1,8 @@
-// Service Worker for Trucker Expense Tracker PWA
-// Version 2.1.5 - Fixed Response cloning issue
 
-const CACHE_NAME = 'trucker-expense-tracker-v2.1.6-ios-fix';
+// Service Worker for Trucker Expense Tracker PWA
+// Version 2.1.4 - REVERT TO WORKING VERSION (Simple and Clean)
+
+const CACHE_NAME = 'trucker-expense-tracker-v2.1.4-restored';
 const urlsToCache = [
   './manifest.json',
   './icon-72x72.png',
@@ -39,50 +40,26 @@ self.addEventListener('activate', (event) => {
 
 // Listen for messages from the main app
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-
-  // Ignore problematic cache clearing messages that cause Lighthouse loops
-  const ignoredTypes = ['FORCE_IOS_CACHE_CLEAR', 'CLEAR_ALL_CACHE'];
-  if (event.data && ignoredTypes.includes(event.data.type)) {
-    console.log(`SW: Ignoring ${event.data.type} message to prevent Lighthouse loops`);
-    return;
-  }
-
-  // Existing message handling code continues below...
-  const messageType = event.data?.type || event.data?.action;
-
-  if (['CLEAR_ALL_CACHE', 'clearCache', 'CLEAR_INDEX_CACHE'].includes(messageType)) {
-    const isFullClear = messageType === 'CLEAR_ALL_CACHE' || messageType === 'clearCache';
-
+  if (event.data && event.data.type === 'CLEAR_INDEX_CACHE') {
+    // Clear cached index page when subscription status changes
     event.waitUntil(
-      (isFullClear ?
-        // Clear all caches
-        caches.keys().then(cacheNames =>
-          Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)))
-        ) :
-        // Clear only index cache
-        caches.open(CACHE_NAME).then(cache => {
-          const indexUrls = [
-            './',
-            './index.html',
-            self.registration.scope,
-            self.registration.scope + 'index.html'
-          ];
-          return Promise.all(indexUrls.map(url => cache.delete(url)));
-        })
-      ).then(() => {
-        // Notify all clients
-        return self.clients.matchAll().then(clients => {
-          clients.forEach(client => {
-            const responseType = isFullClear ? 'ALL_CACHE_CLEARED' : 'INDEX_CACHE_CLEARED';
-            client.postMessage({ type: responseType });
-            client.postMessage({ type: 'FORCE_REFRESH_UI' });
-            // Legacy support
-            if (messageType === 'clearCache') {
-              client.postMessage({ type: 'CACHE_CLEARED' });
-            }
+      caches.open(CACHE_NAME).then((cache) => {
+        // Clear all potential index page variations
+        const indexUrls = [
+          './',
+          './index.html',
+          self.registration.scope,
+          self.registration.scope + 'index.html'
+        ];
+        
+        return Promise.all(
+          indexUrls.map(url => cache.delete(url))
+        ).then(() => {
+          // Notify all clients to reload
+          return self.clients.matchAll().then((clients) => {
+            clients.forEach((client) => {
+              client.postMessage({ type: 'INDEX_CACHE_CLEARED' });
+            });
           });
         });
       })
@@ -90,7 +67,7 @@ self.addEventListener('message', (event) => {
   }
 });
 
-// Fetch event - Handle subscription state changes
+// Fetch event - SIMPLE APPROACH THAT WORKED
 self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') {
@@ -98,56 +75,30 @@ self.addEventListener('fetch', (event) => {
   }
 
   const url = new URL(event.request.url);
-
-  // iOS-specific navigation handling
-  if (event.request.mode === 'navigate' && 
-      event.request.headers.get('User-Agent') && 
-      event.request.headers.get('User-Agent').includes('iPhone')) {
-      
-      const url = new URL(event.request.url);
-      
-      // If this is a navigation request with parameters on iOS, handle carefully
-      if (url.search && (url.searchParams.has('token') || url.searchParams.has('reset'))) {
-          console.log('🍎 iOS navigation with parameters detected');
-          
-          // Let the request go through without service worker interference
-          event.respondWith(
-              fetch(event.request).catch(() => {
-                  // Fallback to cached index.html if network fails
-                  return caches.match('./index.html');
-              })
-          );
-          return;
-      }
-  }
-
-  // CRITICAL: Handle HTML/navigation requests specially
-  if (event.request.mode === 'navigate' ||
-      url.pathname.endsWith('.html') ||
+  
+  // Handle HTML/navigation requests specially (NO iOS-specific complexity)
+  if (event.request.mode === 'navigate' || 
+      url.pathname.endsWith('.html') || 
       url.pathname === '/') {
-
+    
     // For token requests, always fetch from network and don't cache
-    if (url.searchParams.has('token') || url.searchParams.has('ios_refresh')) {
+    if (url.searchParams.has('token')) {
       event.respondWith(
         fetch(event.request).then((networkResponse) => {
-          // Don't cache token responses or iOS refresh requests - return directly
+          // Don't cache token responses - simple and clean
           return networkResponse;
         }).catch(() => {
           throw new Error('Network required for subscription activation');
         })
       );
     } else {
-      // For regular navigation, check localStorage for subscription changes
+      // For regular navigation, simple network-first approach
       event.respondWith(
         fetch(event.request).then((networkResponse) => {
           if (networkResponse.ok) {
-            // FIXED: Clone the response before caching to avoid "Response body is already used" error
-            const responseClone = networkResponse.clone();
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, responseClone);
-            }).catch(err => {
-              console.warn('Cache put failed:', err);
-            });
+            // Cache the response for offline access
+            const cache = caches.open(CACHE_NAME);
+            cache.then(c => c.put(event.request, networkResponse.clone()));
           }
           return networkResponse;
         }).catch(() => {
@@ -169,19 +120,10 @@ self.addEventListener('fetch', (event) => {
     // For static assets, use cache first strategy
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-
-        return fetch(event.request).then((networkResponse) => {
+        return cachedResponse || fetch(event.request).then((networkResponse) => {
           if (networkResponse.ok) {
-            // FIXED: Clone the response before caching
-            const responseClone = networkResponse.clone();
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, responseClone);
-            }).catch(err => {
-              console.warn('Cache put failed:', err);
-            });
+            const cache = caches.open(CACHE_NAME);
+            cache.then(c => c.put(event.request, networkResponse.clone()));
           }
           return networkResponse;
         });
