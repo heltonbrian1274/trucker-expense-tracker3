@@ -1,0 +1,221 @@
+# CORRECT FIX: Revert to Working Approach
+
+## THE REAL PROBLEM
+
+The looping issue was **CAUSED** by the complex iOS-specific "fixes" that were added, not by the original simple code. The working version was simple and effective.
+
+## WHAT NEEDS TO BE CHANGED
+
+### 1. SCRIPT.JS - Revert DOMContentLoaded Event Listener
+
+**FIND the current complex DOMContentLoaded event listener and REPLACE it entirely with:**
+
+```javascript
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. AGGRESSIVE SERVICE WORKER UNREGISTER (This was the key!)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+            for (let registration of registrations) registration.unregister();
+        }).catch(function (err) {
+            console.error('Service worker unregistration failed: ', err);
+        });
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    // 2. SIMPLE TOKEN HANDLING (No complex iOS logic)
+    if (token) {
+        localStorage.setItem('subscriptionToken', token);
+        verifySubscriptionToken(token);
+    } else {
+        checkSubscriptionStatusFromServer();
+    }
+
+    // 3. SIMPLE RESET LOGIC - NO RELOAD! (This was causing the loop)
+    if (urlParams.get('reset') === 'trial') {
+        localStorage.clear();
+        sessionStorage.clear();
+        alert('Trial has been reset! Redirecting...');
+        window.location.href = window.location.pathname;  // Simple redirect, not reload!
+        return;
+    }
+
+    // 4. RE-REGISTER SERVICE WORKER AFTER DELAY (Critical for proper operation)
+    setTimeout(() => {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => console.log('New SW registered:', registration))
+                .catch(error => console.log('New SW registration failed:', error));
+        }
+    }, 500); // 500ms delay is important
+
+    // 5. INITIALIZE APP NORMALLY
+    initializeApp();
+});
+```
+
+### 2. SCRIPT.JS - Remove Complex Functions
+
+**REMOVE or COMMENT OUT these functions that were causing problems:**
+- `cleanURLParametersSafely()`
+- Any complex iOS detection functions beyond the basic `isIOSDevice()`
+- Complex URL parameter cleaning logic in token handling
+
+### 3. SERVICE WORKER - Revert to Simple Version
+
+**REPLACE the entire sw.js file with the simple working version:**
+
+```javascript
+// Service Worker for Trucker Expense Tracker PWA
+// Version 2.1.4 - REVERT TO WORKING VERSION
+
+const CACHE_NAME = 'trucker-expense-tracker-v2.1.4-restored';
+const urlsToCache = [
+  './manifest.json',
+  './icon-72x72.png',
+  './icon-96x96.png',
+  './icon-144x144.png',
+  './icon-192x192.png',
+  './icon-512x512.png'
+];
+
+// Install event - cache static resources
+self.addEventListener('install', (event) => {
+  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(urlsToCache);
+    })
+  );
+});
+
+// Activate event - clean up old caches
+self.addEventListener('activate', (event) => {
+  self.clients.claim();
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+// Listen for messages from the main app
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'CLEAR_INDEX_CACHE') {
+    event.waitUntil(
+      caches.open(CACHE_NAME).then((cache) => {
+        const indexUrls = [
+          './',
+          './index.html',
+          self.registration.scope,
+          self.registration.scope + 'index.html'
+        ];
+        
+        return Promise.all(
+          indexUrls.map(url => cache.delete(url))
+        ).then(() => {
+          return self.clients.matchAll().then((clients) => {
+            clients.forEach((client) => {
+              client.postMessage({ type: 'INDEX_CACHE_CLEARED' });
+            });
+          });
+        });
+      })
+    );
+  }
+});
+
+// Fetch event - SIMPLE APPROACH THAT WORKED
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  const url = new URL(event.request.url);
+  
+  if (event.request.mode === 'navigate' || 
+      url.pathname.endsWith('.html') || 
+      url.pathname === '/') {
+    
+    if (url.searchParams.has('token')) {
+      event.respondWith(
+        fetch(event.request).then((networkResponse) => {
+          return networkResponse;
+        }).catch(() => {
+          throw new Error('Network required for subscription activation');
+        })
+      );
+    } else {
+      event.respondWith(
+        fetch(event.request).then((networkResponse) => {
+          if (networkResponse.ok) {
+            const cache = caches.open(CACHE_NAME);
+            cache.then(c => c.put(event.request, networkResponse.clone()));
+          }
+          return networkResponse;
+        }).catch(() => {
+          return caches.match(event.request).then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            return new Response(
+              '<!DOCTYPE html><html><head><title>Offline</title></head><body><h1>Offline</h1><p>Please check your internet connection.</p></body></html>',
+              { headers: { 'Content-Type': 'text/html' } }
+            );
+          });
+        })
+      );
+    }
+  } else {
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        return cachedResponse || fetch(event.request).then((networkResponse) => {
+          if (networkResponse.ok) {
+            const cache = caches.open(CACHE_NAME);
+            cache.then(c => c.put(event.request, networkResponse.clone()));
+          }
+          return networkResponse;
+        });
+      })
+    );
+  }
+});
+```
+
+## WHY THIS WORKS
+
+### Key Elements of the Working Approach:
+
+1. **Aggressive Service Worker Unregistration**: Clears all existing service workers before processing URL parameters
+2. **Simple Redirect**: Uses `window.location.href = window.location.pathname` instead of `location.reload()`
+3. **Service Worker Re-registration**: Registers a fresh service worker after a 500ms delay
+4. **No iOS-Specific Complexity**: No user agent detection or complex navigation handling
+5. **Simple Token Handling**: Just fetch from network, don't cache
+
+### What Was Breaking It:
+
+1. **Complex iOS handling**: Created race conditions and interference
+2. **Over-engineered service worker**: Too many edge cases and complex logic
+3. **URL parameter cleaning**: The `cleanURLParametersSafely()` function was interfering
+4. **Missing service worker unregistration**: Old service workers were interfering
+
+## TESTING
+
+After implementing these changes:
+
+1. **Clear all browser data** on your iPhone
+2. **Test the Stripe payment flow**
+3. **Verify no infinite loops occur**
+4. **Test both Safari and installed PWA**
+
+## CONCLUSION
+
+**The original simple approach was correct.** The complex "fixes" created the problem they were trying to solve. This revert will restore the working functionality.
+

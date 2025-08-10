@@ -1,0 +1,57 @@
+// ===== CORRECTED SCRIPT.JS FIX - REVERT TO WORKING APPROACH =====
+
+// REPLACE the entire DOMContentLoaded event listener with this WORKING version:
+
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. AGGRESSIVE SERVICE WORKER UNREGISTER (This was the key!)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+            for (let registration of registrations) registration.unregister();
+        }).catch(function (err) {
+            console.error('Service worker unregistration failed: ', err);
+        });
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    // 2. SIMPLE TOKEN HANDLING (No complex iOS logic)
+    if (token) {
+        localStorage.setItem('subscriptionToken', token);
+        verifySubscriptionToken(token);
+    } else {
+        checkSubscriptionStatusFromServer();
+    }
+
+    // 3. SIMPLE RESET LOGIC - NO RELOAD! (This was causing the loop)
+    if (urlParams.get('reset') === 'trial') {
+        localStorage.clear();
+        sessionStorage.clear();
+        alert('Trial has been reset! Redirecting...');
+        window.location.href = window.location.pathname;  // Simple redirect, not reload!
+        return;
+    }
+
+    // 4. RE-REGISTER SERVICE WORKER AFTER DELAY (Critical for proper operation)
+    setTimeout(() => {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(registration => console.log('New SW registered:', registration))
+                .catch(error => console.log('New SW registration failed:', error));
+        }
+    }, 500); // 500ms delay is important
+
+    // 5. INITIALIZE APP NORMALLY
+    initializeApp();
+});
+
+// REMOVE OR COMMENT OUT these complex functions that were causing problems:
+// - cleanURLParametersSafely()
+// - All the complex iOS detection logic
+// - The complex URL parameter cleaning in the token handling
+
+// KEEP the initializeApp() function but remove the complex iOS-specific logic from it
+
+// The key insight: The original simple approach worked perfectly. 
+// The complex iOS-specific handling CAUSED the problems it was trying to solve.
+
