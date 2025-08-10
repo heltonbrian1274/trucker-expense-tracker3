@@ -99,6 +99,28 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
 
+  // iOS-specific navigation handling
+  if (event.request.mode === 'navigate' && 
+      event.request.headers.get('User-Agent') && 
+      event.request.headers.get('User-Agent').includes('iPhone')) {
+      
+      const url = new URL(event.request.url);
+      
+      // If this is a navigation request with parameters on iOS, handle carefully
+      if (url.search && (url.searchParams.has('token') || url.searchParams.has('reset'))) {
+          console.log('🍎 iOS navigation with parameters detected');
+          
+          // Let the request go through without service worker interference
+          event.respondWith(
+              fetch(event.request).catch(() => {
+                  // Fallback to cached index.html if network fails
+                  return caches.match('./index.html');
+              })
+          );
+          return;
+      }
+  }
+
   // CRITICAL: Handle HTML/navigation requests specially
   if (event.request.mode === 'navigate' ||
       url.pathname.endsWith('.html') ||

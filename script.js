@@ -83,14 +83,14 @@ try {
 // Detect Lighthouse and other automated testing tools
 function isLighthouseOrBot() {
     const userAgent = navigator.userAgent.toLowerCase();
-    
+
     // Lighthouse specific detection
-    if (userAgent.includes('lighthouse') || 
+    if (userAgent.includes('lighthouse') ||
         userAgent.includes('chrome-lighthouse') ||
         userAgent.includes('pagespeed')) {
         return true;
     }
-    
+
     // Common bot patterns
     if (userAgent.includes('headlesschrome') ||
         userAgent.includes('phantomjs') ||
@@ -99,19 +99,19 @@ function isLighthouseOrBot() {
         userAgent.includes('spider')) {
         return true;
     }
-    
+
     // Automation tools
     if (userAgent.includes('selenium') ||
         userAgent.includes('webdriver') ||
         userAgent.includes('puppeteer')) {
         return true;
     }
-    
+
     // Check for headless indicators
     if (navigator.webdriver === true) {
         return true;
     }
-    
+
     return false;
 }
 
@@ -121,7 +121,7 @@ function isRealIOSDevice() {
     if (isLighthouseOrBot()) {
         return false;
     }
-    
+
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
 
     // Direct iOS device detection
@@ -224,6 +224,23 @@ function safeLocalStorageGet(key) {
     }
 }
 
+// Function to clean URL parameters without reloading
+function cleanURLParametersSafely() {
+    if (window.history && window.history.replaceState) {
+        const url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState({ path: url }, '', url);
+        console.log('URL parameters cleaned safely.');
+    } else {
+        console.warn('History API not available for safe URL cleaning.');
+        // Fallback for older browsers or environments without history API
+        try {
+            window.location.href = window.location.origin + window.location.pathname;
+        } catch (error) {
+            console.error('Fallback URL cleaning failed:', error);
+        }
+    }
+}
+
 // ======================
 // --- DOMContentLoaded & Initialization ---
 // ======================
@@ -291,10 +308,20 @@ document.addEventListener('DOMContentLoaded', function () {
         try {
             localStorage.clear();
             sessionStorage.clear();
-        } catch (e) {
-            console.warn('Storage clear failed:', e);
+            if ('caches' in window) {
+                caches.keys().then(cacheNames => {
+                    return Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+                });
+            }
+            // Clean URL parameters safely without reload
+            cleanURLParametersSafely();
+            // Reinitialize app without reload
+            setTimeout(() => {
+                initializeApp();
+            }, 100);
+        } catch (error) {
+            console.error('Reset trial error:', error);
         }
-        location.reload();
         return;
     }
 
@@ -1127,10 +1154,10 @@ function updateSummary() {
     const todayExpenses = expenses.filter(ex => ex.date === today);
     const totalExpenses = expenses.reduce((sum, ex) => sum + ex.amount, 0);
     const todayTotal = todayExpenses.reduce((sum, ex) => sum + ex.amount, 0);
-    
+
     const dailyEl = document.getElementById('dailyTotal');
     const totalEl = document.getElementById('totalExpenses');
-    
+
     if (dailyEl) dailyEl.textContent = `$${todayTotal.toFixed(2)}`;
     if (totalEl) totalEl.textContent = `$${totalExpenses.toFixed(2)}`;
 }
