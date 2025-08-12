@@ -123,7 +123,7 @@
     }
     </script>
 
-    <!-- FAQ Schema for Rich Snippets -->
+    <!-- Enhanced FAQ Schema for Rich Snippets -->
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -131,34 +131,106 @@
         "mainEntity": [
             {
                 "@type": "Question",
-                "name": "What expenses can truck drivers track with this app?",
+                "name": "What business expenses can owner-operators track with this app?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Truck drivers can track fuel, maintenance, meals, lodging, tolls, permits, insurance, phone bills, supplies, training, medical exams, office expenses, bank fees, legal fees, and other business expenses. All categories are specifically designed for trucking operations."
+                    "text": "Owner-operators can track 15 different categories of business expenses including fuel, maintenance, meals, lodging, tolls, permits, insurance, phone bills, supplies, training, medical exams, office expenses, bank fees, legal fees, and other business costs. Each category is designed for trucking operations. Consult your tax professional about which expenses may be deductible for your specific situation."
                 }
             },
             {
                 "@type": "Question", 
-                "name": "Is my expense data private and secure?",
+                "name": "Is my trucking expense data private and secure?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes, all your data is stored locally on your device. We have no access to your information and cannot see your expense data. This privacy-first approach ensures your business information stays completely confidential."
+                    "text": "Yes! All your data is stored locally on your device using your browser's secure storage. Nothing is sent to our servers, ensuring complete privacy and security. We have no access to your business information."
                 }
             },
             {
                 "@type": "Question",
-                "name": "Can I export reports for tax preparation and IFTA?",
+                "name": "Can I export trucking expense reports for tax preparation?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Yes, you can export PDF reports and CSV files that are properly formatted for tax preparation and IFTA reporting. Reports include all necessary details for deductions and compliance."
+                    "text": "Absolutely! You can export your expense data as PDF reports or CSV files for your accountant or tax preparation. These reports are organized by category and date, making it easy to provide information to your tax professional."
                 }
             },
             {
                 "@type": "Question",
-                "name": "Do I need to create an account to use the expense tracker?",
+                "name": "Does the trucker expense tracker work offline without internet?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "No account is required. You can start tracking expenses immediately without any signup process. This design choice supports our privacy-first approach and gets you started faster."
+                    "text": "Yes! This is a Progressive Web App (PWA) that works offline. You can add expenses even without an internet connection, making it perfect for tracking costs while on the road."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How does expense tracking software help owner-operators stay organized?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Expense tracking software automatically categorizes your business costs, stores digital receipts, and generates organized reports. This saves hours of manual work and ensures you have proper records for tax preparation. Always consult your tax professional about which expenses apply to your situation."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What's the difference between trucking expense apps and spreadsheets?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Expense tracking apps are faster, more accurate, and work offline. Unlike spreadsheets, our app automatically categorizes expenses, stores receipt photos, and generates professional reports. This reduces errors and saves time during tax season."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do I keep digital receipts organized for my trucking business?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Our app lets you attach photos of receipts to each expense entry, keeping everything organized in one place. You can export these records as PDF reports or CSV files for your accountant or tax professional."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Does the expense tracker work for independent owner-operators?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes! This app is specifically designed for individual owner-operators who need to track their business expenses. Each subscription is for one user to ensure proper record-keeping and data privacy."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I access my expense data on multiple devices?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Your data is stored locally on each device for privacy. To use the app on a new device, you'll need to verify your subscription and can restore data from backups. This ensures your business records remain secure and properly organized per device."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What reports can I generate for my trucking business?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "You can export PDF reports, CSV files, and print summaries of your tracked expenses. These reports are organized by category and date, making it easy to provide information to your tax professional or accountant."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Is this expense tracker suitable for new owner-operators?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Absolutely! The app is designed to be simple and focused, perfect for new owner-operators who need to establish good record-keeping habits. No complicated features - just easy expense tracking."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can I use one subscription for multiple trucks?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Each subscription is designed for one user to ensure proper data privacy and record-keeping. For multiple vehicles, each driver should have their own subscription to maintain accurate individual records."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "When did my 30-day free trial start?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Your trial start date is displayed in the FAQ section when you open the app. The trial period begins when you first use the expense tracking features."
                 }
             }
         ]
@@ -312,14 +384,119 @@
         <div class="modal-content">
             <button class="modal-close" onclick="closeFAQ()">&times;</button>
             <h2>❓ Frequently Asked Questions</h2>
+            
+            <!-- Optimized Existing Questions -->
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
-                    What expenses can I track? <span>+</span>
+                    What business expenses can owner-operators track with this app? <span>+</span>
                 </div>
                 <div class="faq-answer">
-                    You can track 15 different categories of expenses including fuel, maintenance, meals, lodging, tolls, permits, insurance, phone bills, and more. Each category is specifically designed for trucking business needs.
+                    Owner-operators can track 15 different categories of business expenses including fuel, maintenance, meals, lodging, tolls, permits, insurance, phone bills, supplies, training, medical exams, office expenses, bank fees, legal fees, and other business costs. Each category is designed for trucking operations. <em>Consult your tax professional about which expenses may be deductible for your specific situation.</em>
                 </div>
             </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Is my trucking expense data private and secure? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! All your data is stored locally on your device using your browser's secure storage. Nothing is sent to our servers, ensuring complete privacy and security. We have no access to your business information.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I export trucking expense reports for tax preparation? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! You can export your expense data as PDF reports or CSV files for your accountant or tax preparation. These reports are organized by category and date, making it easy to provide information to your tax professional.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Does the trucker expense tracker work offline without internet? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! This is a Progressive Web App (PWA) that works offline. You can add expenses even without an internet connection, making it perfect for tracking costs while on the road.
+                </div>
+            </div>
+            
+            <!-- New Business-Safe Questions -->
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    How does expense tracking software help owner-operators stay organized? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Expense tracking software automatically categorizes your business costs, stores digital receipts, and generates organized reports. This saves hours of manual work and ensures you have proper records for tax preparation. <em>Always consult your tax professional about which expenses apply to your situation.</em>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What's the difference between trucking expense apps and spreadsheets? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Expense tracking apps are faster, more accurate, and work offline. Unlike spreadsheets, our app automatically categorizes expenses, stores receipt photos, and generates professional reports. This reduces errors and saves time during tax season.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    How do I keep digital receipts organized for my trucking business? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Our app lets you attach photos of receipts to each expense entry, keeping everything organized in one place. You can export these records as PDF reports or CSV files for your accountant or tax professional.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Does the expense tracker work for independent owner-operators? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Yes! This app is specifically designed for individual owner-operators who need to track their business expenses. Each subscription is for one user to ensure proper record-keeping and data privacy.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I access my expense data on multiple devices? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Your data is stored locally on each device for privacy. To use the app on a new device, you'll need to verify your subscription and can restore data from backups. This ensures your business records remain secure and properly organized per device.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    What reports can I generate for my trucking business? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    You can export PDF reports, CSV files, and print summaries of your tracked expenses. These reports are organized by category and date, making it easy to provide information to your tax professional or accountant.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Is this expense tracker suitable for new owner-operators? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Absolutely! The app is designed to be simple and focused, perfect for new owner-operators who need to establish good record-keeping habits. No complicated features - just easy expense tracking.
+                </div>
+            </div>
+            
+            <!-- Revenue Protection Question -->
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    Can I use one subscription for multiple trucks? <span>+</span>
+                </div>
+                <div class="faq-answer">
+                    Each subscription is designed for one user to ensure proper data privacy and record-keeping. For multiple vehicles, each driver should have their own subscription to maintain accurate individual records.
+                </div>
+            </div>
+            
+            <!-- Keep Original Trial Question -->
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                     When did my 30-day free trial start? <span>+</span>
@@ -328,30 +505,8 @@
                     <p>Your trial started on: <strong id="trial-start-date-display">loading...</strong></p>
                 </div>
             </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    Is my data secure? <span>+</span>
-                </div>
-                <div class="faq-answer">
-                    Yes! All your data is stored locally on your device using your browser's local storage. Nothing is sent to our servers, ensuring complete privacy and security.
-                </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    Can I export my data? <span>+</span>
-                </div>
-                <div class="faq-answer">
-                    Absolutely! You can export your expense data as PDF reports or CSV files for your accountant or tax preparation.
-                </div>
-            </div>
-            <div class="faq-item">
-                <div class="faq-question" onclick="toggleFAQ(this)">
-                    Does this work offline? <span>+</span>
-                </div>
-                <div class="faq-answer">
-                    Yes! This is a Progressive Web App (PWA) that works offline. You can add expenses even without an internet connection.
-                </div>
-            </div>
+            
+            <!-- Keep Original Subscription Question -->
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                     What happens after the trial period? <span>+</span>
@@ -360,6 +515,7 @@
                     After the 30-day trial, you'll need to subscribe for $14.99/month to continue using the app. Your data will remain on your device during the trial period.
                 </div>
             </div>
+            
             <div class="faq-item">
                 <div class="faq-question" onclick="toggleFAQ(this)">
                      How do I use my subscription on a new device? <span>+</span>
@@ -414,59 +570,72 @@
         <div class="modal-content welcome-content">
             <h2>Welcome to the Privacy-First Expense Tracker!</h2>
             <p class="welcome-subtitle">Your Business Stays Your Business.</p>
-            <div class="welcome-features">
-                <div class="welcome-feature">
-                    <span class="feature-icon">🔒</span>
-                    <div class="feature-content">
-                        <strong>Total Privacy</strong>
-                        <p>All your data is saved only on this device. We can never see it.</p>
+            <ul id="welcome-features">
+                <li>
+                    <span class="welcome-icon">🔒</span>
+                    <div>
+                        <strong>Total Privacy</strong><br>
+                        All your data is saved only on this device. We can never see it.
                     </div>
-                </div>
-                <div class="welcome-feature">
-                    <span class="feature-icon">👍</span>
-                    <div class="feature-content">
-                        <strong>Simple & Focused</strong>
-                        <p>No complicated features. Just easy expense tracking for owner-operators.</p>
+                </li>
+                <li>
+                    <span class="welcome-icon">👍</span>
+                    <div>
+                        <strong>Simple & Focused</strong><br>
+                        No complicated features. Just easy expense tracking for owner-operators.
                     </div>
-                </div>
-                <div class="welcome-feature">
-                    <span class="feature-icon">🚀</span>
-                    <div class="feature-content">
-                        <strong>No Account Needed</strong>
-                        <p>Get started right now without signing up.</p>
+                </li>
+                <li>
+                    <span class="welcome-icon">📱</span>
+                    <div>
+                        <strong>Works Everywhere</strong><br>
+                        Use on your phone, tablet, or computer. Works offline too.
                     </div>
-                </div>
-            </div>
-            <button class="welcome-btn" onclick="closeWelcomeModal()" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; padding: 16px 32px; border-radius: 12px; font-size: 18px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 24px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); transition: all 0.2s ease;">Start Tracking Expenses</button>
+                </li>
+                <li>
+                    <span class="welcome-icon">🎁</span>
+                    <div>
+                        <strong>30-Day Free Trial</strong><br>
+                        Try all features free for 30 days. No credit card required.
+                    </div>
+                </li>
+            </ul>
+            <button onclick="closeWelcomeModal()" class="btn" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; padding: 16px 32px; border: none; border-radius: 12px; font-weight: 600; font-size: 16px; width: 100%; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); transition: all 0.2s ease;">Start Tracking Expenses</button>
         </div>
     </div>
 
     <div id="subscriptionModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeAllModals()">&times;</button>
-            <h2>✅ Already Subscribed?</h2>
-            <p>Enter your subscription email to verify your account:</p>
-            <form id="alreadySubscribedForm">
+            <h2>💳 Subscribe to Continue</h2>
+            <p>Your 30-day trial has ended. Subscribe to continue tracking your expenses and accessing your data.</p>
+            <div class="subscription-options">
+                <div class="subscription-plan">
+                    <h3>Monthly Plan</h3>
+                    <div class="price">$14.99/month</div>
+                    <ul>
+                        <li>✅ Unlimited expense tracking</li>
+                        <li>✅ PDF & CSV exports</li>
+                        <li>✅ Offline functionality</li>
+                        <li>✅ Complete privacy</li>
+                    </ul>
+                    <button onclick="window.open('https://buy.stripe.com/28EeVc2X1d4V3XleCBdZ600', '_blank')" class="btn btn-primary">Subscribe Now</button>
+                </div>
+            </div>
+            <div class="already-subscribed">
+                <p>Already subscribed? <button onclick="showVerificationForm()" class="btn btn-link">Verify your subscription</button></p>
+            </div>
+            <form id="verificationForm" style="display: none;" onsubmit="verifySubscription(event)">
                 <div class="form-group">
-                    <label for="subscriberEmail">Email Address:</label>
-                    <input type="email" id="subscriberEmail" name="subscriberEmail" required placeholder="Enter your subscription email"
-                           style="width: 100%; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; font-size: 16px;">
+                    <label for="subscriptionEmail">Enter your subscription email:</label>
+                    <input type="email" id="subscriptionEmail" required placeholder="your@email.com">
                 </div>
                 <button type="submit" class="btn">Verify Subscription</button>
             </form>
-            <div id="subscriptionVerificationSuccess" style="display: none; text-align: center; padding: 30px;">
-                <div style="font-size: 4rem; margin-bottom: 20px; color: var(--success-color);">✅</div>
-                <div id="verificationSuccessMessage">
-                    <h3 style="color: var(--success-color); margin-bottom: 15px;">Subscription Verified!</h3>
-                    <p style="color: #666;">Your Pro subscription has been activated successfully.</p>
-                </div>
-                <button onclick="location.reload()" class="btn" style="margin-top: 20px;">Continue to App</button>
-            </div>
         </div>
     </div>
 
- <script src="/script.js"></script>
-
+    <script src="/script.js"></script>
 </body>
 </html>
 
