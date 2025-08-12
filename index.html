@@ -375,11 +375,38 @@
         <div class="modal-content">
             <button class="modal-close" onclick="closeFeedback()">&times;</button>
             <h2>💬 Send Feedback</h2>
-            <p>We'd love to hear from you! Your feedback helps us improve the app.</p>
-            <div class="feedback-buttons">
-                <button class="feedback-btn" onclick="window.location.href='mailto:support@truckerexpensetracker.com?subject=Feedback%20for%20Trucker%20Expense%20Tracker&body=Hi,%0A%0AI%20have%20feedback%20about%20the%20Trucker%20Expense%20Tracker:%0A%0A'">📧 Email Us</button>
+            <form onsubmit="submitFeedback(event)" id="feedbackForm">
+                <div class="form-group">
+                    <label for="feedbackType">Feedback Type:</label>
+                    <select id="feedbackType" required onchange="updateEmailDisplay()">
+                        <option value="">Select type...</option>
+                        <option value="bug">🐛 Bug Report</option>
+                        <option value="feature">💡 Feature Request</option>
+                        <option value="improvement">⚡ Improvement</option>
+                        <option value="general">💬 General Feedback</option>
+                    </select>
+                    <div id="emailDisplay" style="margin-top: 5px; font-size: 0.9rem; color: #666; min-height: 20px; display: flex; align-items: center;"></div>
+                </div>
+                <div class="form-group">
+                    <label for="feedbackMessage">Message:</label>
+                    <textarea id="feedbackMessage" rows="5" required placeholder="Tell us what you think..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="feedbackEmail">Email (optional):</label>
+                    <input type="email" id="feedbackEmail" placeholder="your@email.com">
+                </div>
+                <button type="submit" class="btn" id="feedbackSubmitBtn">Send Feedback</button>
+            </form>
+            <div id="feedbackSuccess" style="display: none; text-align: center; padding: 30px;">
+                <div style="font-size: 4rem; margin-bottom: 20px; color: var(--success-color);">✓</div>
+                <h3 style="color: var(--success-color); margin-bottom: 15px;">Email Client Opening...</h3>
+                <p style="color: #666; margin-bottom: 20px;">Your default email client should open with a pre-filled message.</p>
+                <div style="background: var(--background-light); padding: 15px; border-radius: 10px; margin: 20px 0; border-left: 4px solid var(--success-color);">
+                    <p style="font-size: 0.9rem; color: #666; margin: 0;"><strong>Next steps:</strong></p>
+                    <p style="font-size: 0.9rem; color: #666; margin: 5px 0 0 0;">1. Check your email client<br>2. Review the pre-filled message<br>3. Click send to reach our team</p>
+                </div>
+                <button onclick="resetFeedbackForm()" class="btn btn-secondary">Send Another Message</button>
             </div>
-            <p style="font-size: 14px; color: #666; margin-top: 20px;">Click "Email Us" to open your email client with a pre-filled message.</p>
         </div>
     </div>
 
