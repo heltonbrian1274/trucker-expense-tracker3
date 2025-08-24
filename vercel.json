@@ -44,11 +44,4 @@
       ]
     }
   ]
-{
-  "crons": [
-    {
-      "path": "/api/redis-keepalive",
-      "schedule": "0 */6 * * *"
-    }
-  ]
 }
